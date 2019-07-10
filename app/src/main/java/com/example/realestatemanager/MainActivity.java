@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentManager;
 
 import com.example.realestatemanager.activities.AddFormActivity;
 import com.example.realestatemanager.activities.DetailActivity;
@@ -86,10 +87,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void configureAndShowListFragment(){
-        System.out.println("and here");
         listFragment = (ListFragment) getSupportFragmentManager().findFragmentById(R.id.frame_layout_main);
         if (listFragment == null) {
-            System.out.println("hi");
             listFragment = new ListFragment();
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.frame_layout_main, listFragment)
@@ -98,12 +97,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void configureAndShowDetailFragment(){
-        System.out.println("and here too?");
         detailFragment = (DetailFragment) getSupportFragmentManager().findFragmentById(R.id.frame_layout_detail);
 
         //A - We only add DetailFragment in Tablet mode (If found frame_layout_detail)
         if (detailFragment == null && findViewById(R.id.frame_layout_detail) != null) {
-            System.out.println("hello");
             detailFragment = new DetailFragment();
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.frame_layout_detail, detailFragment)
