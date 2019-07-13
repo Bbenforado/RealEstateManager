@@ -78,12 +78,53 @@ public class PlaceViewModel extends ViewModel {
     }
 
     public long createAddress(Address address) {
-        System.out.println("view model create address");
-        return addressDataSource.createAddress(address);
+        Callable<Long> insertCallable = () -> addressDataSource.createAddress(address);
+        long rowId = 0;
+
+        ExecutorService executorService = Executors.newFixedThreadPool(10);
+        Future<Long> future = executorService.submit(insertCallable);
+        try {
+            rowId = future.get();
+        } catch (InterruptedException e1) {
+            e1.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return rowId;
     }
 
     //FOR INTERESTS
     public long createInterest(Interest interest) {
-        return interestDataSource.createInterest(interest);
+        Callable<Long> insertCallable = () -> interestDataSource.createInterest(interest);
+        long rowId = 0;
+
+        ExecutorService executorService = Executors.newFixedThreadPool(10);
+        Future<Long> future = executorService.submit(insertCallable);
+        try {
+            rowId = future.get();
+        } catch (InterruptedException e1) {
+            e1.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return rowId;
+    }
+
+    public void updatePlace(Place place) {
+        executor.execute(() -> {
+            placeDataSource.updatePlace(place);
+        });
+    }
+
+    public void updateAddress(Address address) {
+        executor.execute(() -> {
+            addressDataSource.updateAddress(address);
+        });
+    }
+
+    public void updateInterest(Interest interest) {
+        executor.execute(() -> {
+            interestDataSource.updateInterest(interest);
+        });
     }
 }

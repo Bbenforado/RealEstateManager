@@ -30,4 +30,9 @@ public class PlaceDataRepository {
         System.out.println("repository create place");
         return placeDao.createPlace(place);
     }
+
+    //UPDATE
+    public void updatePlace(Place place) {
+        placeDao.updatePlace(place);
+    }
 }

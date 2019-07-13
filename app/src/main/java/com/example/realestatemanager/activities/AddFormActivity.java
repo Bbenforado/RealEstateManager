@@ -2,10 +2,17 @@ package com.example.realestatemanager.activities;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.RingtoneManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -19,8 +26,11 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NotificationCompat;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.example.realestatemanager.MainActivity;
 import com.example.realestatemanager.models.Address;
 import com.example.realestatemanager.models.Interest;
 import com.example.realestatemanager.viewModels.PlaceViewModel;
@@ -72,10 +82,15 @@ public class AddFormActivity extends AppCompatActivity {
     private String[] typesOfPlace = {"Loft", "Mansion", "Penthouse", "Duplex"};
     private String type;
     private SharedPreferences preferences;
-    public static final String APP_PREFERENCES = "appPreference";
+    public static final String APP_PREFERENCES = "appPreferences";
     public static final String SWITCH_BUTTON_MODE = "switchButtonMode";
+    public static final String STATUS_FORM_ACTIVITY = "statusFormActivity";
+    private final int NOTIFICATION_ID = 100;
+    private final String NOTIFICATION_TAG = "realEstateManager";
+    private static final String PLACE_ID = "placeId";
     private PlaceViewModel placeViewModel;
-
+    private int status;
+    private long placeId;
 
 
     @Override
@@ -88,6 +103,29 @@ public class AddFormActivity extends AppCompatActivity {
         configureToolbar();
         configureViewModel();
         setSwitchListener();
+
+        status = preferences.getInt(STATUS_FORM_ACTIVITY, -1);
+        System.out.println("status = " + status);
+        //if it s to edit one existing place
+        if (status == 1) {
+            placeId = preferences.getLong(PLACE_ID, -1);
+            System.out.println("id = " + placeId);
+            //update ui
+            placeViewModel.getPlace(placeId).observe(this, new Observer<Place>() {
+                @Override
+                public void onChanged(Place place) {
+                    completeFormWithData(place);
+                }
+            });
+            placeViewModel.getAddress(placeId).observe(this, new Observer<Address>() {
+                @Override
+                public void onChanged(Address address) {
+                    completeAddressFormWithData(address);
+                }
+            });
+        }
+
+
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -100,23 +138,48 @@ public class AddFormActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.menu_save_place:
-                if (paramsAreOk()) {
-                    //create place
-                    long id = createPlace();
-                    System.out.println("id = " + id);
-                    CheckBox[] checkBoxes = {checkBoxSchool, checkBoxMarketPlace, checkBoxPark, checkBoxHospital, checkBoxCinema, checkBoxTheater};
-                    //create interest
-                    for (CheckBox checkBox : checkBoxes) {
-                        if (checkBox.isChecked()) {
-                            Interest interest = new Interest(checkBox.getText().toString(), id);
-                            placeViewModel.createInterest(interest);
+                //if it s to save a new place
+                if (status != 1) {
+                    if (paramsAreOk()) {
+                        //create place
+                        long id = createPlace();
+                        System.out.println("id = " + id);
+                        CheckBox[] checkBoxes = {checkBoxSchool, checkBoxMarketPlace, checkBoxPark, checkBoxHospital, checkBoxCinema, checkBoxTheater};
+                        //create interest
+                        for (CheckBox checkBox : checkBoxes) {
+                            if (checkBox.isChecked()) {
+                                Interest interest = new Interest(checkBox.getText().toString(), id);
+                                placeViewModel.createInterest(interest);
+                            }
                         }
+                        //create address
+                        createAddress(id);
+                        sendNotification("Place created");
+                        launchMainActivity();
+                    } else {
+                        Toast.makeText(this, "You have to enter at least a price, a type of place, an address and the real estate manager in charge of this place!",
+                                Toast.LENGTH_LONG).show();
                     }
-                    //create address
-                    createAddress(id);
                 } else {
-                    Toast.makeText(this, "You have to enter at least a price, a type of place, an address and the real estate manager in charge of this place!",
-                            Toast.LENGTH_LONG).show();
+                    //if it s to update an existing place
+                    //get existing place
+                    placeViewModel.getPlace(placeId).observe(this, new Observer<Place>() {
+                        @Override
+                        public void onChanged(Place place) {
+                            updatePlace(place);
+
+                        }
+                    });
+                    placeViewModel.getAddress(placeId).observe(this, new Observer<Address>() {
+                        @Override
+                        public void onChanged(Address address) {
+                            updateAddress(address);
+                        }
+                    });
+                    sendNotification("Place updated");
+                    //return to main activity
+                    launchMainActivity();
+
                 }
                 return true;
             default:
@@ -164,9 +227,98 @@ public class AddFormActivity extends AppCompatActivity {
     public void selectSaleDate(View view) {
         createDatePickerDialog(view);
     }
+
+    //----------------------------------------------
+    //UPDATE UI
+    //-----------------------------------------------
+    private void completeFormWithData(Place place) {
+        typeOfPlaceButton.setText(place.getType());
+        editTextPrice.setText(String.valueOf(place.getPrice()));
+        editTextAuthor.setText(place.getAuthor());
+
+        if (place.getDescription() != null) {
+            editTextDescription.setText(place.getDescription());
+        } else {
+            editTextDescription.setText("Not informed yet");
+        }
+        if (place.getSurface() != 0) {
+            editTextSurface.setText(String.valueOf(place.getSurface()));
+        }else {
+            editTextSurface.setText("Not informed yet");
+        }
+        if (place.getNbrOfRooms() != 0) {
+            editTextNbrOfRooms.setText(String.valueOf(place.getNbrOfRooms()));
+        } else {
+            editTextNbrOfRooms.setText("Not informed yet");
+        }
+        if (place.getNbrOfBathrooms() != 0) {
+            editTextNbrOfBathrooms.setText(String.valueOf(place.getNbrOfBathrooms()));
+        } else {
+            editTextNbrOfBathrooms.setText("Not informed yet");
+        }
+        if (place.getNbrOfBedrooms() != 0) {
+            editTextNbrOfBedrooms.setText(String.valueOf(place.getNbrOfBedrooms()));
+        } else {
+            editTextNbrOfBedrooms.setText("Not informed yet");
+        }
+
+
+    }
+
+    private void completeAddressFormWithData(Address address) {
+        editTextStreetNbr.setText(String.valueOf(address.getStreetNumber()));
+        editTextStreetName.setText(address.getStreetName());
+        editTextPostalCode.setText(String.valueOf(address.getPostalCode()));
+        editTextCity.setText(address.getCity());
+        editTextCountry.setText(address.getCountry());
+        if (address.getComplement() != null) {
+            editTextComplement.setText(address.getComplement());
+        } else {
+            editTextComplement.setText("Not informed");
+        }
+
+    }
+
     //--------------------------------------------
     //METHODS
     //---------------------------------------------
+    private void launchMainActivity() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
+
+    private void sendNotification(String message) {
+        Intent intent = new Intent(this, AddFormActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+
+        NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
+        inboxStyle.setBigContentTitle("Notification sent");
+        inboxStyle.addLine(message);
+
+        String channelId = "fcm_default_channel";
+
+        NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(this, channelId)
+                        .setSmallIcon(R.drawable.house)
+                        .setContentTitle("Real estate manager")
+                        .setAutoCancel(true)
+                        .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                        .setContentIntent(pendingIntent)
+                        .setStyle(inboxStyle);
+
+        NotificationManager notificationManager = (NotificationManager)
+                getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence channelName = "Message provenant de mon appli";
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel channel = new NotificationChannel(channelId, channelName, importance);
+            notificationManager.createNotificationChannel(channel);
+
+            notificationManager.notify(NOTIFICATION_TAG, NOTIFICATION_ID, notificationBuilder.build());
+        }
+    }
+
     private void displayDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Choose a type of place: ");
@@ -275,6 +427,47 @@ public class AddFormActivity extends AppCompatActivity {
         return placeViewModel.createPlace(place);
     }
 
+    private void updatePlace(Place place) {
+        //FOR PLACE
+        long surface;
+        int nbrOfRooms;
+        int nbrOfBathrooms;
+        int nbrOfBedrooms;
+        String description;
+        String type = typeOfPlaceButton.getText().toString();
+        place.setType(type);
+        long price = Long.parseLong(editTextPrice.getText().toString());
+        place.setPrice(price);
+
+        if (!TextUtils.isEmpty(editTextSurface.getText().toString())) {
+            surface = Long.parseLong(editTextSurface.getText().toString());
+            place.setSurface(surface);
+        }
+        if (!TextUtils.isEmpty(editTextNbrOfRooms.getText().toString())) {
+            nbrOfRooms = Integer.parseInt(editTextNbrOfRooms.getText().toString());
+            place.setNbrOfRooms(nbrOfRooms);
+        }
+        if (!TextUtils.isEmpty(editTextNbrOfBathrooms.getText().toString())) {
+            nbrOfBathrooms = Integer.parseInt(editTextNbrOfBathrooms.getText().toString());
+            place.setNbrOfBathrooms(nbrOfBathrooms);
+        }
+        if (!TextUtils.isEmpty(editTextNbrOfBedrooms.getText().toString())) {
+            nbrOfBedrooms = Integer.parseInt(editTextNbrOfBedrooms.getText().toString());
+            place.setNbrOfBedrooms(nbrOfBedrooms);
+        }
+        if (!TextUtils.isEmpty(editTextDescription.getText().toString())) {
+            description = editTextDescription.getText().toString();
+            place.setDescription(description);
+        }
+        int status = preferences.getInt(SWITCH_BUTTON_MODE, -1);
+        place.setStatus(status);
+        String author = editTextAuthor.getText().toString();
+        place.setAuthor(author);
+        String date = new Date().toString();
+        place.setCreationDate(date);
+        placeViewModel.updatePlace(place);
+    }
+
     private void createAddress(long placeId) {
         //FOR ADDRESS
         String complement = null;
@@ -290,6 +483,30 @@ public class AddFormActivity extends AppCompatActivity {
         Address address = new Address(placeId, streetNumber, streetName, complement, postalCode, city, country);
         placeViewModel.createAddress(address);
     }
+
+    private void updateAddress(Address address) {
+        String complement;
+        int streetNumber = Integer.parseInt(editTextStreetNbr.getText().toString());
+        address.setStreetNumber(streetNumber);
+        String streetName = editTextStreetName.getText().toString();
+        address.setStreetName(streetName);
+        if (!TextUtils.isEmpty(editTextComplement.getText().toString())) {
+            complement = editTextComplement.getText().toString();
+            address.setComplement(complement);
+        }
+        String postalCode = editTextPostalCode.getText().toString();
+        address.setPostalCode(postalCode);
+        String city = editTextCity.getText().toString();
+        address.setCity(city);
+        String country = editTextCountry.getText().toString();
+        address.setCountry(country);
+
+        placeViewModel.updateAddress(address);
+    }
+
+    //----------------------------------------------------
+    //METHODS
+    //----------------------------------------------------
 
 
 }

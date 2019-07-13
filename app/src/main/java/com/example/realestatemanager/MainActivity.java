@@ -4,6 +4,8 @@ import android.content.Intent;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,27 +18,36 @@ import com.example.realestatemanager.activities.SettingsActivity;
 import com.example.realestatemanager.fragments.DetailFragment;
 import com.example.realestatemanager.fragments.ListFragment;
 import com.facebook.stetho.Stetho;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity {
     @Nullable
     @BindView(R.id.toolbar) Toolbar toolbar;
     private ListFragment listFragment;
     private DetailFragment detailFragment;
+    SharedPreferences preferences;
+    public static final String APP_PREFERENCES = "appPreferences";
+    public static final String USER_NAME = "userName";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_main);
-            ButterKnife.bind(this);
+        setContentView(R.layout.activity_main);
+        preferences = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE);
+        ButterKnife.bind(this);
+
             Stetho.initializeWithDefaults(this);
 
             //this.textViewMain = findViewById(R.id.activity_second_activity_text_view_main);
             configureToolbar();
             configureAndShowListFragment();
             configureAndShowDetailFragment();
+
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -51,14 +62,6 @@ public class MainActivity extends AppCompatActivity {
      */
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
-            case R.id.menu_add:
-                Intent intent = new Intent(this, AddFormActivity.class);
-                startActivity(intent);
-                return true;
-            case R.id.menu_edit:
-                Intent editIntent = new Intent(this, DetailActivity.class);
-                startActivity(editIntent);
-                return true;
             case R.id.menu_search:
                 return true;
             case R.id.menu_settings:
@@ -84,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void configureToolbar() {
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Real estate manager");
     }
 
     private void configureAndShowListFragment(){
@@ -107,4 +111,6 @@ public class MainActivity extends AppCompatActivity {
                     .commit();
         }
     }
+
+
 }

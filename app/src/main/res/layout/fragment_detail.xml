@@ -78,6 +78,7 @@
                         android:layout_marginBottom="10dp"/>
 
                     <TextView
+                        android:id="@+id/text_view_type_of_place_detail_fragment"
                         android:layout_gravity="center"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -100,6 +101,7 @@
                         android:layout_marginBottom="10dp"/>
 
                     <TextView
+                        android:id="@+id/text_view_price_detail_fragment"
                         android:layout_gravity="center"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -131,7 +133,6 @@
 
             </LinearLayout>
             </androidx.cardview.widget.CardView>
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -141,6 +142,7 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/text_view_description_detail_fragment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="7dp"
@@ -191,6 +193,7 @@
                             android:textStyle="bold"/>
 
                         <TextView
+                            android:id="@+id/text_view_surface_detail_fragment"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="300 m2"/>
@@ -224,6 +227,7 @@
                         android:textStyle="bold"/>
 
                     <TextView
+                        android:id="@+id/text_view_nbr_rooms_detail_fragment"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="5"/>
@@ -257,6 +261,7 @@
                         android:layout_marginBottom="5dp"/>
 
                     <TextView
+                        android:id="@+id/text_view_nbr_bathrooms_detail_fragment"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="1"/>
@@ -290,6 +295,7 @@
                         android:layout_marginBottom="5dp"/>
 
                     <TextView
+                        android:id="@+id/text_view_nbr_bedrooms_detail_fragment"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="2"/>
@@ -329,11 +335,19 @@
 
             </LinearLayout>
 
-
         </LinearLayout>
 
-
-
     </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/edit_floating_action_button_detail_fragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_anchor="@id/main.appbar"
+        app:layout_anchorGravity="bottom|end"
+        android:layout_marginBottom="8dp"
+        android:layout_marginRight="5dp"
+        android:clickable="true"
+        android:src="@drawable/ic_edit_white"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

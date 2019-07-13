@@ -1,7 +1,14 @@
-package com.example.realestatemanager;
+package com.example.realestatemanager.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.wifi.WifiManager;
+
+import androidx.lifecycle.ViewModelProviders;
+
+import com.example.realestatemanager.injections.Injection;
+import com.example.realestatemanager.injections.ViewModelFactory;
+import com.example.realestatemanager.viewModels.PlaceViewModel;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

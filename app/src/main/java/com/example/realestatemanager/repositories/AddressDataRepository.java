@@ -31,4 +31,9 @@ public class AddressDataRepository {
         System.out.println("repository create address");
         return addressDao.createAddress(address);
     }
+
+    //UPDATE
+    public void updateAddress(Address address) {
+        addressDao.updateAddress(address);
+    }
 }

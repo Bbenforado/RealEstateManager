@@ -27,4 +27,9 @@ public class InterestDataRepository {
     public long createInterest(Interest interest) {
         return interestDao.createInterest(interest);
     }
+
+    //UPDATE
+    public void updateInterest(Interest interest) {
+        interestDao.updateInterest(interest);
+    }
 }
