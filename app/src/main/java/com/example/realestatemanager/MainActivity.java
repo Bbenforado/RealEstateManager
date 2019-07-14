@@ -1,15 +1,23 @@
 package com.example.realestatemanager;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
+
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 
 import com.example.realestatemanager.activities.AddFormActivity;
@@ -19,15 +27,18 @@ import com.example.realestatemanager.fragments.DetailFragment;
 import com.example.realestatemanager.fragments.ListFragment;
 import com.facebook.stetho.Stetho;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
     @Nullable
     @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindView(R.id.drawer_layout) DrawerLayout drawerLayout;
+    @BindView(R.id.nav_view) NavigationView navigationView;
     private ListFragment listFragment;
     private DetailFragment detailFragment;
     SharedPreferences preferences;
@@ -41,13 +52,24 @@ public class MainActivity extends AppCompatActivity {
         preferences = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE);
         ButterKnife.bind(this);
 
-            Stetho.initializeWithDefaults(this);
+        Stetho.initializeWithDefaults(this);
 
-            //this.textViewMain = findViewById(R.id.activity_second_activity_text_view_main);
-            configureToolbar();
-            configureAndShowListFragment();
-            configureAndShowDetailFragment();
+        //this.textViewMain = findViewById(R.id.activity_second_activity_text_view_main);
+        configureToolbar();
+        configureNavigationView();
+        configureDrawerLayout();
+        configureAndShowListFragment();
+        configureAndShowDetailFragment();
 
+    }
+
+    @Override
+    public void onBackPressed() {
+         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -88,6 +110,37 @@ public class MainActivity extends AppCompatActivity {
     private void configureToolbar() {
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Real estate manager");
+    }
+
+    private void configureDrawerLayout() {
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+    }
+
+    /**
+     * launchs activity that displays articles found for the category selected (depending on the item you clicked on)
+     * @param menuItem
+     * @return
+     */
+    @Override
+    public boolean onNavigationItemSelected(MenuItem menuItem) {
+
+        int id = menuItem.getItemId();
+        switch (id) {
+            case R.id.settings:
+                Toast.makeText(this, "you clicked on settings", Toast.LENGTH_SHORT).show();
+                break;
+            default:
+                break;
+        }
+        this.drawerLayout.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    private void configureNavigationView() {
+        navigationView.setNavigationItemSelectedListener(this);
+
     }
 
     private void configureAndShowListFragment(){
