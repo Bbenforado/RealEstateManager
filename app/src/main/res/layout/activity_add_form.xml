@@ -435,16 +435,6 @@
             android:background="@android:color/darker_gray"
             android:layout_marginTop="15dp" />
 
-        <!--<com.google.android.material.button.MaterialButton
-            android:id="@+id/button_add_interest"
-            style="@style/Widget.MaterialComponents.Button.UnelevatedButton.Icon"
-            android:layout_width="match_parent"
-            android:layout_height="45dp"
-            android:text="Add interest"
-            app:icon="@drawable/heart_small"
-            android:textAllCaps="false"
-            android:backgroundTint="@color/purpleAccent"
-            android:layout_marginBottom="10dp"/>-->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -544,27 +534,6 @@
             android:layout_height="0.4dp"
             android:background="@android:color/darker_gray"
             android:layout_marginTop="15dp" />
-
-        <RelativeLayout
-            android:layout_marginTop="20dp"
-            android:orientation="horizontal"
-            android:layout_marginBottom="7dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Available"
-                android:textSize="16sp"/>
-
-            <Switch
-                android:id="@+id/swith_button_available"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"/>
-
-        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="match_parent"

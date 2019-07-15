@@ -15,12 +15,12 @@ public class InterestDataRepository {
     }
 
     //GET PLACE
-    public LiveData<Interest> getInterest(long idPlace) {
+    /*public LiveData<Interest> getInterest(long idPlace) {
         return this.interestDao.getInterest(idPlace);
-    }
+    }*/
 
-    public LiveData<List<Interest>> getInterests() {
-        return this.interestDao.getInterests();
+    public LiveData<List<Interest>> getInterests(long placeId) {
+        return this.interestDao.getInterests(placeId);
     }
 
     //CREATE

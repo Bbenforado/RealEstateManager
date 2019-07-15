@@ -26,6 +26,7 @@ import com.example.realestatemanager.adapters.PlaceRecyclerViewAdapter;
 import com.example.realestatemanager.injections.Injection;
 import com.example.realestatemanager.injections.ViewModelFactory;
 import com.example.realestatemanager.models.Address;
+import com.example.realestatemanager.models.Interest;
 import com.example.realestatemanager.models.Place;
 import com.example.realestatemanager.utils.ItemClickSupport;
 import com.example.realestatemanager.viewModels.PlaceViewModel;
@@ -109,6 +110,8 @@ public class ListFragment extends Fragment {
     }
 
 
+
+
     private void updatePlacesList(List<Place> places) {
         this.adapter.updatePlaceData(places);
     }
@@ -116,6 +119,8 @@ public class ListFragment extends Fragment {
     private void updateAddressesList(List<Address> addresses) {
         this.adapter.updateAddressData(addresses);
     }
+
+
 
 
     private void configureOnClickRecyclerView() {

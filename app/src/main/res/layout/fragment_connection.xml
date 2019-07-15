@@ -44,38 +44,42 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:layout_height="wrap_content"
             app:errorEnabled="true"
-            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-            app:boxStrokeColor="@color/blue"
-            android:layout_marginBottom="20sp"
-            >
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            app:boxStrokeColor="@android:color/white"
+            app:boxStrokeWidth="0.1dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/user_last_name_text_edit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:hintEnabled="true"
+                android:inputType="text"
                 android:textSize="12sp"
+                android:textColor="@android:color/white"
+                android:maxLines="1"
                 android:hint="Last name"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:layout_height="wrap_content"
             app:errorEnabled="true"
-            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-            app:boxStrokeColor="@color/blue"
-            android:layout_marginBottom="20sp"
-            >
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            app:boxStrokeColor="@android:color/white"
+            app:boxStrokeWidth="0.1dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/user_first_name_text_edit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:hintEnabled="true"
+                android:inputType="text"
                 android:textSize="12sp"
+                android:textColor="@android:color/white"
+                android:maxLines="1"
                 android:hint="First name"/>
 
         </com.google.android.material.textfield.TextInputLayout>

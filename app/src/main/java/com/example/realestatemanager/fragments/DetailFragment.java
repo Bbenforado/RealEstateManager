@@ -18,9 +18,12 @@ import com.example.realestatemanager.R;
 import com.example.realestatemanager.activities.AddFormActivity;
 import com.example.realestatemanager.injections.Injection;
 import com.example.realestatemanager.injections.ViewModelFactory;
+import com.example.realestatemanager.models.Interest;
 import com.example.realestatemanager.models.Place;
 import com.example.realestatemanager.viewModels.PlaceViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -125,5 +128,11 @@ public class DetailFragment extends Fragment {
     //--------------------------------------------
     //METHODS
     //----------------------------------------------
+    private void getInterests(long placeId) {
+        viewModel.getInterests(placeId).observe(this, this::updateInterestsList);
+    }
 
+    private void updateInterestsList(List<Interest> interests) {
+        this.adapter.updateInterestData(interests);
+    }
 }

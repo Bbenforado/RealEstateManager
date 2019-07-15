@@ -70,7 +70,6 @@ public class AddFormActivity extends AppCompatActivity {
     @BindView(R.id.text_edit_postal_code) TextInputEditText editTextPostalCode;
     @BindView(R.id.text_edit_city) TextInputEditText editTextCity;
     @BindView(R.id.text_edit_country) TextInputEditText editTextCountry;
-    @BindView(R.id.swith_button_available) Switch switchButtonAvailable;
     @BindView(R.id.text_edit_author) TextInputEditText editTextAuthor;
     @BindView(R.id.checkboxSchool) CheckBox checkBoxSchool;
     @BindView(R.id.checkboxMarketPlace) CheckBox checkBoxMarketPlace;
@@ -85,6 +84,7 @@ public class AddFormActivity extends AppCompatActivity {
     public static final String APP_PREFERENCES = "appPreferences";
     public static final String SWITCH_BUTTON_MODE = "switchButtonMode";
     public static final String STATUS_FORM_ACTIVITY = "statusFormActivity";
+    public static final String USER_NAME = "userName";
     private final int NOTIFICATION_ID = 100;
     private final String NOTIFICATION_TAG = "realEstateManager";
     private static final String PLACE_ID = "placeId";
@@ -102,10 +102,9 @@ public class AddFormActivity extends AppCompatActivity {
 
         configureToolbar();
         configureViewModel();
-        setSwitchListener();
+        //setSwitchListener();
 
         status = preferences.getInt(STATUS_FORM_ACTIVITY, -1);
-        System.out.println("status = " + status);
         //if it s to edit one existing place
         if (status == 1) {
             placeId = preferences.getLong(PLACE_ID, -1);
@@ -123,6 +122,8 @@ public class AddFormActivity extends AppCompatActivity {
                     completeAddressFormWithData(address);
                 }
             });
+        } else {
+            displayRealEstateManagerName();
         }
 
 
@@ -143,7 +144,6 @@ public class AddFormActivity extends AppCompatActivity {
                     if (paramsAreOk()) {
                         //create place
                         long id = createPlace();
-                        System.out.println("id = " + id);
                         CheckBox[] checkBoxes = {checkBoxSchool, checkBoxMarketPlace, checkBoxPark, checkBoxHospital, checkBoxCinema, checkBoxTheater};
                         //create interest
                         for (CheckBox checkBox : checkBoxes) {
@@ -231,6 +231,13 @@ public class AddFormActivity extends AppCompatActivity {
     //----------------------------------------------
     //UPDATE UI
     //-----------------------------------------------
+    private void displayRealEstateManagerName() {
+        if (preferences.getString(USER_NAME, null) != null) {
+            String realEstateManagerName = preferences.getString(USER_NAME, null);
+            editTextAuthor.setText(realEstateManagerName);
+        }
+    }
+
     private void completeFormWithData(Place place) {
         typeOfPlaceButton.setText(place.getType());
         editTextPrice.setText(String.valueOf(place.getPrice()));
@@ -371,7 +378,7 @@ public class AddFormActivity extends AppCompatActivity {
         datePickerDialog.show();
     }
 
-    private void setSwitchListener() {
+    /*private void setSwitchListener() {
         switchButtonAvailable.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -382,7 +389,7 @@ public class AddFormActivity extends AppCompatActivity {
                 }
             }
         });
-    }
+    }*/
 
     private boolean paramsAreOk() {
         return !TextUtils.isEmpty(editTextPrice.getText().toString()) && typeOfPlaceButton.getText().toString() != "Type of place" &&
@@ -396,6 +403,7 @@ public class AddFormActivity extends AppCompatActivity {
 
     private long createPlace() {
         //FOR PLACE
+
         long surface = 0;
         int nbrOfRooms = 0;
         int nbrOfBathrooms = 0;
@@ -421,8 +429,13 @@ public class AddFormActivity extends AppCompatActivity {
         int status = preferences.getInt(SWITCH_BUTTON_MODE, -1);
         String author = editTextAuthor.getText().toString();
         String date = new Date().toString();
-
-        Place place = new Place(nbrOfRooms, nbrOfBathrooms, nbrOfBedrooms, type, price, status, date, author, description, surface);
+        Place place;
+        if (saleDateButton.getText().toString() == null) {
+            place = new Place(nbrOfRooms, nbrOfBathrooms, nbrOfBedrooms, type, price, status, date, author, description, surface);
+        } else {
+            String saleDate = saleDateButton.getText().toString();
+            place = new Place(nbrOfRooms, nbrOfBathrooms, nbrOfBedrooms, type, price, status, date, saleDate, author, description, surface);
+        }
 
         return placeViewModel.createPlace(place);
     }

@@ -107,6 +107,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         this.textViewQuantity.setText(Integer.toString(quantity));
     }*/
 
+    /**
+     * @param menuItem
+     * @return
+     */
+    @Override
+    public boolean onNavigationItemSelected(MenuItem menuItem) {
+        int id = menuItem.getItemId();
+        switch (id) {
+            case R.id.settings:
+                Intent settingIntent = new Intent(this, SettingsActivity.class);
+                startActivity(settingIntent);
+                break;
+            default:
+                break;
+        }
+        this.drawerLayout.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    //----------------------------------------
+    //CONFIGURATION
+    //-------------------------------------------
     private void configureToolbar() {
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Real estate manager");
@@ -116,26 +138,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
-    }
-
-    /**
-     * launchs activity that displays articles found for the category selected (depending on the item you clicked on)
-     * @param menuItem
-     * @return
-     */
-    @Override
-    public boolean onNavigationItemSelected(MenuItem menuItem) {
-
-        int id = menuItem.getItemId();
-        switch (id) {
-            case R.id.settings:
-                Toast.makeText(this, "you clicked on settings", Toast.LENGTH_SHORT).show();
-                break;
-            default:
-                break;
-        }
-        this.drawerLayout.closeDrawer(GravityCompat.START);
-        return true;
     }
 
     private void configureNavigationView() {
@@ -156,7 +158,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void configureAndShowDetailFragment(){
         detailFragment = (DetailFragment) getSupportFragmentManager().findFragmentById(R.id.frame_layout_detail);
 
-        //A - We only add DetailFragment in Tablet mode (If found frame_layout_detail)
         if (detailFragment == null && findViewById(R.id.frame_layout_detail) != null) {
             detailFragment = new DetailFragment();
             getSupportFragmentManager().beginTransaction()

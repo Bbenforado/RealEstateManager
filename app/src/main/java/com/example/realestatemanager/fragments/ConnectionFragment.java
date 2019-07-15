@@ -1,6 +1,7 @@
 package com.example.realestatemanager.fragments;
 
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
@@ -43,13 +45,19 @@ public class ConnectionFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        View result = inflater.inflate(R.layout.fragment_connection, container, false);
+        ButterKnife.bind(this, result);
         preferences = getActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
-        return inflater.inflate(R.layout.fragment_connection, container, false);
+        return result;
     }
 
     @OnClick(R.id.material_button_save_user)
     public void launchActivity() {
+        //save user name
+        String userLastName = lastNameEditText.getText().toString();
+        String userFirstName = firstNameEditText.getText().toString();
+        preferences.edit().putString(USER_NAME, userFirstName + " " + userLastName).apply();
+        getFragmentManager().beginTransaction().remove(ConnectionFragment.this).commit();
     }
 
 }

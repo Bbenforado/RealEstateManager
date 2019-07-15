@@ -27,7 +27,6 @@ public class PlaceDataRepository {
 
     //CREATE
     public long createPlace(Place place) {
-        System.out.println("repository create place");
         return placeDao.createPlace(place);
     }
 

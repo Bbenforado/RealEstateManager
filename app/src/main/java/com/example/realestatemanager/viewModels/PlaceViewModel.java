@@ -127,4 +127,8 @@ public class PlaceViewModel extends ViewModel {
             interestDataSource.updateInterest(interest);
         });
     }
+
+    public LiveData<List<Interest>> getInterests(long placeId) {
+        return interestDataSource.getInterests(placeId);
+    }
 }

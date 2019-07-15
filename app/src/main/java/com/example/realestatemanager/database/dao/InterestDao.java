@@ -15,11 +15,11 @@ import java.util.List;
 @Dao
 public interface InterestDao {
 
-    @Query("SELECT * FROM interests")
-    LiveData<List<Interest>> getInterests();
-
     @Query("SELECT * FROM interests WHERE idPlace = :idPlace")
-    LiveData<Interest> getInterest(long idPlace);
+    LiveData<List<Interest>> getInterests(long idPlace);
+
+    /*@Query("SELECT * FROM interests WHERE idPlace = :idPlace")
+    LiveData<Interest> getInterest(long idPlace);*/
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long createInterest(Interest interest);

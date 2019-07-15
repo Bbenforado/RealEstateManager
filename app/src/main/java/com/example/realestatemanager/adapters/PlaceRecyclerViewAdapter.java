@@ -21,6 +21,7 @@ import com.example.realestatemanager.fragments.ListFragment;
 import com.example.realestatemanager.injections.Injection;
 import com.example.realestatemanager.injections.ViewModelFactory;
 import com.example.realestatemanager.models.Address;
+import com.example.realestatemanager.models.Interest;
 import com.example.realestatemanager.models.Place;
 import com.example.realestatemanager.viewModels.PlaceViewModel;
 
@@ -31,6 +32,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceViewHold
 
     private List<Place> placeList;
     private List<Address> addressList;
+    private List<Interest> interestList;
     PlaceViewModel viewModel;
     Context context;
 
@@ -75,6 +77,11 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceViewHold
 
     public void updateAddressData(List<Address> addresses) {
         this.addressList = addresses;
+        notifyDataSetChanged();
+    }
+
+    public void updateInterestData(List<Interest> interests) {
+        this.interestList = interests;
         notifyDataSetChanged();
     }
 
