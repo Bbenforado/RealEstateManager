@@ -90,7 +90,6 @@ public class ListFragment extends Fragment {
         this.adapter = new PlaceRecyclerViewAdapter();
         this.recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
     }
 
     @OnClick(R.id.add_floating_action_button)

@@ -8,6 +8,8 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +18,8 @@ import android.widget.TextView;
 
 import com.example.realestatemanager.R;
 import com.example.realestatemanager.activities.AddFormActivity;
+import com.example.realestatemanager.adapters.DetailRecyclerViewAdapter;
+import com.example.realestatemanager.adapters.PlaceRecyclerViewAdapter;
 import com.example.realestatemanager.injections.Injection;
 import com.example.realestatemanager.injections.ViewModelFactory;
 import com.example.realestatemanager.models.Interest;
@@ -45,11 +49,13 @@ public class DetailFragment extends Fragment {
     @BindView(R.id.text_view_nbr_bedrooms_detail_fragment) TextView nbrOfBedroomsTextView;
     @BindView(R.id.text_view_description_detail_fragment) TextView descriptionTextView;
     @BindView(R.id.edit_floating_action_button_detail_fragment) FloatingActionButton editFloatingActionButton;
+    @BindView(R.id.recycler_view_detail_interest) RecyclerView recyclerViewInterest;
     private static final String APP_PREFERENCES = "appPreferences";
     private static final String PLACE_ID = "placeId";
     public static final String STATUS_FORM_ACTIVITY = "statusFormActivity";
     private PlaceViewModel viewModel;
     private SharedPreferences preferences;
+    private DetailRecyclerViewAdapter adapter;
 
     public DetailFragment() {
         // Required empty public constructor
@@ -67,6 +73,7 @@ public class DetailFragment extends Fragment {
             @Override
             public void onChanged(Place place) {
                 updateUi(place);
+                configureRecyclerView();
             }
         });
         return view;
@@ -90,6 +97,12 @@ public class DetailFragment extends Fragment {
     private void configureViewModel() {
         ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(getContext());
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(PlaceViewModel.class);
+    }
+
+    private void configureRecyclerView() {
+        this.adapter = new DetailRecyclerViewAdapter();
+        this.recyclerViewInterest.setAdapter(adapter);
+        recyclerViewInterest.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
     //--------------------------------------------------
@@ -123,6 +136,7 @@ public class DetailFragment extends Fragment {
         } else {
             nbrOfBedroomsTextView.setText("Not informed yet");
         }
+        getInterests(place.getId());
     }
 
     //--------------------------------------------
