@@ -86,41 +86,14 @@ public class ListFragment extends Fragment {
         return result;
     }
 
+    //-------------------------------------------
+    //CONFIGURATION
+    //-------------------------------------------
     private void configureRecyclerView() {
         this.adapter = new PlaceRecyclerViewAdapter();
         this.recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     }
-
-    @OnClick(R.id.add_floating_action_button)
-    public void launchAddPlaceFormActivity() {
-        preferences.edit().putInt(STATUS_FORM_ACTIVITY, -1).apply();
-        Intent intent = new Intent(getContext(), AddFormActivity.class);
-        startActivity(intent);
-    }
-
-
-    private void getPlaces() {
-        viewModel.getPlaces().observe(this, this::updatePlacesList);
-    }
-
-    private void getAddresses() {
-        viewModel.getAddresses().observe(this, this::updateAddressesList);
-    }
-
-
-
-
-    private void updatePlacesList(List<Place> places) {
-        this.adapter.updatePlaceData(places);
-    }
-
-    private void updateAddressesList(List<Address> addresses) {
-        this.adapter.updateAddressData(addresses);
-    }
-
-
-
 
     private void configureOnClickRecyclerView() {
         ItemClickSupport.addTo(recyclerView, R.layout.fragment_list_item)
@@ -133,17 +106,49 @@ public class ListFragment extends Fragment {
                         startActivity(editIntent);
                     }
                 })
-        .setOnItemLongClickListener(new ItemClickSupport.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClicked(RecyclerView recyclerView, int position, View v) {
-                Place place = adapter.getPlace(position);
-                displayLongClickDialog(place);
+                .setOnItemLongClickListener(new ItemClickSupport.OnItemLongClickListener() {
+                    @Override
+                    public boolean onItemLongClicked(RecyclerView recyclerView, int position, View v) {
+                        Place place = adapter.getPlace(position);
+                        displayLongClickDialog(place);
 
-                return false;
-            }
-        });
+                        return false;
+                    }
+                });
     }
 
+    //----------------------------------------------
+    //ACTIONS
+    //------------------------------------------------
+    @OnClick(R.id.add_floating_action_button)
+    public void launchAddPlaceFormActivity() {
+        preferences.edit().putInt(STATUS_FORM_ACTIVITY, -1).apply();
+        Intent intent = new Intent(getContext(), AddFormActivity.class);
+        startActivity(intent);
+    }
+
+    //-----------------------------------------------
+    //GET DATA
+    //------------------------------------------------
+    private void getPlaces() {
+        viewModel.getPlaces().observe(this, this::updatePlacesList);
+    }
+
+    private void getAddresses() {
+        viewModel.getAddresses().observe(this, this::updateAddressesList);
+    }
+
+    private void updatePlacesList(List<Place> places) {
+        this.adapter.updatePlaceData(places);
+    }
+
+    private void updateAddressesList(List<Address> addresses) {
+        this.adapter.updateAddressData(addresses);
+    }
+
+    //-----------------------------------
+    //
+    //------------------------------------------------------
     private void displayLongClickDialog(Place place) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 

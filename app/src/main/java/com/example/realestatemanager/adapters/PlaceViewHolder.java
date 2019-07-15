@@ -42,6 +42,7 @@ public class PlaceViewHolder extends RecyclerView.ViewHolder {
         if (address.getIdPlace() == place.getId()) {
             this.cityTextView.setText(address.getCity());
         }
+        System.out.println("place sale date = " + place.getDateOfSale());
         if (place.getDateOfSale() != null) {
             statusTextView.setText("Sold");
             statusTextView.setTextColor(context.getResources().getColor(R.color.red));

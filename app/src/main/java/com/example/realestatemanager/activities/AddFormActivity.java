@@ -430,7 +430,7 @@ public class AddFormActivity extends AppCompatActivity {
         String author = editTextAuthor.getText().toString();
         String date = new Date().toString();
         Place place;
-        if (saleDateButton.getText().toString() == null) {
+        if (TextUtils.isEmpty(saleDateButton.getText())) {
             place = new Place(nbrOfRooms, nbrOfBathrooms, nbrOfBedrooms, type, price, status, date, author, description, surface);
         } else {
             String saleDate = saleDateButton.getText().toString();
