@@ -6,4 +6,6 @@
 
     <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
     <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
+
+    <string name="popup_title_permission_files_access">Cette application a besoin de permission pour fonctionner.</string>
 </resources>

@@ -15,9 +15,9 @@ public class InterestDataRepository {
     }
 
     //GET PLACE
-    /*public LiveData<Interest> getInterest(long idPlace) {
+    public LiveData<Interest> getInterest(long idPlace) {
         return this.interestDao.getInterest(idPlace);
-    }*/
+    }
 
     public LiveData<List<Interest>> getInterests(long placeId) {
         return this.interestDao.getInterests(placeId);
@@ -31,5 +31,10 @@ public class InterestDataRepository {
     //UPDATE
     public void updateInterest(Interest interest) {
         interestDao.updateInterest(interest);
+    }
+
+    //DELETE
+    public void deleteInterests(long placeId) {
+        interestDao.deleteInterests(placeId);
     }
 }

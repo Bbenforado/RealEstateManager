@@ -6,11 +6,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
-import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.Toolbar;
@@ -21,10 +18,6 @@ import com.example.realestatemanager.R;
 import com.example.realestatemanager.fragments.ConnectionFragment;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -45,7 +38,6 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
         ButterKnife.bind(this);
         preferences = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE);
-        System.out.println("user name = " + preferences.getString(USER_NAME, null));
 
         configureToolbar();
         if (preferences.getString(USER_NAME, null) == null) {

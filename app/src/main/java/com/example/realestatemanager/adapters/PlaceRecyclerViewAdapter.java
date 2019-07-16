@@ -1,23 +1,16 @@
 package com.example.realestatemanager.adapters;
 
 import android.content.Context;
-import android.net.sip.SipAudioCall;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.realestatemanager.R;
-import com.example.realestatemanager.fragments.ListFragment;
 import com.example.realestatemanager.injections.Injection;
 import com.example.realestatemanager.injections.ViewModelFactory;
 import com.example.realestatemanager.models.Address;

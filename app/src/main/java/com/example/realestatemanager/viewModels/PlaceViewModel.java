@@ -47,11 +47,6 @@ public class PlaceViewModel extends ViewModel {
         return placeDataSource.getPlaces();
     }
 
-    /*public long createPlace(Place place) {
-        System.out.println("view model create place");
-        return executor.execute(placeDataSource.createPlace(place));
-    }*/
-
     public long createPlace(Place place) {
         Callable<Long> insertCallable = () -> placeDataSource.createPlace(place);
         long rowId = 0;
@@ -130,5 +125,15 @@ public class PlaceViewModel extends ViewModel {
 
     public LiveData<List<Interest>> getInterests(long placeId) {
         return interestDataSource.getInterests(placeId);
+    }
+
+    public LiveData<Interest> getInterest(long placeId) {
+        return interestDataSource.getInterest(placeId);
+    }
+
+    public void deleteInterests(long placeId) {
+        //executor.execute(() -> {
+            interestDataSource.deleteInterests(placeId);
+        //});
     }
 }

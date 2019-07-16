@@ -1,22 +1,15 @@
 package com.example.realestatemanager.adapters;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.realestatemanager.R;
-import com.example.realestatemanager.injections.Injection;
-import com.example.realestatemanager.injections.ViewModelFactory;
 import com.example.realestatemanager.models.Address;
 import com.example.realestatemanager.models.Place;
-import com.example.realestatemanager.viewModels.PlaceViewModel;
-
-import java.lang.ref.WeakReference;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -42,7 +35,6 @@ public class PlaceViewHolder extends RecyclerView.ViewHolder {
         if (address.getIdPlace() == place.getId()) {
             this.cityTextView.setText(address.getCity());
         }
-        System.out.println("place sale date = " + place.getDateOfSale());
         if (place.getDateOfSale() != null) {
             statusTextView.setText("Sold");
             statusTextView.setTextColor(context.getResources().getColor(R.color.red));

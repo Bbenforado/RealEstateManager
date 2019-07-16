@@ -51,8 +51,12 @@
                 android:textAllCaps="false"
                 app:icon="@drawable/picture" />
 
-
         </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/photo_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"/>
 
         <LinearLayout
             android:layout_width="match_parent"

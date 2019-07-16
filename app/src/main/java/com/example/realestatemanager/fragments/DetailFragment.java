@@ -85,7 +85,6 @@ public class DetailFragment extends Fragment {
     @OnClick(R.id.edit_floating_action_button_detail_fragment)
     public void editPlace() {
         preferences.edit().putInt(STATUS_FORM_ACTIVITY, 1).apply();
-        System.out.println("status here = " + preferences.getInt(STATUS_FORM_ACTIVITY, -1));
         Intent intent = new Intent(getContext(), AddFormActivity.class);
         startActivity(intent);
     }

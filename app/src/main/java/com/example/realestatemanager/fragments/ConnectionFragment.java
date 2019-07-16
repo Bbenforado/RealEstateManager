@@ -32,8 +32,7 @@ public class ConnectionFragment extends Fragment {
     @BindView(R.id.user_first_name_text_edit)
     TextInputEditText firstNameEditText;
     @BindView(R.id.user_last_name_text_edit) TextInputEditText lastNameEditText;
-
-    SharedPreferences preferences;
+    private SharedPreferences preferences;
     public static final String APP_PREFERENCES = "appPreferences";
     public static final String USER_NAME = "userName";
 

@@ -1,5 +1,6 @@
 package com.example.realestatemanager.activities;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.NotificationChannel;
@@ -11,9 +12,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,6 +33,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NotificationCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.realestatemanager.MainActivity;
 import com.example.realestatemanager.models.Address;
@@ -41,12 +46,17 @@ import com.example.realestatemanager.models.Place;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
 
 public class AddFormActivity extends AppCompatActivity {
 
@@ -77,6 +87,7 @@ public class AddFormActivity extends AppCompatActivity {
     @BindView(R.id.checkboxHospital) CheckBox checkBoxHospital;
     @BindView(R.id.checkboxCinema) CheckBox checkBoxCinema;
     @BindView(R.id.checkboxTheater) CheckBox checkBoxTheater;
+    @BindView(R.id.photo_recycler_view) RecyclerView recyclerView;
     //---------------------------------------------------------------------------------------
     private String[] typesOfPlace = {"Loft", "Mansion", "Penthouse", "Duplex"};
     private String type;
@@ -91,6 +102,14 @@ public class AddFormActivity extends AppCompatActivity {
     private PlaceViewModel placeViewModel;
     private int status;
     private long placeId;
+    private List<CheckBox> checkBoxes;
+    private static final String PERMS = Manifest.permission.READ_EXTERNAL_STORAGE;
+    private static final int RC_IMAGE_PERMS = 100;
+    private Uri uriImageSelected;
+    private static final int RC_CHOOSE_PHOTO = 200;
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+
+
 
 
     @Override
@@ -100,15 +119,15 @@ public class AddFormActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         preferences = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE);
 
+        status = preferences.getInt(STATUS_FORM_ACTIVITY, -1);
         configureToolbar();
         configureViewModel();
         //setSwitchListener();
+        checkBoxes = Arrays.asList(checkBoxSchool, checkBoxMarketPlace, checkBoxPark, checkBoxHospital, checkBoxCinema, checkBoxTheater);
 
-        status = preferences.getInt(STATUS_FORM_ACTIVITY, -1);
         //if it s to edit one existing place
         if (status == 1) {
             placeId = preferences.getLong(PLACE_ID, -1);
-            System.out.println("id = " + placeId);
             //update ui
             placeViewModel.getPlace(placeId).observe(this, new Observer<Place>() {
                 @Override
@@ -122,12 +141,19 @@ public class AddFormActivity extends AppCompatActivity {
                     completeAddressFormWithData(address);
                 }
             });
+            placeViewModel.getInterests(placeId).observe(this, new Observer<List<Interest>>() {
+                @Override
+                public void onChanged(List<Interest> interests) {
+                    completeInterestFormWithData(interests);
+                }
+            });
         } else {
             displayRealEstateManagerName();
         }
 
 
     }
+
 
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_toolbar_add_place_activity, menu);
@@ -144,7 +170,7 @@ public class AddFormActivity extends AppCompatActivity {
                     if (paramsAreOk()) {
                         //create place
                         long id = createPlace();
-                        CheckBox[] checkBoxes = {checkBoxSchool, checkBoxMarketPlace, checkBoxPark, checkBoxHospital, checkBoxCinema, checkBoxTheater};
+                        //CheckBox[] checkBoxes = {checkBoxSchool, checkBoxMarketPlace, checkBoxPark, checkBoxHospital, checkBoxCinema, checkBoxTheater};
                         //create interest
                         for (CheckBox checkBox : checkBoxes) {
                             if (checkBox.isChecked()) {
@@ -170,6 +196,7 @@ public class AddFormActivity extends AppCompatActivity {
 
                         }
                     });
+
                     placeViewModel.getAddress(placeId).observe(this, new Observer<Address>() {
                         @Override
                         public void onChanged(Address address) {
@@ -187,12 +214,35 @@ public class AddFormActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        // 2 - Forward results to EasyPermissions
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // 6 - Calling the appropriate method after activity result
+        this.handleResponse(requestCode, resultCode, data);
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            //imageView.setImageBitmap(imageBitmap);
+        }
+    }
+
     //-----------------------------------
     //CONFIGURATION
     //--------------------------------------
     private void configureToolbar() {
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Add a new place");
+        if (status == 1) {
+            getSupportActionBar().setTitle("Edit place");
+        } else {
+            getSupportActionBar().setTitle("Add a new place");
+        }
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
@@ -203,20 +253,36 @@ public class AddFormActivity extends AppCompatActivity {
     //-------------------------------------
     //ACTIONS
     //----------------------------------
+
     @OnClick(R.id.material_type_of_place_button)
     public void chooseATypeOfPlace() {
         displayDialog();
     }
 
     @OnClick(R.id.button_add_pictures)
-    public void addPictures() {
+    @AfterPermissionGranted(RC_IMAGE_PERMS)
+    public void onClickAddFile() {
+        if (!EasyPermissions.hasPermissions(this, PERMS)) {
+            EasyPermissions.requestPermissions(this, getString(R.string.popup_title_permission_files_access), RC_IMAGE_PERMS, PERMS);
+            Toast.makeText(this, "Permissions granted", Toast.LENGTH_SHORT).show();
+            return;
+        }
         String[] wayToGetPicture = {"Pick from gallery", "Take from camera"};
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setItems(wayToGetPicture, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String string = "You clicked on " + wayToGetPicture[which];
-                Toast.makeText(getApplicationContext(), string, Toast.LENGTH_SHORT).show();
+                switch (which) {
+                    case 0:
+                        chooseImageFromPhone();
+                        break;
+                    case 1:
+                        dispatchTakePictureIntent();
+                        break;
+                        default:
+                            break;
+                }
+
             }
         });
         AlertDialog dialog = builder.create();
@@ -268,8 +334,6 @@ public class AddFormActivity extends AppCompatActivity {
         } else {
             editTextNbrOfBedrooms.setText("Not informed yet");
         }
-
-
     }
 
     private void completeAddressFormWithData(Address address) {
@@ -283,12 +347,52 @@ public class AddFormActivity extends AppCompatActivity {
         } else {
             editTextComplement.setText("Not informed");
         }
+    }
 
+    private void completeInterestFormWithData(List<Interest> interests) {
+        for (int i = 0; i < interests.size(); i++) {
+            for (int j = 0; j< checkBoxes.size(); j++) {
+                if (interests.get(i).getType().equals(checkBoxes.get(j).getText().toString())) {
+                    checkBoxes.get(j).setChecked(true);
+                }
+            }
+        }
     }
 
     //--------------------------------------------
     //METHODS
     //---------------------------------------------
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
+    }
+
+    private void chooseImageFromPhone(){
+        if (!EasyPermissions.hasPermissions(this, PERMS)) {
+            EasyPermissions.requestPermissions(this, getString(R.string.popup_title_permission_files_access), RC_IMAGE_PERMS, PERMS);
+            return;
+        }
+        Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(i, RC_CHOOSE_PHOTO);
+    }
+
+    // 4 - Handle activity response (after user has chosen or not a picture)
+    private void handleResponse(int requestCode, int resultCode, Intent data){
+        if (requestCode == RC_CHOOSE_PHOTO) {
+            if (resultCode == RESULT_OK) { //SUCCESS
+                this.uriImageSelected = data.getData();
+                /*Glide.with(this) //SHOWING PREVIEW OF IMAGE
+                        .load(this.uriImageSelected)
+                        .apply(RequestOptions.circleCropTransform())
+                        .into(this.imageViewPreview);*/
+            } else {
+                Toast.makeText(this, "No image chosen", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
     private void launchMainActivity() {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
@@ -329,7 +433,6 @@ public class AddFormActivity extends AppCompatActivity {
     private void displayDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Choose a type of place: ");
-
         builder.setItems(typesOfPlace, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -378,19 +481,6 @@ public class AddFormActivity extends AppCompatActivity {
         datePickerDialog.show();
     }
 
-    /*private void setSwitchListener() {
-        switchButtonAvailable.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    preferences.edit().putInt(SWITCH_BUTTON_MODE, 1).apply();
-                } else {
-                    preferences.edit().putInt(SWITCH_BUTTON_MODE, 0).apply();
-                }
-            }
-        });
-    }*/
-
     private boolean paramsAreOk() {
         return !TextUtils.isEmpty(editTextPrice.getText().toString()) && typeOfPlaceButton.getText().toString() != "Type of place" &&
                 !TextUtils.isEmpty(editTextAuthor.getText().toString()) && !TextUtils.isEmpty(editTextStreetNbr.getText().toString()) &&
@@ -400,10 +490,9 @@ public class AddFormActivity extends AppCompatActivity {
 
     //-------------------------------------------------------------------------
     //CREATE IN DATABASE
+    //-------------------------------------------------------------------------
 
     private long createPlace() {
-        //FOR PLACE
-
         long surface = 0;
         int nbrOfRooms = 0;
         int nbrOfBathrooms = 0;
@@ -436,12 +525,10 @@ public class AddFormActivity extends AppCompatActivity {
             String saleDate = saleDateButton.getText().toString();
             place = new Place(nbrOfRooms, nbrOfBathrooms, nbrOfBedrooms, type, price, status, date, saleDate, author, description, surface);
         }
-
         return placeViewModel.createPlace(place);
     }
 
     private void updatePlace(Place place) {
-        //FOR PLACE
         long surface;
         int nbrOfRooms;
         int nbrOfBathrooms;
@@ -516,6 +603,16 @@ public class AddFormActivity extends AppCompatActivity {
 
         placeViewModel.updateAddress(address);
     }
+
+    /*private void updateInterests(long placeId) {
+        for (CheckBox checkBox : checkBoxes) {
+            if (checkBox.isChecked()) {
+                if (placeViewModel.getInterest(placeId, ))
+                Interest interest = new Interest(checkBox.getText().toString(), placeId);
+                placeViewModel.updateInterest(interest);
+            }
+        }
+    }*/
 
     //----------------------------------------------------
     //METHODS

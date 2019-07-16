@@ -18,8 +18,8 @@ public interface InterestDao {
     @Query("SELECT * FROM interests WHERE idPlace = :idPlace")
     LiveData<List<Interest>> getInterests(long idPlace);
 
-    /*@Query("SELECT * FROM interests WHERE idPlace = :idPlace")
-    LiveData<Interest> getInterest(long idPlace);*/
+    @Query("SELECT * FROM interests WHERE idPlace = :idPlace")
+    LiveData<Interest> getInterest(long idPlace);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long createInterest(Interest interest);
@@ -30,6 +30,6 @@ public interface InterestDao {
     @Update
     int updateInterest(Interest interest);
 
-    @Query("DELETE FROM interests WHERE id = :id")
-    int deleteInterest(long id);
+    @Query("DELETE FROM interests WHERE idPlace = :id")
+    int deleteInterests(long id);
 }

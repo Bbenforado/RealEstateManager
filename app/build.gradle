@@ -44,4 +44,7 @@ dependencies {
 
     implementation 'com.facebook.stetho:stetho:1.5.1'
 
+    //EASY PERMISSIONS
+    implementation 'pub.devrel:easypermissions:3.0.0'
+
 }
