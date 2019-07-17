@@ -126,9 +126,7 @@ public class DetailFragment extends Fragment {
     //UPDATE UI
     //---------------------------------------------------
     private void updateUi(Place place) {
-        //createSlider(place);
-        //displayPhotosOfPlace(place.getId());
-        essai(place.getId());
+        displayPhotosOfPlace(place.getId());
 
         typeOfPlaceTextView.setText(place.getType());
         priceTextView.setText(String.valueOf(place.getPrice()));
@@ -180,35 +178,7 @@ public class DetailFragment extends Fragment {
     }
 
     //----------------------------------------------------
-
     private void displayPhotosOfPlace(long placeId) {
-        viewModel.getPhotosForAPlace(placeId).observe(this, new Observer<List<Photo>>() {
-            @Override
-            public void onChanged(List<Photo> photos) {
-                if (photos.size() != 0) {
-                    List<File> files = new ArrayList<>();
-
-                    TextSliderView textSliderView = new TextSliderView(getContext());
-
-                    for (int i = 0; i<photos.size(); i++) {
-                        System.out.println("i = " + i);
-                        String path = photos.get(i).getUri();
-                        System.out.println("path here = " + path);
-                        File file = new File(path);
-                        files.add(file);
-
-                        textSliderView.image(files.get(i));
-                        sliderLayout.addSlider(textSliderView);
-                    }
-
-
-                }
-            }
-        });
-    }
-
-
-    private void essai(long placeId) {
 
         viewModel.getPhotosForAPlace(placeId).observe(this, new Observer<List<Photo>>() {
             @Override
@@ -228,43 +198,11 @@ public class DetailFragment extends Fragment {
                     TextSliderView textSliderView = new TextSliderView(getContext());
                     // initialize a SliderLayout
                     textSliderView
-                            //.description(name)
                             .image(file_maps.get(name));
-                            //.setScaleType(BaseSliderView.ScaleType.Fit);
-
-                    //add your extra information
-                    /*textSliderView.bundle(new Bundle());
-                    textSliderView.getBundle()
-                            .putString("extra", name);*/
 
                     sliderLayout.addSlider(textSliderView);
                 }
             }
         });
-    }
-
-
-
-
-    private void createSlider(Place place) {
-
-        viewModel.getPhotosForAPlace(place.getId()).observe(this, new Observer<List<Photo>>() {
-            @Override
-            public void onChanged(List<Photo> photos) {
-
-                System.out.println("path = " + photos.get(0).getUri());
-                String path = photos.get(0).getUri();
-                File file = new File(path);
-
-
-                TextSliderView textSliderView = new TextSliderView(getContext());
-                textSliderView
-                        .image(file);
-
-                sliderLayout.addSlider(textSliderView);
-            }
-        });
-
-
     }
 }
