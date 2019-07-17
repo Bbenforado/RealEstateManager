@@ -52,13 +52,12 @@ public class ListFragment extends Fragment {
     @BindView(R.id.add_floating_action_button)
     FloatingActionButton floatingButtonAddPlace;
     private PlaceRecyclerViewAdapter adapter;
-    private List<Place> placeList;
-    private List<Address> addressList;
+    //private List<Place> placeList;
     private PlaceViewModel viewModel;
     private SharedPreferences preferences;
-    public static final String APP_PREFERENCES = "appPreferences";
-    public static final String PLACE_ID = "placeId";
-    public static final String STATUS_FORM_ACTIVITY = "statusFormActivity";
+    private static final String APP_PREFERENCES = "appPreferences";
+    private static final String PLACE_ID = "placeId";
+    private static final String STATUS_FORM_ACTIVITY = "statusFormActivity";
     private String[] longClickFunctionality = {"Edit place"};
 
     public ListFragment() {
@@ -72,7 +71,7 @@ public class ListFragment extends Fragment {
         ButterKnife.bind(this, result);
         preferences = this.getActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
 
-        addressList = new ArrayList<>();
+        //List<Address> addressList = new ArrayList<>();
         configureRecyclerView();
 
         configureOnClickRecyclerView();

@@ -41,7 +41,7 @@ public class PhotoDataRepository {
     }
 
     //DELETE
-    public void deletePhoto(long placeId) {
-        photoDao.deletePhotos(placeId);
+    public void deletePhoto(long photoId) {
+        photoDao.deletePhoto(photoId);
     }
 }

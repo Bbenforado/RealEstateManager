@@ -55,7 +55,6 @@ public class PlaceViewHolder extends RecyclerView.ViewHolder {
                     photoList.add(photos.get(i));
                 }
             }
-            System.out.println("size of list = " + photoList.size());
             if (photoList.size() > 1) {
                 Photo mainPhoto = photoList.get(0);
                 String path = mainPhoto.getUri();

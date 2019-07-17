@@ -6,9 +6,15 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.realestatemanager.R;
+import com.example.realestatemanager.models.Photo;
+
+import java.util.List;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class PhotoViewHolder extends RecyclerView.ViewHolder {
 
@@ -17,9 +23,11 @@ public class PhotoViewHolder extends RecyclerView.ViewHolder {
 
     public PhotoViewHolder(@NonNull View itemView) {
         super(itemView);
+        ButterKnife.bind(this, itemView);
     }
 
-    public void updateUi() {
-
+    public void updateUi(Photo photo, RequestManager glide) {
+        String image = photo.getUri();
+        glide.load(image).apply(RequestOptions.noTransformation()).into(imageView);
     }
 }

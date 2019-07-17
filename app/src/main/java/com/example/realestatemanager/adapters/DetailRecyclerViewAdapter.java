@@ -35,8 +35,8 @@ public class DetailRecyclerViewAdapter extends RecyclerView.Adapter<DetailViewHo
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.fragment_detail_recycler_view_interest_item, viewGroup, false);
 
-        ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(context);
-        PlaceViewModel viewModel = ViewModelProviders.of((FragmentActivity) context, viewModelFactory).get(PlaceViewModel.class);
+        /*ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(context);
+        PlaceViewModel viewModel = ViewModelProviders.of((FragmentActivity) context, viewModelFactory).get(PlaceViewModel.class);*/
 
         return new DetailViewHolder(view);
     }

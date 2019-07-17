@@ -31,6 +31,6 @@ public interface PhotoDao {
     @Update
     int updatePhoto(Photo photo);
 
-    @Query("DELETE FROM photos WHERE placeId = :id")
-    int deletePhotos(long id);
+    @Query("DELETE FROM photos WHERE id = :id")
+    int deletePhoto(long id);
 }

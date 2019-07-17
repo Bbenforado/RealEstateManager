@@ -13,8 +13,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
@@ -27,9 +25,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.DatePicker;
-import android.widget.Switch;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
@@ -38,12 +35,16 @@ import androidx.core.content.FileProvider;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.loader.content.CursorLoader;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.realestatemanager.MainActivity;
+import com.example.realestatemanager.adapters.PhotoRecyclerViewAdapter;
 import com.example.realestatemanager.models.Address;
 import com.example.realestatemanager.models.Interest;
 import com.example.realestatemanager.models.Photo;
+import com.example.realestatemanager.utils.ItemClickSupport;
 import com.example.realestatemanager.viewModels.PlaceViewModel;
 import com.example.realestatemanager.R;
 import com.example.realestatemanager.injections.Injection;
@@ -54,7 +55,6 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -71,7 +71,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 public class AddFormActivity extends AppCompatActivity {
 
 
-    private static final int REQUEST_TAKE_PHOTO = 1;
+
     //----------------------------------
     //BIND VIEWS
     //------------------------------------
@@ -98,7 +98,7 @@ public class AddFormActivity extends AppCompatActivity {
     @BindView(R.id.checkboxHospital) CheckBox checkBoxHospital;
     @BindView(R.id.checkboxCinema) CheckBox checkBoxCinema;
     @BindView(R.id.checkboxTheater) CheckBox checkBoxTheater;
-    //@BindView(R.id.photo_recycler_view) RecyclerView recyclerView;
+    @BindView(R.id.recycler_view_photo_add_form) RecyclerView recyclerView;
     //---------------------------------------------------------------------------------------
     private String[] typesOfPlace = {"Loft", "Mansion", "Penthouse", "Duplex"};
     private String type;
@@ -107,8 +107,6 @@ public class AddFormActivity extends AppCompatActivity {
     public static final String SWITCH_BUTTON_MODE = "switchButtonMode";
     public static final String STATUS_FORM_ACTIVITY = "statusFormActivity";
     public static final String USER_NAME = "userName";
-    private final int NOTIFICATION_ID = 100;
-    private final String NOTIFICATION_TAG = "realEstateManager";
     private static final String PLACE_ID = "placeId";
     private PlaceViewModel placeViewModel;
     private int status;
@@ -117,9 +115,13 @@ public class AddFormActivity extends AppCompatActivity {
     private static final String PERMS = Manifest.permission.READ_EXTERNAL_STORAGE;
     private static final int RC_IMAGE_PERMS = 100;
     private static final int RC_CHOOSE_PHOTO = 200;
-    //static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final int REQUEST_TAKE_PHOTO = 1;
     private List<Photo> photoList;
     private String currentPhotoPath;
+    private PhotoRecyclerViewAdapter adapter;
+    private List<Photo> photoListForThePlace;
+    private String[] longClickFunctionality = {"Delete photo"};
+    private List<Photo> allPhotos;
 
 
 
@@ -133,13 +135,20 @@ public class AddFormActivity extends AppCompatActivity {
 
         status = preferences.getInt(STATUS_FORM_ACTIVITY, -1);
         configureToolbar();
-        configureViewModel();
-        //setSwitchListener();
-        checkBoxes = Arrays.asList(checkBoxSchool, checkBoxMarketPlace, checkBoxPark, checkBoxHospital, checkBoxCinema, checkBoxTheater);
         photoList = new ArrayList<>();
+        configureOnClickRecyclerViewForAddActivity();
+        configureOnClickRecyclerView();
+        configureViewModel();
+        checkBoxes = Arrays.asList(checkBoxSchool, checkBoxMarketPlace, checkBoxPark, checkBoxHospital, checkBoxCinema, checkBoxTheater);
+
         //if it s to edit one existing place
         if (status == 1) {
+
+            System.out.println("photo list edit is = " + photoList);
+
             placeId = preferences.getLong(PLACE_ID, -1);
+            configureRecyclerView(placeId);
+            configureOnClickRecyclerView();
             //update ui
             placeViewModel.getPlace(placeId).observe(this, new Observer<Place>() {
                 @Override
@@ -147,6 +156,13 @@ public class AddFormActivity extends AppCompatActivity {
                     completeFormWithData(place);
                 }
             });
+            //updateUi(allPhotos);
+            /*placeViewModel.getPhotosForAPlace(placeId).observe(this, new Observer<List<Photo>>() {
+                @Override
+                public void onChanged(List<Photo> photos) {
+                    updateUi(photos);
+                }
+            });*/
             placeViewModel.getAddress(placeId).observe(this, new Observer<Address>() {
                 @Override
                 public void onChanged(Address address) {
@@ -162,10 +178,7 @@ public class AddFormActivity extends AppCompatActivity {
         } else {
             displayRealEstateManagerName();
         }
-
-
     }
-
 
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_toolbar_add_place_activity, menu);
@@ -191,7 +204,6 @@ public class AddFormActivity extends AppCompatActivity {
                             }
                         }
                         //create photo
-
                         for (Photo photo : photoList) {
                             photo.setPlaceId(id);
                             placeViewModel.createPhoto(photo);
@@ -214,9 +226,7 @@ public class AddFormActivity extends AppCompatActivity {
 
                         }
                     });
-
                     //create photo
-                    System.out.println("photo list in here = " + photoList.size());
                     for (Photo photo : photoList) {
                         photo.setPlaceId(placeId);
                         placeViewModel.createPhoto(photo);
@@ -260,6 +270,16 @@ public class AddFormActivity extends AppCompatActivity {
                 Photo photo = new Photo(currentPhotoPath);
                 photoList.add(photo);
                 System.out.println("photo list = " + photoList);
+                if (status != 1) {
+                    System.out.println("here for camera and add");
+                    adapter.notifyDataSetChanged();
+                } else {
+                    System.out.println("here for camera and edit");
+                    //allPhotos.addAll(photoList);
+                    allPhotos.add(photo);
+                    adapter.notifyDataSetChanged();
+                }
+
             }
         }
     }
@@ -277,6 +297,42 @@ public class AddFormActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
+    private void configureRecyclerView(long placeId) {
+        //final list of photos
+        allPhotos = new ArrayList<>();
+
+        //get the photos already saved for this place
+        placeViewModel.getPhotosForAPlace(placeId).observe(this, new Observer<List<Photo>>() {
+            @Override
+            public void onChanged(List<Photo> photos) {
+                photoListForThePlace = photos;
+                //add the photos to the final list of photos
+                allPhotos.addAll(photoListForThePlace);
+            }
+        });
+        adapter = new PhotoRecyclerViewAdapter(allPhotos, Glide.with(this));
+        this.recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayout.HORIZONTAL, false));
+    }
+
+    private void configureOnClickRecyclerViewForAddActivity() {
+        adapter = new PhotoRecyclerViewAdapter(photoList, Glide.with(this));
+        this.recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayout.HORIZONTAL, false));
+    }
+
+    private void configureOnClickRecyclerView() {
+        ItemClickSupport.addTo(recyclerView, R.layout.photo_recycler_view_item)
+                .setOnItemLongClickListener(new ItemClickSupport.OnItemLongClickListener() {
+                    @Override
+                    public boolean onItemLongClicked(RecyclerView recyclerView, int position, View v) {
+                        Photo photo = adapter.getItem(position);
+                        displayLongClickDialog(photo);
+                        return false;
+                    }
+                });
+    }
+
     private void configureViewModel() {
         ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(this);
         placeViewModel = ViewModelProviders.of(this, viewModelFactory).get(PlaceViewModel.class);
@@ -284,7 +340,6 @@ public class AddFormActivity extends AppCompatActivity {
     //-------------------------------------
     //ACTIONS
     //----------------------------------
-
     @OnClick(R.id.material_type_of_place_button)
     public void chooseATypeOfPlace() {
         displayDialog();
@@ -298,7 +353,6 @@ public class AddFormActivity extends AppCompatActivity {
             Toast.makeText(this, "Permissions granted", Toast.LENGTH_SHORT).show();
             return;
         }
-
         String[] wayToGetPicture = {"Pick from gallery", "Take from camera"};
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setItems(wayToGetPicture, new DialogInterface.OnClickListener() {
@@ -314,7 +368,6 @@ public class AddFormActivity extends AppCompatActivity {
                         default:
                             break;
                 }
-
             }
         });
         AlertDialog dialog = builder.create();
@@ -329,6 +382,12 @@ public class AddFormActivity extends AppCompatActivity {
     //----------------------------------------------
     //UPDATE UI
     //-----------------------------------------------
+    private void updateUi(List<Photo> photosOThePlace) {
+        //photoListForThePlace.addAll(photos);
+        allPhotos.addAll(photosOThePlace);
+        adapter.notifyDataSetChanged();
+    }
+
     private void displayRealEstateManagerName() {
         if (preferences.getString(USER_NAME, null) != null) {
             String realEstateManagerName = preferences.getString(USER_NAME, null);
@@ -394,6 +453,25 @@ public class AddFormActivity extends AppCompatActivity {
     //--------------------------------------------
     //METHODS
     //---------------------------------------------
+
+    private void displayLongClickDialog(Photo photo) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setItems(longClickFunctionality, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                placeViewModel.deletePhoto(photo.getId());
+                long placeId = photo.getPlaceId();
+
+                //here i need to get the new list of picture and say to recycler view that data has changed
+
+               // adapter.notifyDataSetChanged();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
     private File createImageFile() throws IOException {
         //create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
@@ -436,26 +514,9 @@ public class AddFormActivity extends AppCompatActivity {
             return;
         }
         Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-/*
-        File photoFile = null;
-        try {
-            photoFile = createImageFile();
-        } catch (IOException ex) {
-            Toast.makeText(this, "Error occurred", Toast.LENGTH_SHORT).show();
-        }
-        if (photoFile != null) {
-            Uri photoUri = FileProvider.getUriForFile(this,
-                    "com.example.realestatemanager.fileprovider",
-                    photoFile);
-            i.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-            System.out.println("photo uri = " + photoUri);
-            startActivityForResult(i, RC_CHOOSE_PHOTO);
-        }*/
-
         startActivityForResult(i, RC_CHOOSE_PHOTO);
     }
 
-    // 4 - Handle activity response (after user has chosen or not a picture)
     private void handleResponse(int requestCode, int resultCode, Intent data) {
         if (requestCode == RC_CHOOSE_PHOTO) {
             if (resultCode == RESULT_OK) { //SUCCESS
@@ -464,8 +525,16 @@ public class AddFormActivity extends AppCompatActivity {
                 String path = getRealPathFromURI(uri);
                 Photo photo = new Photo(path);
                 photoList.add(photo);
-                System.out.println("photolist in handle response = " + photoList);
-
+                System.out.println("photo list here in gallery = " + photoList);
+                if (status != 1) {
+                    System.out.println("here for pick gallery and add");
+                    adapter.notifyDataSetChanged();
+                } else {
+                    System.out.println("here for pick gallery and edit");
+                    //allPhotos.addAll(photoList);
+                    allPhotos.add(photo);
+                    adapter.notifyDataSetChanged();
+                }
 
             } else {
                 Toast.makeText(this, "No image chosen", Toast.LENGTH_SHORT).show();
@@ -517,6 +586,8 @@ public class AddFormActivity extends AppCompatActivity {
             NotificationChannel channel = new NotificationChannel(channelId, channelName, importance);
             notificationManager.createNotificationChannel(channel);
 
+            int NOTIFICATION_ID = 100;
+            String NOTIFICATION_TAG = "realEstateManager";
             notificationManager.notify(NOTIFICATION_TAG, NOTIFICATION_ID, notificationBuilder.build());
         }
     }

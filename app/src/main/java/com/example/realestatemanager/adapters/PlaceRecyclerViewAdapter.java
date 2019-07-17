@@ -29,7 +29,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceViewHold
     private List<Address> addressList;
     private List<Interest> interestList;
     private List<Photo> photoList;
-    private PlaceViewModel viewModel;
+    //private PlaceViewModel viewModel;
     private Context context;
     private RequestManager glide;
 
@@ -47,8 +47,8 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceViewHold
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.fragment_list_item, viewGroup, false);
 
-        ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(context);
-        viewModel = ViewModelProviders.of((FragmentActivity) context, viewModelFactory).get(PlaceViewModel.class);
+        /*ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(context);
+        viewModel = ViewModelProviders.of((FragmentActivity) context, viewModelFactory).get(PlaceViewModel.class);*/
         return new PlaceViewHolder(view);
     }
 
