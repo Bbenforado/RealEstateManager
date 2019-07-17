@@ -143,10 +143,8 @@ public class AddFormActivity extends AppCompatActivity {
 
         //if it s to edit one existing place
         if (status == 1) {
-
-            System.out.println("photo list edit is = " + photoList);
-
             placeId = preferences.getLong(PLACE_ID, -1);
+
             configureRecyclerView(placeId);
             configureOnClickRecyclerView();
             //update ui
@@ -677,13 +675,17 @@ public class AddFormActivity extends AppCompatActivity {
         if (!TextUtils.isEmpty(editTextDescription.getText().toString())) {
             description = editTextDescription.getText().toString();
         }
-        int status = preferences.getInt(SWITCH_BUTTON_MODE, -1);
+        //int status = preferences.getInt(SWITCH_BUTTON_MODE, -1);
         String author = editTextAuthor.getText().toString();
         String date = new Date().toString();
         Place place;
         if (TextUtils.isEmpty(saleDateButton.getText())) {
+            //is available
+            int status = 0;
             place = new Place(nbrOfRooms, nbrOfBathrooms, nbrOfBedrooms, type, price, status, date, author, description, surface);
         } else {
+            //if sold
+            int status = 1;
             String saleDate = saleDateButton.getText().toString();
             place = new Place(nbrOfRooms, nbrOfBathrooms, nbrOfBedrooms, type, price, status, date, saleDate, author, description, surface);
         }

@@ -68,6 +68,9 @@ public class DetailFragment extends Fragment {
     RecyclerView recyclerViewInterest;
     @BindView(R.id.slider)
     SliderLayout sliderLayout;
+    @BindView(R.id.status_text_view_detail_fragment) TextView statusTextView;
+    @BindView(R.id.real_estate_manager_text_view_detail_fragment) TextView managerOfPlaceTextView;
+    @BindView(R.id.creation_date_detail_text_view) TextView creationDateTextView;
     private static final String APP_PREFERENCES = "appPreferences";
     private static final String PLACE_ID = "placeId";
     public static final String STATUS_FORM_ACTIVITY = "statusFormActivity";
@@ -127,7 +130,13 @@ public class DetailFragment extends Fragment {
     //---------------------------------------------------
     private void updateUi(Place place) {
         displayPhotosOfPlace(place.getId());
-
+        managerOfPlaceTextView.setText(place.getAuthor());
+        creationDateTextView.setText(place.getCreationDate());
+        if (place.getStatus() == 0) {
+            statusTextView.setText("Available");
+        } else {
+            statusTextView.setText("Sold");
+        }
         typeOfPlaceTextView.setText(place.getType());
         priceTextView.setText(String.valueOf(place.getPrice()));
         if (place.getDescription() != null) {
