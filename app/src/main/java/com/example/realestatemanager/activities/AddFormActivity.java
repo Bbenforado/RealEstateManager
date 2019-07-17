@@ -17,6 +17,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -31,6 +32,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.FileProvider;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
@@ -38,6 +40,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.realestatemanager.MainActivity;
 import com.example.realestatemanager.models.Address;
 import com.example.realestatemanager.models.Interest;
+import com.example.realestatemanager.models.Photo;
 import com.example.realestatemanager.viewModels.PlaceViewModel;
 import com.example.realestatemanager.R;
 import com.example.realestatemanager.injections.Injection;
@@ -46,7 +49,11 @@ import com.example.realestatemanager.models.Place;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Array;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -61,6 +68,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 public class AddFormActivity extends AppCompatActivity {
 
 
+    private static final int REQUEST_TAKE_PHOTO = 1;
     //----------------------------------
     //BIND VIEWS
     //------------------------------------
@@ -87,7 +95,7 @@ public class AddFormActivity extends AppCompatActivity {
     @BindView(R.id.checkboxHospital) CheckBox checkBoxHospital;
     @BindView(R.id.checkboxCinema) CheckBox checkBoxCinema;
     @BindView(R.id.checkboxTheater) CheckBox checkBoxTheater;
-    @BindView(R.id.photo_recycler_view) RecyclerView recyclerView;
+    //@BindView(R.id.photo_recycler_view) RecyclerView recyclerView;
     //---------------------------------------------------------------------------------------
     private String[] typesOfPlace = {"Loft", "Mansion", "Penthouse", "Duplex"};
     private String type;
@@ -105,9 +113,10 @@ public class AddFormActivity extends AppCompatActivity {
     private List<CheckBox> checkBoxes;
     private static final String PERMS = Manifest.permission.READ_EXTERNAL_STORAGE;
     private static final int RC_IMAGE_PERMS = 100;
-    private Uri uriImageSelected;
     private static final int RC_CHOOSE_PHOTO = 200;
-    static final int REQUEST_IMAGE_CAPTURE = 1;
+    //static final int REQUEST_IMAGE_CAPTURE = 1;
+    private List<Photo> photoList;
+    String currentPhotoPath;
 
 
 
@@ -178,6 +187,11 @@ public class AddFormActivity extends AppCompatActivity {
                                 placeViewModel.createInterest(interest);
                             }
                         }
+                        //create photo
+                        /*for (Photo photo : photoList) {
+                            photo.setPlaceId(id);
+                            placeViewModel.createPhoto(photo);
+                        }*/
                         //create address
                         createAddress(id);
                         sendNotification("Place created");
@@ -226,10 +240,13 @@ public class AddFormActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         // 6 - Calling the appropriate method after activity result
         this.handleResponse(requestCode, resultCode, data);
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            //imageView.setImageBitmap(imageBitmap);
+
+        if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
+            File imgFile = new  File(currentPhotoPath);
+            if(imgFile.exists())            {
+                //image.setImageURI(Uri.fromFile(imgFile));
+                Toast.makeText(this, "file exists",Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -267,6 +284,7 @@ public class AddFormActivity extends AppCompatActivity {
             Toast.makeText(this, "Permissions granted", Toast.LENGTH_SHORT).show();
             return;
         }
+        photoList = new ArrayList<>();
         String[] wayToGetPicture = {"Pick from gallery", "Take from camera"};
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setItems(wayToGetPicture, new DialogInterface.OnClickListener() {
@@ -362,10 +380,43 @@ public class AddFormActivity extends AppCompatActivity {
     //--------------------------------------------
     //METHODS
     //---------------------------------------------
+    private File createImageFile() throws IOException {
+        System.out.println("create file");
+        //create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,
+                ".jpg",
+                storageDir
+        );
+        //save a file
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
     private void dispatchTakePictureIntent() {
+        System.out.println("dispatch picture");
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            System.out.println("here");
+
+            File photoFile = null;
+            try {
+                System.out.println("ok");
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                Toast.makeText(this, "Error occurred", Toast.LENGTH_SHORT).show();
+            }
+            if (photoFile != null) {
+                System.out.println("hello");
+                Uri photoUri = FileProvider.getUriForFile(this,
+                        "com.example.realestatemanager.fileprovider",
+                        photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+            }
         }
     }
 
@@ -382,7 +433,14 @@ public class AddFormActivity extends AppCompatActivity {
     private void handleResponse(int requestCode, int resultCode, Intent data){
         if (requestCode == RC_CHOOSE_PHOTO) {
             if (resultCode == RESULT_OK) { //SUCCESS
-                this.uriImageSelected = data.getData();
+                Uri uriImageSelected = data.getData();
+
+                System.out.println(" uri = " + uriImageSelected);
+                String uri = uriImageSelected.getPath();
+                System.out.println("uri string = " + uri);
+                Photo photo = new Photo(uri);
+                photoList.add(photo);
+
                 /*Glide.with(this) //SHOWING PREVIEW OF IMAGE
                         .load(this.uriImageSelected)
                         .apply(RequestOptions.circleCropTransform())

@@ -8,12 +8,14 @@ import androidx.room.RoomDatabase;
 
 import com.example.realestatemanager.database.dao.AddressDao;
 import com.example.realestatemanager.database.dao.InterestDao;
+import com.example.realestatemanager.database.dao.PhotoDao;
 import com.example.realestatemanager.database.dao.PlaceDao;
 import com.example.realestatemanager.models.Address;
 import com.example.realestatemanager.models.Interest;
+import com.example.realestatemanager.models.Photo;
 import com.example.realestatemanager.models.Place;
 
-@Database(entities = {Address.class, Interest.class, Place.class}, version = 1,
+@Database(entities = {Address.class, Interest.class, Place.class, Photo.class}, version = 1,
 exportSchema = false)
 public abstract class RealEstateManagerDatabase extends RoomDatabase {
 
@@ -24,6 +26,7 @@ public abstract class RealEstateManagerDatabase extends RoomDatabase {
     public abstract PlaceDao placeDao();
     public abstract AddressDao addressDao();
     public abstract InterestDao interestDao();
+    public abstract PhotoDao photoDao();
 
     //INSTANCE
     public static RealEstateManagerDatabase getInstance(Context context) {

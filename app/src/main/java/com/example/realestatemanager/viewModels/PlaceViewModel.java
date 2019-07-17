@@ -8,9 +8,11 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 import com.example.realestatemanager.models.Address;
 import com.example.realestatemanager.models.Interest;
+import com.example.realestatemanager.models.Photo;
 import com.example.realestatemanager.models.Place;
 import com.example.realestatemanager.repositories.AddressDataRepository;
 import com.example.realestatemanager.repositories.InterestDataRepository;
+import com.example.realestatemanager.repositories.PhotoDataRepository;
 import com.example.realestatemanager.repositories.PlaceDataRepository;
 
 import java.util.List;
@@ -26,19 +28,24 @@ public class PlaceViewModel extends ViewModel {
     private final PlaceDataRepository placeDataSource;
     private final AddressDataRepository addressDataSource;
     private final InterestDataRepository interestDataSource;
+    private final PhotoDataRepository photoDataSource;
     private final Executor executor;
 
     @Nullable
     private LiveData<Place> currentPlace;
 
-    public PlaceViewModel(PlaceDataRepository placeDataSource, AddressDataRepository addressDataSource, InterestDataRepository interestDataSource, Executor executor) {
+    public PlaceViewModel(PlaceDataRepository placeDataSource, AddressDataRepository addressDataSource,
+                          InterestDataRepository interestDataSource, PhotoDataRepository photoDataRepository, Executor executor) {
         this.placeDataSource = placeDataSource;
         this.addressDataSource = addressDataSource;
         this.interestDataSource = interestDataSource;
+        this.photoDataSource = photoDataRepository;
         this.executor = executor;
     }
 
+    //-----------------------------------------------
     //FOR PLACES
+    //-------------------------------------------------------
     public LiveData<Place> getPlace(long placeId) {
         return placeDataSource.getPlace(placeId);
     }
@@ -63,7 +70,15 @@ public class PlaceViewModel extends ViewModel {
         return rowId;
     }
 
+    public void updatePlace(Place place) {
+        executor.execute(() -> {
+            placeDataSource.updatePlace(place);
+        });
+    }
+
+    //-----------------------------------------------------
     //FOR ADDRESSES
+    //--------------------------------------------------------------
     public LiveData<Address> getAddress(long placeId) {
         return addressDataSource.getAddress(placeId);
     }
@@ -88,7 +103,15 @@ public class PlaceViewModel extends ViewModel {
         return rowId;
     }
 
+    public void updateAddress(Address address) {
+        executor.execute(() -> {
+            addressDataSource.updateAddress(address);
+        });
+    }
+
+    //-------------------------------------------------
     //FOR INTERESTS
+    //-----------------------------------------------------
     public long createInterest(Interest interest) {
         Callable<Long> insertCallable = () -> interestDataSource.createInterest(interest);
         long rowId = 0;
@@ -103,18 +126,6 @@ public class PlaceViewModel extends ViewModel {
             e.printStackTrace();
         }
         return rowId;
-    }
-
-    public void updatePlace(Place place) {
-        executor.execute(() -> {
-            placeDataSource.updatePlace(place);
-        });
-    }
-
-    public void updateAddress(Address address) {
-        executor.execute(() -> {
-            addressDataSource.updateAddress(address);
-        });
     }
 
     public void updateInterest(Interest interest) {
@@ -135,5 +146,18 @@ public class PlaceViewModel extends ViewModel {
         //executor.execute(() -> {
             interestDataSource.deleteInterests(placeId);
         //});
+    }
+
+    //-------------------------------------------------
+    //FOR PHOTOS
+    //----------------------------------------------------
+    public void createPhoto(Photo photo) {
+        executor.execute(() -> {
+            photoDataSource.createPhoto(photo);
+        });
+    }
+
+    public LiveData<List<Photo>> getPhotos() {
+        return photoDataSource.getPhotos();
     }
 }

@@ -5,6 +5,7 @@ import android.content.Context;
 import com.example.realestatemanager.database.RealEstateManagerDatabase;
 import com.example.realestatemanager.repositories.AddressDataRepository;
 import com.example.realestatemanager.repositories.InterestDataRepository;
+import com.example.realestatemanager.repositories.PhotoDataRepository;
 import com.example.realestatemanager.repositories.PlaceDataRepository;
 
 import java.util.concurrent.Executor;
@@ -27,6 +28,11 @@ public class Injection {
         return new InterestDataRepository(database.interestDao());
     }
 
+    public static PhotoDataRepository providePhotoDataSource(Context context) {
+        RealEstateManagerDatabase database =  RealEstateManagerDatabase.getInstance(context);
+        return new PhotoDataRepository(database.photoDao());
+    }
+
     public static Executor provideExecutor() {
         return Executors.newSingleThreadExecutor();
     }
@@ -35,7 +41,8 @@ public class Injection {
         PlaceDataRepository dataSourcePlace = providePlaceDataSource(context);
         AddressDataRepository dataSourceAddress = provideAddressDataSource(context);
         InterestDataRepository dataSourceInterest = provideInterestDataSource(context);
+        PhotoDataRepository dataSourcePhoto = providePhotoDataSource(context);
         Executor executor = provideExecutor();
-        return new ViewModelFactory(dataSourcePlace, dataSourceAddress, dataSourceInterest, executor);
+        return new ViewModelFactory(dataSourcePlace, dataSourceAddress, dataSourceInterest, dataSourcePhoto, executor);
     }
 }

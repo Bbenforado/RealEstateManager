@@ -1,15 +1,23 @@
 package com.example.realestatemanager.adapters;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.realestatemanager.R;
 import com.example.realestatemanager.models.Address;
+import com.example.realestatemanager.models.Photo;
 import com.example.realestatemanager.models.Place;
+
+import java.io.File;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -20,6 +28,8 @@ public class PlaceViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.status_text_view) TextView statusTextView;
     @BindView(R.id.city_text_view) TextView cityTextView;
     @BindView(R.id.price_text_view) TextView priceTextView;
+    @BindView(R.id.fragment_list_item_image)
+    ImageView imageView;
 
 
 
@@ -29,12 +39,25 @@ public class PlaceViewHolder extends RecyclerView.ViewHolder {
 
     }
 
-    public void updateUi(Place place, Address address, Context context) {
+    public void updateUi(Place place, Address address, List<Photo> photos,
+                         Context context, RequestManager glide) {
         this.typeOfPlaceTextView.setText(place.getType());
         this.priceTextView.setText(String.valueOf(place.getPrice()));
         if (address.getIdPlace() == place.getId()) {
             this.cityTextView.setText(address.getCity());
         }
+
+        if (photos.size() != 0) {
+            Photo mainPhoto = photos.get(0);
+            String uri = mainPhoto.getUri();
+            Uri photoUri = Uri.parse(uri);
+
+            System.out.println("uri = " + photoUri);
+
+            //display photo with glide
+            glide.load(photoUri.getPath()).apply(RequestOptions.noTransformation()).into(imageView);
+        }
+
         if (place.getDateOfSale() != null) {
             statusTextView.setText("Sold");
             statusTextView.setTextColor(context.getResources().getColor(R.color.red));
@@ -44,4 +67,13 @@ public class PlaceViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
+    /*private Photo getMainPhoto(List<Photo> photos) {
+        for (int i = 0; i<photos.size(); i++) {
+            //get the main photo
+            if (photos.get(i).isMainPhoto()) {
+                return photos.get(i);
+            }
+        }
+    }
+*/
 }

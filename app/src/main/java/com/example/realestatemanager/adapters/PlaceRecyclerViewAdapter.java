@@ -10,11 +10,13 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.RequestManager;
 import com.example.realestatemanager.R;
 import com.example.realestatemanager.injections.Injection;
 import com.example.realestatemanager.injections.ViewModelFactory;
 import com.example.realestatemanager.models.Address;
 import com.example.realestatemanager.models.Interest;
+import com.example.realestatemanager.models.Photo;
 import com.example.realestatemanager.models.Place;
 import com.example.realestatemanager.viewModels.PlaceViewModel;
 
@@ -26,12 +28,16 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceViewHold
     private List<Place> placeList;
     private List<Address> addressList;
     private List<Interest> interestList;
+    private List<Photo> photoList;
     PlaceViewModel viewModel;
     Context context;
+    private RequestManager glide;
 
-    public PlaceRecyclerViewAdapter() {
+    public PlaceRecyclerViewAdapter(RequestManager glide) {
         this.placeList = new ArrayList<>();
         this.addressList = new ArrayList<>();
+        this.photoList = new ArrayList<>();
+        this.glide = glide;
     }
 
     @NonNull
@@ -48,8 +54,15 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceViewHold
 
     @Override
     public void onBindViewHolder(@NonNull PlaceViewHolder holder, int position) {
+        List<Photo> photos = new ArrayList<>();
+        if (photoList.size() != 0) {
+            if (photoList.get(position).getPlaceId() == placeList.get(position).getId()) {
+                photos.add(photoList.get(position));
+            }
+        }
 
-        holder.updateUi(placeList.get(position), addressList.get(position), context);
+        holder.updateUi(placeList.get(position), addressList.get(position),
+                photos, context, this.glide);
 
 
     }
@@ -70,6 +83,11 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceViewHold
 
     public void updateAddressData(List<Address> addresses) {
         this.addressList = addresses;
+        notifyDataSetChanged();
+    }
+
+    public void updatePhotoData(List<Photo> photos) {
+        this.photoList = photos;
         notifyDataSetChanged();
     }
 

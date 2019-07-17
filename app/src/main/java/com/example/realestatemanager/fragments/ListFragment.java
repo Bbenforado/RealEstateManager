@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.realestatemanager.R;
 import com.example.realestatemanager.activities.AddFormActivity;
 import com.example.realestatemanager.activities.DetailActivity;
@@ -27,6 +28,7 @@ import com.example.realestatemanager.injections.Injection;
 import com.example.realestatemanager.injections.ViewModelFactory;
 import com.example.realestatemanager.models.Address;
 import com.example.realestatemanager.models.Interest;
+import com.example.realestatemanager.models.Photo;
 import com.example.realestatemanager.models.Place;
 import com.example.realestatemanager.utils.ItemClickSupport;
 import com.example.realestatemanager.viewModels.PlaceViewModel;
@@ -82,6 +84,7 @@ public class ListFragment extends Fragment {
         //get data to display in recycler view
         getPlaces();
         getAddresses();
+        getPhotos();
 
         return result;
     }
@@ -90,7 +93,7 @@ public class ListFragment extends Fragment {
     //CONFIGURATION
     //-------------------------------------------
     private void configureRecyclerView() {
-        this.adapter = new PlaceRecyclerViewAdapter();
+        this.adapter = new PlaceRecyclerViewAdapter(Glide.with(this));
         this.recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     }
@@ -136,6 +139,14 @@ public class ListFragment extends Fragment {
 
     private void getAddresses() {
         viewModel.getAddresses().observe(this, this::updateAddressesList);
+    }
+
+    private void getPhotos() {
+        viewModel.getPhotos().observe(this, this::updatePhotosList);
+    }
+
+    private void updatePhotosList(List<Photo> photos) {
+        this.adapter.updatePhotoData(photos);
     }
 
     private void updatePlacesList(List<Place> places) {
