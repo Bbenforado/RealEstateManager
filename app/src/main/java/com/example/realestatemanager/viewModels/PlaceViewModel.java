@@ -160,4 +160,8 @@ public class PlaceViewModel extends ViewModel {
     public LiveData<List<Photo>> getPhotos() {
         return photoDataSource.getPhotos();
     }
+
+    public LiveData<List<Photo>> getPhotosForAPlace(long placeId) {
+        return photoDataSource.getPhotosForAPlace(placeId);
+    }
 }

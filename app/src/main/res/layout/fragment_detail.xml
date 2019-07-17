@@ -28,7 +28,7 @@
             app:expandedTitleMarginEnd="64dp"
             >
 
-            <ImageView
+            <!--<ImageView
                 android:id="@+id/main.backdrop"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -36,12 +36,22 @@
                 android:fitsSystemWindows="true"
                 app:layout_collapseMode="parallax"
                 android:src="@drawable/living_room"
+                app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"/>-->
+
+            <com.daimajia.slider.library.SliderLayout
+                android:id="@+id/slider"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fitsSystemWindows="true"
+                app:layout_collapseMode="parallax"
+                android:scaleType="centerCrop"
                 app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"/>
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/nested_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
@@ -336,10 +346,10 @@
         android:id="@+id/edit_floating_action_button_detail_fragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_anchor="@id/main.appbar"
+        app:layout_anchor="@id/nested_scroll_view"
         app:layout_anchorGravity="bottom|end"
-        android:layout_marginBottom="8dp"
-        android:layout_marginRight="5dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginRight="16dp"
         android:clickable="true"
         android:src="@drawable/ic_edit_white"/>
 

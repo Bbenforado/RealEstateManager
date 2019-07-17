@@ -17,6 +17,7 @@ import com.example.realestatemanager.models.Photo;
 import com.example.realestatemanager.models.Place;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -47,15 +48,24 @@ public class PlaceViewHolder extends RecyclerView.ViewHolder {
             this.cityTextView.setText(address.getCity());
         }
 
+        List<Photo> photoList = new ArrayList<>();
         if (photos.size() != 0) {
-            Photo mainPhoto = photos.get(0);
-            String uri = mainPhoto.getUri();
-            Uri photoUri = Uri.parse(uri);
+            for (int i = 0; i<photos.size(); i++ ) {
+                if (photos.get(i).getPlaceId() == place.getId()) {
+                    photoList.add(photos.get(i));
+                }
+            }
+            System.out.println("size of list = " + photoList.size());
+            if (photoList.size() > 1) {
+                Photo mainPhoto = photoList.get(0);
+                String path = mainPhoto.getUri();
+                glide.load(path).apply(RequestOptions.noTransformation()).into(imageView);
+            } else if (photoList.size() == 1) {
+                glide.load(photoList.get(0).getUri()).apply(RequestOptions.noTransformation()).into(imageView);
+            } else {
+                glide.load(R.drawable.no_image).apply(RequestOptions.noTransformation()).into(imageView);
+            }
 
-            System.out.println("uri = " + photoUri);
-
-            //display photo with glide
-            glide.load(photoUri.getPath()).apply(RequestOptions.noTransformation()).into(imageView);
         }
 
         if (place.getDateOfSale() != null) {

@@ -26,6 +26,10 @@ public class PhotoDataRepository {
         return this.photoDao.getPhotos();
     }
 
+    public LiveData<List<Photo>> getPhotosForAPlace(long placeId) {
+        return this.photoDao.getPhotosForAPlace(placeId);
+    }
+
     //CREATE
     public long createPhoto(Photo photo) {
         return photoDao.createPhoto(photo);

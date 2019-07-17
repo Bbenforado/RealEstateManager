@@ -29,8 +29,8 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceViewHold
     private List<Address> addressList;
     private List<Interest> interestList;
     private List<Photo> photoList;
-    PlaceViewModel viewModel;
-    Context context;
+    private PlaceViewModel viewModel;
+    private Context context;
     private RequestManager glide;
 
     public PlaceRecyclerViewAdapter(RequestManager glide) {
@@ -54,17 +54,8 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceViewHold
 
     @Override
     public void onBindViewHolder(@NonNull PlaceViewHolder holder, int position) {
-        List<Photo> photos = new ArrayList<>();
-        if (photoList.size() != 0) {
-            if (photoList.get(position).getPlaceId() == placeList.get(position).getId()) {
-                photos.add(photoList.get(position));
-            }
-        }
-
         holder.updateUi(placeList.get(position), addressList.get(position),
-                photos, context, this.glide);
-
-
+                photoList, context, this.glide);
     }
 
     @Override
