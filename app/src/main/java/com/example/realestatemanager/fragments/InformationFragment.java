@@ -75,12 +75,10 @@ public class InformationFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View result = inflater.inflate(R.layout.fragment_information, container, false);
-        System.out.println("come here????");
         preferences = getActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         ButterKnife.bind(this, result);
         configureViewModel();
         long placeId = preferences.getLong(PLACE_ID, -1);
-        System.out.println("id = " + placeId);
         viewModel.getPlace(placeId).observe(this, new Observer<Place>() {
             @Override
             public void onChanged(Place place) {
@@ -106,7 +104,6 @@ public class InformationFragment extends Fragment {
     //UPDATE UI
     //---------------------------------------------------
     private void updateUi(Place place) {
-        System.out.println("update ui");
         managerOfPlaceTextView.setText(place.getAuthor());
         creationDateTextView.setText(place.getCreationDate());
         if (place.getStatus() == 0) {

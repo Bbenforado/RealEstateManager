@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -16,6 +18,7 @@ import androidx.viewpager.widget.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.daimajia.slider.library.SliderLayout;
@@ -86,6 +89,9 @@ public class DetailFragment extends Fragment {
 
     @BindView(R.id.viewpager) ViewPager viewPager;
     @BindView(R.id.main_tabs) TabLayout tabLayout;
+    @BindView(R.id.nested_scroll_view)
+    NestedScrollView scrollView;
+    @BindView(R.id.layout) LinearLayout linearLayout;
 
     public DetailFragment() {
         // Required empty public constructor
@@ -145,6 +151,10 @@ public class DetailFragment extends Fragment {
             tabLayout.getTabAt(i).setIcon(iconTabLayout[i]);
         }
         tabLayout.setTabMode(TabLayout.MODE_FIXED);
+        System.out.println("viewpager = " + viewPager.getHeight());
+        System.out.println("scroll = " + scrollView.getHeight());
+        System.out.println("linear = " + linearLayout.getHeight());
+        System.out.println("tab = " + tabLayout.getHeight());
     }
 
     //--------------------------------------------------
