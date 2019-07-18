@@ -4,12 +4,14 @@ package com.example.realestatemanager.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +23,7 @@ import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.daimajia.slider.library.SliderTypes.TextSliderView;
 import com.example.realestatemanager.R;
 import com.example.realestatemanager.activities.AddFormActivity;
+import com.example.realestatemanager.adapters.DetailFragmentAdapter;
 import com.example.realestatemanager.adapters.DetailRecyclerViewAdapter;
 import com.example.realestatemanager.adapters.PlaceRecyclerViewAdapter;
 import com.example.realestatemanager.injections.Injection;
@@ -30,6 +33,7 @@ import com.example.realestatemanager.models.Photo;
 import com.example.realestatemanager.models.Place;
 import com.example.realestatemanager.viewModels.PlaceViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.tabs.TabLayout;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -48,7 +52,7 @@ public class DetailFragment extends Fragment {
     //----------------------------------------------
     //BIND VIEWS
     //------------------------------------------------
-    @BindView(R.id.text_view_type_of_place_detail_fragment)
+ /*   @BindView(R.id.text_view_type_of_place_detail_fragment)
     TextView typeOfPlaceTextView;
     @BindView(R.id.text_view_price_detail_fragment)
     TextView priceTextView;
@@ -61,22 +65,27 @@ public class DetailFragment extends Fragment {
     @BindView(R.id.text_view_nbr_bedrooms_detail_fragment)
     TextView nbrOfBedroomsTextView;
     @BindView(R.id.text_view_description_detail_fragment)
-    TextView descriptionTextView;
+    TextView descriptionTextView;*/
     @BindView(R.id.edit_floating_action_button_detail_fragment)
     FloatingActionButton editFloatingActionButton;
-    @BindView(R.id.recycler_view_detail_interest)
-    RecyclerView recyclerViewInterest;
+    //@BindView(R.id.recycler_view_detail_interest)
+    //RecyclerView recyclerViewInterest;
     @BindView(R.id.slider)
     SliderLayout sliderLayout;
-    @BindView(R.id.status_text_view_detail_fragment) TextView statusTextView;
+ /*   @BindView(R.id.status_text_view_detail_fragment) TextView statusTextView;
     @BindView(R.id.real_estate_manager_text_view_detail_fragment) TextView managerOfPlaceTextView;
-    @BindView(R.id.creation_date_detail_text_view) TextView creationDateTextView;
+    @BindView(R.id.creation_date_detail_text_view) TextView creationDateTextView;*/
     private static final String APP_PREFERENCES = "appPreferences";
     private static final String PLACE_ID = "placeId";
     public static final String STATUS_FORM_ACTIVITY = "statusFormActivity";
     private PlaceViewModel viewModel;
     private SharedPreferences preferences;
-    private DetailRecyclerViewAdapter adapter;
+    //private DetailRecyclerViewAdapter adapter;
+    private String[] titles = {"Information", "View location"};
+    private int[] iconTabLayout = {R.drawable.house_white, R.drawable.ic_address_white};
+
+    @BindView(R.id.viewpager) ViewPager viewPager;
+    @BindView(R.id.main_tabs) TabLayout tabLayout;
 
     public DetailFragment() {
         // Required empty public constructor
@@ -88,13 +97,15 @@ public class DetailFragment extends Fragment {
         //------------------------------------------------
         preferences = getActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         ButterKnife.bind(this, view);
+        configureViewpagerAndTabs();
         configureViewModel();
         long placeId = preferences.getLong(PLACE_ID, -1);
         viewModel.getPlace(placeId).observe(this, new Observer<Place>() {
             @Override
             public void onChanged(Place place) {
-                updateUi(place);
-                configureRecyclerView();
+                //updateUi(place);
+                //configureRecyclerView();
+                displayPhotosOfPlace(placeId);
             }
         });
         return view;
@@ -119,16 +130,27 @@ public class DetailFragment extends Fragment {
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(PlaceViewModel.class);
     }
 
-    private void configureRecyclerView() {
+    /*private void configureRecyclerView() {
         this.adapter = new DetailRecyclerViewAdapter();
         this.recyclerViewInterest.setAdapter(adapter);
         recyclerViewInterest.setLayoutManager(new LinearLayoutManager(getContext()));
+    }*/
+
+    private void configureViewpagerAndTabs() {
+        System.out.println("configure tabs");
+        viewPager.setAdapter(new DetailFragmentAdapter(getActivity().getSupportFragmentManager(), titles) {
+        });
+        tabLayout.setupWithViewPager(viewPager);
+        for (int i = 0; i < tabLayout.getTabCount(); i++) {
+            tabLayout.getTabAt(i).setIcon(iconTabLayout[i]);
+        }
+        tabLayout.setTabMode(TabLayout.MODE_FIXED);
     }
 
     //--------------------------------------------------
     //UPDATE UI
     //---------------------------------------------------
-    private void updateUi(Place place) {
+    /*private void updateUi(Place place) {
         displayPhotosOfPlace(place.getId());
         managerOfPlaceTextView.setText(place.getAuthor());
         creationDateTextView.setText(place.getCreationDate());
@@ -165,26 +187,26 @@ public class DetailFragment extends Fragment {
             nbrOfBedroomsTextView.setText("Not informed yet");
         }
         getInterests(place.getId());
-    }
+    }*/
 
     //--------------------------------------------
     //METHODS
     //----------------------------------------------
-    private void getInterests(long placeId) {
+    /*private void getInterests(long placeId) {
         viewModel.getInterests(placeId).observe(this, this::updateInterestsList);
     }
 
     private void updateInterestsList(List<Interest> interests) {
         this.adapter.updateInterestData(interests);
-    }
+    }*/
 
-    private void getPhotos(long placeId) {
+    /*private void getPhotos(long placeId) {
         viewModel.getPhotosForAPlace(placeId).observe(this, this::updatePhotosList);
-    }
+    }*/
 
-    private void updatePhotosList(List<Photo> photos) {
+    /*private void updatePhotosList(List<Photo> photos) {
 
-    }
+    }*/
 
     //----------------------------------------------------
     private void displayPhotosOfPlace(long placeId) {
