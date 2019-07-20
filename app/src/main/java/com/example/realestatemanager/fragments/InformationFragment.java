@@ -23,6 +23,7 @@ import com.example.realestatemanager.adapters.DetailFragmentAdapter;
 import com.example.realestatemanager.adapters.DetailRecyclerViewAdapter;
 import com.example.realestatemanager.injections.Injection;
 import com.example.realestatemanager.injections.ViewModelFactory;
+import com.example.realestatemanager.models.Address;
 import com.example.realestatemanager.models.Interest;
 import com.example.realestatemanager.models.Place;
 import com.example.realestatemanager.viewModels.PlaceViewModel;
@@ -57,6 +58,10 @@ public class InformationFragment extends Fragment {
     @BindView(R.id.layout_date_of_sale)
     LinearLayout layoutDateOfSale;
     @BindView(R.id.date_of_sale_detail_text_view) TextView dateOfSaleTextView;
+    @BindView(R.id.street_address_text_view_information) TextView streetAddressTextView;
+    @BindView(R.id.complement_text_view_information) TextView complementTextView;
+    @BindView(R.id.postal_code_and_city_text_view_information) TextView postalCodeAndCityTextView;
+    @BindView(R.id.country_text_view_information) TextView countryTextView;
     private PlaceViewModel viewModel;
     private DetailRecyclerViewAdapter adapter;
     private SharedPreferences preferences;
@@ -145,6 +150,19 @@ public class InformationFragment extends Fragment {
             nbrOfBedroomsTextView.setText("Not informed yet");
         }
         getInterests(place.getId());
+        viewModel.getAddress(place.getId()).observe(this, new Observer<Address>() {
+            @Override
+            public void onChanged(Address address) {
+                streetAddressTextView.setText(address.getStreetNumber() + " " + address.getStreetName());
+                if (!address.getComplement().equals("Not informed")) {
+                    complementTextView.setText(address.getComplement());
+                } else {
+                    complementTextView.setVisibility(View.GONE);
+                }
+                postalCodeAndCityTextView.setText(address.getPostalCode() + " " + address.getCity());
+                countryTextView.setText(address.getCountry());
+            }
+        });
     }
 
     private void getInterests(long placeId) {
