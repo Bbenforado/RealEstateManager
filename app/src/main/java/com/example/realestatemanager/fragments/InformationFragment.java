@@ -15,6 +15,7 @@ import androidx.viewpager.widget.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.realestatemanager.R;
@@ -53,6 +54,9 @@ public class InformationFragment extends Fragment {
     TextView nbrOfBedroomsTextView;
     @BindView(R.id.text_view_description_detail_fragment)
     TextView descriptionTextView;
+    @BindView(R.id.layout_date_of_sale)
+    LinearLayout layoutDateOfSale;
+    @BindView(R.id.date_of_sale_detail_text_view) TextView dateOfSaleTextView;
     private PlaceViewModel viewModel;
     private DetailRecyclerViewAdapter adapter;
     private SharedPreferences preferences;
@@ -104,13 +108,17 @@ public class InformationFragment extends Fragment {
     //UPDATE UI
     //---------------------------------------------------
     private void updateUi(Place place) {
-        managerOfPlaceTextView.setText(place.getAuthor());
-        creationDateTextView.setText(place.getCreationDate());
-        if (place.getStatus() == 0) {
+        if (place.getDateOfSale() == null) {
+            layoutDateOfSale.setVisibility(View.GONE);
             statusTextView.setText("Available");
         } else {
+            layoutDateOfSale.setVisibility(View.VISIBLE);
+            dateOfSaleTextView.setText(place.getDateOfSale());
             statusTextView.setText("Sold");
         }
+        managerOfPlaceTextView.setText(place.getAuthor());
+        creationDateTextView.setText(place.getCreationDate());
+
         if (place.getDescription() != null) {
             descriptionTextView.setText(place.getDescription());
         } else {

@@ -18,7 +18,6 @@ public class Place {
     private long surface;
     private String type;
     private long price;
-    private int status;
     private String creationDate;
     private String dateOfSale;
     private String author;
@@ -28,7 +27,7 @@ public class Place {
 
     }
 
-    //constructor with date of sale
+  /*  //constructor with date of sale
     public Place(int nbrOfRooms, int nbrOfBathrooms, int nbrOfBedrooms, String type, long price,
                  int status, String creationDate, String dateOfSale, String author, String description, long surface) {
         this.nbrOfRooms = nbrOfRooms;
@@ -36,7 +35,19 @@ public class Place {
         this.nbrOfBedrooms = nbrOfBedrooms;
         this.type = type;
         this.price = price;
-        this.status = status;
+        this.creationDate = creationDate;
+        this.dateOfSale = dateOfSale;
+        this.author = author;
+        this.description = description;
+        this.surface = surface;
+    }*/
+
+    public Place(int nbrOfRooms, int nbrOfBathrooms, int nbrOfBedrooms, String type, long price, String creationDate, String dateOfSale, String author, String description, long surface) {
+        this.nbrOfRooms = nbrOfRooms;
+        this.nbrOfBathrooms = nbrOfBathrooms;
+        this.nbrOfBedrooms = nbrOfBedrooms;
+        this.type = type;
+        this.price = price;
         this.creationDate = creationDate;
         this.dateOfSale = dateOfSale;
         this.author = author;
@@ -44,7 +55,7 @@ public class Place {
         this.surface = surface;
     }
 
-    //constructor without date of sale
+    /*//constructor without date of sale
     public Place(int nbrOfRooms, int nbrOfBathrooms, int nbrOfBedrooms, String type, long price,
                  int status, String creationDate, String author, String description, long surface) {
         this.nbrOfRooms = nbrOfRooms;
@@ -57,7 +68,7 @@ public class Place {
         this.author = author;
         this.description = description;
         this.surface = surface;
-    }
+    }*/
 
     //----------------------------------
     //GETTERS
@@ -87,9 +98,9 @@ public class Place {
         return price;
     }
 
-    public int getStatus() {
+    /*public int getStatus() {
         return status;
-    }
+    }*/
 
     public String getCreationDate() {
         return creationDate;
@@ -139,9 +150,9 @@ public class Place {
         this.price = price;
     }
 
-    public void setStatus(int status) {
+    /*public void setStatus(int status) {
         this.status = status;
-    }
+    }*/
 
     public void setCreationDate(String creationDate) {
         this.creationDate = creationDate;

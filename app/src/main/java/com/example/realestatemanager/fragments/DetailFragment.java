@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import com.daimajia.slider.library.SliderLayout;
 import com.daimajia.slider.library.SliderTypes.BaseSliderView;
+import com.daimajia.slider.library.SliderTypes.DefaultSliderView;
 import com.daimajia.slider.library.SliderTypes.TextSliderView;
 import com.example.realestatemanager.R;
 import com.example.realestatemanager.activities.AddFormActivity;
@@ -115,6 +116,12 @@ public class DetailFragment extends Fragment {
             }
         });
         return view;
+    }
+
+    @Override
+    public void onStop() {
+        sliderLayout.stopAutoCycle();
+        super.onStop();
     }
 
     //----------------------------------------------
@@ -236,12 +243,12 @@ public class DetailFragment extends Fragment {
 
                 }
                 for (String name : file_maps.keySet()) {
-                    TextSliderView textSliderView = new TextSliderView(getContext());
+                    DefaultSliderView sliderView = new DefaultSliderView(getContext());
                     // initialize a SliderLayout
-                    textSliderView
+                   sliderView
                             .image(file_maps.get(name));
 
-                    sliderLayout.addSlider(textSliderView);
+                    sliderLayout.addSlider(sliderView);
                 }
             }
         });

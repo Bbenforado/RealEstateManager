@@ -106,6 +106,7 @@ public class AddFormActivity extends AppCompatActivity {
     public static final String APP_PREFERENCES = "appPreferences";
     public static final String SWITCH_BUTTON_MODE = "switchButtonMode";
     public static final String STATUS_FORM_ACTIVITY = "statusFormActivity";
+    public static final String DATE_OF_SALE = "dateOfSale";
     public static final String USER_NAME = "userName";
     private static final String PLACE_ID = "placeId";
     private PlaceViewModel placeViewModel;
@@ -176,6 +177,12 @@ public class AddFormActivity extends AppCompatActivity {
         } else {
             displayRealEstateManagerName();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        preferences.edit().putString(DATE_OF_SALE, null).apply();
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -624,9 +631,11 @@ public class AddFormActivity extends AppCompatActivity {
                     if ((month+1) < currentMonth) {
                         Toast.makeText(getApplicationContext(), "ok", Toast.LENGTH_SHORT).show();
                         saleDateButton.setText(dayOfMonth + "/" + newMonth + "/" + year);
+                        preferences.edit().putString(DATE_OF_SALE, dayOfMonth +"/"+ newMonth +  "/" + year).apply();
                     } else if ((month+1) == currentMonth) {
                         if (dayOfMonth <= currentDay) {
                             saleDateButton.setText(dayOfMonth + "/" + newMonth + "/" + year);
+                            preferences.edit().putString(DATE_OF_SALE, dayOfMonth +"/"+ newMonth +  "/" + year).apply();
                         } else {
                             Toast.makeText(getApplicationContext(), "not ok", Toast.LENGTH_SHORT).show();
                         }
@@ -681,13 +690,11 @@ public class AddFormActivity extends AppCompatActivity {
         Place place;
         if (TextUtils.isEmpty(saleDateButton.getText())) {
             //is available
-            int status = 0;
-            place = new Place(nbrOfRooms, nbrOfBathrooms, nbrOfBedrooms, type, price, status, date, author, description, surface);
+            place = new Place(nbrOfRooms, nbrOfBathrooms, nbrOfBedrooms, type, price, date, null, author, description, surface);
         } else {
             //if sold
-            int status = 1;
-            String saleDate = saleDateButton.getText().toString();
-            place = new Place(nbrOfRooms, nbrOfBathrooms, nbrOfBedrooms, type, price, status, date, saleDate, author, description, surface);
+            String saleDate = preferences.getString(DATE_OF_SALE, null);
+            place = new Place(nbrOfRooms, nbrOfBathrooms, nbrOfBedrooms, type, price, date, saleDate, author, description, surface);
         }
         return placeViewModel.createPlace(place);
     }
@@ -698,6 +705,7 @@ public class AddFormActivity extends AppCompatActivity {
         int nbrOfBathrooms;
         int nbrOfBedrooms;
         String description;
+        String dateOfSale;
         String type = typeOfPlaceButton.getText().toString();
         place.setType(type);
         long price = Long.parseLong(editTextPrice.getText().toString());
@@ -723,12 +731,17 @@ public class AddFormActivity extends AppCompatActivity {
             description = editTextDescription.getText().toString();
             place.setDescription(description);
         }
-        int status = preferences.getInt(SWITCH_BUTTON_MODE, -1);
-        place.setStatus(status);
+        /*int status = preferences.getInt(SWITCH_BUTTON_MODE, -1);
+        place.setStatus(status);*/
+
+        if (preferences.getString(DATE_OF_SALE, null) != null) {
+            place.setDateOfSale(preferences.getString(DATE_OF_SALE, null));
+        }
+
         String author = editTextAuthor.getText().toString();
         place.setAuthor(author);
-        String date = new Date().toString();
-        place.setCreationDate(date);
+        /*String date = new Date().toString();
+        place.setCreationDate(date);*/
         placeViewModel.updatePlace(place);
     }
 
