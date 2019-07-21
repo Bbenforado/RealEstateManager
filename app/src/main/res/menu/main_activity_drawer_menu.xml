@@ -10,6 +10,11 @@
             android:title="Settings"
             android:icon="@drawable/ic_setting_toolbar"/>
 
+        <item
+            android:id="@+id/map"
+            android:title="Map view"
+            android:icon="@drawable/ic_map"/>
+
     </group>
 
 </menu>

@@ -1,10 +1,7 @@
 package com.example.realestatemanager;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,26 +10,20 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.FragmentManager;
 
-import com.example.realestatemanager.activities.AddFormActivity;
-import com.example.realestatemanager.activities.DetailActivity;
+import com.example.realestatemanager.activities.MapActivity;
 import com.example.realestatemanager.activities.SettingsActivity;
 import com.example.realestatemanager.fragments.DetailFragment;
 import com.example.realestatemanager.fragments.ListFragment;
 import com.facebook.stetho.Stetho;
-import com.google.android.material.button.MaterialButton;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.textfield.TextInputEditText;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
     @Nullable
@@ -118,6 +109,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.settings:
                 Intent settingIntent = new Intent(this, SettingsActivity.class);
                 startActivity(settingIntent);
+                break;
+            case R.id.map:
+                //use internet check method here and if it s there, launch activity, else, toast message
+                Intent mapIntent = new Intent(this, MapActivity.class);
+                startActivity(mapIntent);
                 break;
             default:
                 break;

@@ -27,11 +27,15 @@ import com.example.realestatemanager.models.Address;
 import com.example.realestatemanager.models.Interest;
 import com.example.realestatemanager.models.Place;
 import com.example.realestatemanager.viewModels.PlaceViewModel;
+import com.google.android.material.button.MaterialButton;
 
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+
+import static com.example.realestatemanager.utils.Utils.convertDollarToEuro;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -62,9 +66,12 @@ public class InformationFragment extends Fragment {
     @BindView(R.id.complement_text_view_information) TextView complementTextView;
     @BindView(R.id.postal_code_and_city_text_view_information) TextView postalCodeAndCityTextView;
     @BindView(R.id.country_text_view_information) TextView countryTextView;
+    @BindView(R.id.text_view_price_detail_fragment) TextView priceTextView;
+    @BindView(R.id.material_convert_price_button) MaterialButton convertPriceButton;
     private PlaceViewModel viewModel;
     private DetailRecyclerViewAdapter adapter;
     private SharedPreferences preferences;
+    private long price;
 
     public InformationFragment() {
         // Required empty public constructor
@@ -93,6 +100,7 @@ public class InformationFragment extends Fragment {
             public void onChanged(Place place) {
                 updateUi(place);
                 configureRecyclerView();
+                price = place.getPrice();
             }
         });
         return result;
@@ -110,6 +118,21 @@ public class InformationFragment extends Fragment {
     }
 
     //--------------------------------------------------
+    //ACTIONS
+    //----------------------------------------------------
+    @OnClick(R.id.material_convert_price_button)
+    public void convertPrice() {
+        if (convertPriceButton.getText().toString().equals("Convert to euros")) {
+            int priceInEuros = convertDollarToEuro((int)price);
+            priceTextView.setText(String.valueOf(priceInEuros));
+            convertPriceButton.setText("Convert to dollars");
+        } else if (convertPriceButton.getText().toString().equals("Convert to dollars")) {
+            priceTextView.setText(String.valueOf(price));
+            convertPriceButton.setText("Convert to euros");
+        }
+    }
+
+    //--------------------------------------------------
     //UPDATE UI
     //---------------------------------------------------
     private void updateUi(Place place) {
@@ -120,9 +143,11 @@ public class InformationFragment extends Fragment {
             layoutDateOfSale.setVisibility(View.VISIBLE);
             dateOfSaleTextView.setText(place.getDateOfSale());
             statusTextView.setText("Sold");
+            statusTextView.setTextColor(getResources().getColor(R.color.red));
         }
         managerOfPlaceTextView.setText(place.getAuthor());
         creationDateTextView.setText(place.getCreationDate());
+        priceTextView.setText(String.valueOf(place.getPrice()));
 
         if (place.getDescription() != null) {
             descriptionTextView.setText(place.getDescription());

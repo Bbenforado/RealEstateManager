@@ -41,6 +41,8 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.example.realestatemanager.utils.Utils.getLocationFromAddress;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -120,30 +122,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
 
     }
 
-    public LatLng getLocationFromAddress(Context context,String strAddress) {
 
-        Geocoder coder = new Geocoder(context);
-        List<Address> address;
-        LatLng latLng = null;
-
-        try {
-            // May throw an IOException
-            address = coder.getFromLocationName(strAddress, 5);
-            if (address == null) {
-                return null;
-            }
-            if (address.size() != 0) {
-                Address location = address.get(0);
-                latLng = new LatLng(location.getLatitude(), location.getLongitude());
-            }
-
-        } catch (IOException ex) {
-
-            ex.printStackTrace();
-        }
-
-        return latLng;
-    }
 
 
     @Override
