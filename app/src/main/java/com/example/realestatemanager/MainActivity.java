@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
@@ -19,11 +20,14 @@ import com.example.realestatemanager.activities.MapActivity;
 import com.example.realestatemanager.activities.SettingsActivity;
 import com.example.realestatemanager.fragments.DetailFragment;
 import com.example.realestatemanager.fragments.ListFragment;
+import com.example.realestatemanager.utils.Utils;
 import com.facebook.stetho.Stetho;
 import com.google.android.material.navigation.NavigationView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static com.example.realestatemanager.utils.Utils.isInternetAvailable;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
     @Nullable
@@ -112,8 +116,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.map:
                 //use internet check method here and if it s there, launch activity, else, toast message
-                Intent mapIntent = new Intent(this, MapActivity.class);
-                startActivity(mapIntent);
+                if (isInternetAvailable(this)) {
+                    Intent mapIntent = new Intent(this, MapActivity.class);
+                    startActivity(mapIntent);
+                } else {
+                    Toast.makeText(this, "You don't have internet, you can't access to this screen", Toast.LENGTH_SHORT).show();
+                }
                 break;
             default:
                 break;

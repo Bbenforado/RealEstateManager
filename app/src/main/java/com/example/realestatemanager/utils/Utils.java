@@ -53,6 +53,7 @@ public class Utils {
      * @return
      */
     public static Boolean isInternetAvailable(Context context){
+        System.out.println("coming here is internet");
         WifiManager wifi = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
         return wifi.isWifiEnabled();
     }
@@ -79,24 +80,27 @@ public class Utils {
     }
 
     public static LatLng getLocationFromAddress(Context context, String strAddress) {
-
+        System.out.println("get location from address");
         Geocoder coder = new Geocoder(context);
         List<Address> address;
         LatLng latLng = null;
 
         try {
             // May throw an IOException
+            System.out.println("come here or not");
             address = coder.getFromLocationName(strAddress, 5);
             if (address == null) {
+                System.out.println("return null");
                 return null;
             }
             if (address.size() != 0) {
+                System.out.println("ok ");
                 Address location = address.get(0);
                 latLng = new LatLng(location.getLatitude(), location.getLongitude());
             }
 
         } catch (IOException ex) {
-
+            System.out.println("else here? + " + ex);
             ex.printStackTrace();
         }
 

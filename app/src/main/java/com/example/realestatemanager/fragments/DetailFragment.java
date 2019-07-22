@@ -87,6 +87,7 @@ public class DetailFragment extends Fragment {
     //private DetailRecyclerViewAdapter adapter;
     private String[] titles = {"Information", "View location"};
     private int[] iconTabLayout = {R.drawable.house_white, R.drawable.ic_address_white};
+    private DefaultSliderView sliderView;
 
     @BindView(R.id.viewpager) ViewPager viewPager;
     @BindView(R.id.main_tabs) TabLayout tabLayout;
@@ -106,6 +107,7 @@ public class DetailFragment extends Fragment {
         ButterKnife.bind(this, view);
         configureViewpagerAndTabs();
         configureViewModel();
+        displayGenericPhoto();
         long placeId = preferences.getLong(PLACE_ID, -1);
         viewModel.getPlace(placeId).observe(this, new Observer<Place>() {
             @Override
@@ -122,6 +124,24 @@ public class DetailFragment extends Fragment {
     public void onStop() {
         sliderLayout.stopAutoCycle();
         super.onStop();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        System.out.println("on start");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        System.out.println("on resume");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        System.out.println("on pause");
     }
 
     //----------------------------------------------
@@ -143,12 +163,6 @@ public class DetailFragment extends Fragment {
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(PlaceViewModel.class);
     }
 
-    /*private void configureRecyclerView() {
-        this.adapter = new DetailRecyclerViewAdapter();
-        this.recyclerViewInterest.setAdapter(adapter);
-        recyclerViewInterest.setLayoutManager(new LinearLayoutManager(getContext()));
-    }*/
-
     private void configureViewpagerAndTabs() {
         System.out.println("configure tabs");
         viewPager.setAdapter(new DetailFragmentAdapter(getActivity().getSupportFragmentManager(), titles) {
@@ -158,74 +172,18 @@ public class DetailFragment extends Fragment {
             tabLayout.getTabAt(i).setIcon(iconTabLayout[i]);
         }
         tabLayout.setTabMode(TabLayout.MODE_FIXED);
-        System.out.println("viewpager = " + viewPager.getHeight());
-        System.out.println("scroll = " + scrollView.getHeight());
-        System.out.println("linear = " + linearLayout.getHeight());
-        System.out.println("tab = " + tabLayout.getHeight());
     }
-
-    //--------------------------------------------------
-    //UPDATE UI
-    //---------------------------------------------------
-    /*private void updateUi(Place place) {
-        displayPhotosOfPlace(place.getId());
-        managerOfPlaceTextView.setText(place.getAuthor());
-        creationDateTextView.setText(place.getCreationDate());
-        if (place.getStatus() == 0) {
-            statusTextView.setText("Available");
-        } else {
-            statusTextView.setText("Sold");
-        }
-        typeOfPlaceTextView.setText(place.getType());
-        priceTextView.setText(String.valueOf(place.getPrice()));
-        if (place.getDescription() != null) {
-            descriptionTextView.setText(place.getDescription());
-        } else {
-            descriptionTextView.setText("Not informed yet");
-        }
-        if (place.getSurface() != 0) {
-            surfaceTextView.setText(String.valueOf(place.getSurface()));
-        } else {
-            surfaceTextView.setText("Not informed yet");
-        }
-        if (place.getNbrOfRooms() != 0) {
-            nbrOfRoomsTextView.setText(String.valueOf(place.getNbrOfRooms()));
-        } else {
-            nbrOfRoomsTextView.setText("Not informed yet");
-        }
-        if (place.getNbrOfBathrooms() != 0) {
-            nbrOfBathroomsTextView.setText(String.valueOf(place.getNbrOfBathrooms()));
-        } else {
-            nbrOfBathroomsTextView.setText("Not informed yet");
-        }
-        if (place.getNbrOfBedrooms() != 0) {
-            nbrOfBedroomsTextView.setText(String.valueOf(place.getNbrOfBedrooms()));
-        } else {
-            nbrOfBedroomsTextView.setText("Not informed yet");
-        }
-        getInterests(place.getId());
-    }*/
-
-    //--------------------------------------------
-    //METHODS
-    //----------------------------------------------
-    /*private void getInterests(long placeId) {
-        viewModel.getInterests(placeId).observe(this, this::updateInterestsList);
-    }
-
-    private void updateInterestsList(List<Interest> interests) {
-        this.adapter.updateInterestData(interests);
-    }*/
-
-    /*private void getPhotos(long placeId) {
-        viewModel.getPhotosForAPlace(placeId).observe(this, this::updatePhotosList);
-    }*/
-
-    /*private void updatePhotosList(List<Photo> photos) {
-
-    }*/
-
     //----------------------------------------------------
+
+    private void displayGenericPhoto() {
+        sliderView = new DefaultSliderView(getContext());
+        // initialize a SliderLayout
+        sliderView.image(R.drawable.no_image);
+        sliderView.setScaleType(BaseSliderView.ScaleType.Fit);
+
+        sliderLayout.addSlider(sliderView);
+    }
+
     private void displayPhotosOfPlace(long placeId) {
 
         viewModel.getPhotosForAPlace(placeId).observe(this, new Observer<List<Photo>>() {
@@ -234,7 +192,7 @@ public class DetailFragment extends Fragment {
 
                 HashMap<String, File> file_maps = new HashMap<String, File>();
 
-                for (int i=0; i<photos.size(); i++) {
+                for (int i = 0; i < photos.size(); i++) {
 
                     String path = photos.get(i).getUri();
                     File file = new File(path);
@@ -243,11 +201,9 @@ public class DetailFragment extends Fragment {
 
                 }
                 for (String name : file_maps.keySet()) {
-                    DefaultSliderView sliderView = new DefaultSliderView(getContext());
-                    // initialize a SliderLayout
-                   sliderView
-                            .image(file_maps.get(name));
-
+                    sliderLayout.removeAllSliders();
+                    sliderView = new DefaultSliderView(getContext());
+                    sliderView.image(file_maps.get(name));
                     sliderLayout.addSlider(sliderView);
                 }
             }

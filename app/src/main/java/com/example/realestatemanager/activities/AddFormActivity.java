@@ -387,11 +387,11 @@ public class AddFormActivity extends AppCompatActivity {
     //----------------------------------------------
     //UPDATE UI
     //-----------------------------------------------
-    private void updateUi(List<Photo> photosOThePlace) {
+    /*private void updateUi(List<Photo> photosOThePlace) {
         //photoListForThePlace.addAll(photos);
         allPhotos.addAll(photosOThePlace);
         adapter.notifyDataSetChanged();
-    }
+    }*/
 
     private void displayRealEstateManagerName() {
         if (preferences.getString(USER_NAME, null) != null) {
@@ -466,11 +466,14 @@ public class AddFormActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 placeViewModel.deletePhoto(photo.getId());
-                long placeId = photo.getPlaceId();
+                long photoId = photo.getId();
 
-                //here i need to get the new list of picture and say to recycler view that data has changed
-
-               // adapter.notifyDataSetChanged();
+                for (int i = 0; i<allPhotos.size(); i++) {
+                    if (allPhotos.get(i).getId() == photoId) {
+                        allPhotos.remove(allPhotos.get(i));
+                    }
+                }
+               adapter.notifyDataSetChanged();
             }
         });
         AlertDialog dialog = builder.create();

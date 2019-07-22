@@ -179,8 +179,12 @@ public class InformationFragment extends Fragment {
             @Override
             public void onChanged(Address address) {
                 streetAddressTextView.setText(address.getStreetNumber() + " " + address.getStreetName());
-                if (!address.getComplement().equals("Not informed")) {
-                    complementTextView.setText(address.getComplement());
+                if (address.getComplement() != null) {
+                    if (!address.getComplement().equals("Not informed")) {
+                        complementTextView.setText(address.getComplement());
+                    } else {
+                        complementTextView.setVisibility(View.GONE);
+                    }
                 } else {
                     complementTextView.setVisibility(View.GONE);
                 }

@@ -106,7 +106,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                     if (latLng != null) {
                         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 16);
                         gmap.animateCamera(cameraUpdate);
-                        Marker marker = gmap.addMarker(new MarkerOptions()
+                        gmap.addMarker(new MarkerOptions()
                                     .position(latLng));
 
                     }else {

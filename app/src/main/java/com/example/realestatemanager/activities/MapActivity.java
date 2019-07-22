@@ -9,6 +9,8 @@ import androidx.lifecycle.ViewModelProviders;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
@@ -41,18 +43,22 @@ import butterknife.ButterKnife;
 import static com.example.realestatemanager.utils.Utils.formatLocation;
 import static com.example.realestatemanager.utils.Utils.getLocationFromAddress;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener {
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener, GoogleMap.OnMarkerClickListener {
 
     private GoogleMap googleMap;
     private static final int REQUEST_ID_ACCESS_COURSE_FINE_LOCATION = 100;
     private PlaceViewModel viewModel;
     private List<LatLng> latLngs;
+    private SharedPreferences preferences;
+    private static final String APP_PREFERENCES = "appPreferences";
+    private static final String PLACE_ID = "placeId";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         ButterKnife.bind(this);
+        preferences = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE);
         configureViewModel();
         latLngs = new ArrayList<>();
         SupportMapFragment map = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map_fragment_map_activity);
@@ -71,6 +77,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         });
 
         googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        googleMap.getUiSettings().setZoomControlsEnabled(true);
         try {
             googleMap.setMyLocationEnabled(true);
         }
@@ -78,6 +85,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             e.printStackTrace();
             return;
         }
+        googleMap.setOnMarkerClickListener(this);
 
     }
 
@@ -118,11 +126,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private void showMyLocation() {
         if (getUserLocation(this) == null) {
-            Toast.makeText(this, "location not found", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "location not found user", Toast.LENGTH_SHORT).show();
         } else {
-            //Location location = getUserLocation(this);
-            //String userLocation = formatLocation(location);
-
             Double userLat = getUserLocation(this).getLatitude();
             Double userLng = getUserLocation(this).getLongitude();
 
@@ -131,11 +136,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             float zoomLevel = 16.0f;
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoomLevel));
 
-            Marker marker;
+            /*Marker marker;
             marker = googleMap.addMarker(new MarkerOptions()
                     .position(latLng)
                     .title("user location"));
-            marker.showInfoWindow();
+            marker.setTag(-1);
+            marker.showInfoWindow();*/
             getAllAddresses(this);
         }
     }
@@ -149,32 +155,47 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         viewModel.getAddresses().observe(this, new Observer<List<Address>>() {
             @Override
             public void onChanged(List<Address> addresses) {
+                System.out.println("addresses size = " + addresses.size());
                 for(int i = 0; i<addresses.size(); i++) {
 
                     String finalAddress = addresses.get(i).getStreetNumber() + " " + addresses.get(i).getStreetName() + "," +
                             addresses.get(i).getCity() + "," + addresses.get(i).getPostalCode() + " " +
                             addresses.get(i).getCountry();
                     LatLng latLng = getLocationFromAddress(context, finalAddress);
+                    System.out.println("latlong = " + latLng);
                     latLngs.add(latLng);
+                    long placeId = addresses.get(i).getIdPlace();
+                    showPlaceOnMap(placeId, latLng);
                 }
-                showAllPlacesOnMap(latLngs);
+                //showAllPlacesOnMap(latLngs);
             }
         });
     }
 
-    private void showAllPlacesOnMap(List<LatLng> placesLatLngs) {
+    private void showPlaceOnMap(long id, LatLng latLng) {
+        if (latLng != null) {
+            System.out.println("come here show place on map");
+            CameraUpdateFactory.newLatLng(latLng);
+            Marker placeMarker = googleMap.addMarker(new MarkerOptions()
+            .position(latLng));
+            placeMarker.setTag(id);
+        } else {
+            Toast.makeText(this, "Location not found places", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+  /*  private void showAllPlacesOnMap(List<LatLng> placesLatLngs) {
         for (int i = 0; i<placesLatLngs.size(); i++) {
             if (placesLatLngs.get(i) != null) {
                 CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(placesLatLngs.get(i), 16);
                 googleMap.animateCamera(cameraUpdate);
-                Marker marker = googleMap.addMarker(new MarkerOptions()
+                googleMap.addMarker(new MarkerOptions()
                         .position(placesLatLngs.get(i)));
-
             } else {
                 Toast.makeText(this, "Location not found", Toast.LENGTH_SHORT).show();
             }
         }
-    }
+    }*/
 
     public Location getUserLocation(LocationListener listener) {
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
@@ -219,5 +240,20 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onProviderDisabled(String provider) {
 
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        long tag = (long) marker.getTag();
+
+        /*if (tag == -1) {
+            //users marker
+        } else {*/
+            preferences.edit().putLong(PLACE_ID, tag).apply();
+            Intent detailIntent = new Intent(this, DetailActivity.class);
+            startActivity(detailIntent);
+        //}
+
+        return false;
     }
 }
