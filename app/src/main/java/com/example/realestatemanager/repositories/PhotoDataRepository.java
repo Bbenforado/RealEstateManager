@@ -36,8 +36,8 @@ public class PhotoDataRepository {
     }
 
     //UPDATE
-    public void updatePhoto(Photo photo) {
-        photoDao.updatePhoto(photo);
+    public int updatePhoto(Photo photo) {
+        return photoDao.updatePhoto(photo);
     }
 
     //DELETE

@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -121,7 +122,7 @@ public class AddFormActivity extends AppCompatActivity {
     private String currentPhotoPath;
     private PhotoRecyclerViewAdapter adapter;
     private List<Photo> photoListForThePlace;
-    private String[] longClickFunctionality = {"Delete photo"};
+    private String[] longClickFunctionality = {"Delete photo", "Add description to photo", "Choose as main photo"};
     private List<Photo> allPhotos;
 
 
@@ -137,8 +138,7 @@ public class AddFormActivity extends AppCompatActivity {
         status = preferences.getInt(STATUS_FORM_ACTIVITY, -1);
         configureToolbar();
         photoList = new ArrayList<>();
-        configureOnClickRecyclerViewForAddActivity();
-        configureOnClickRecyclerView();
+
         configureViewModel();
         checkBoxes = Arrays.asList(checkBoxSchool, checkBoxMarketPlace, checkBoxPark, checkBoxHospital, checkBoxCinema, checkBoxTheater);
 
@@ -155,13 +155,6 @@ public class AddFormActivity extends AppCompatActivity {
                     completeFormWithData(place);
                 }
             });
-            //updateUi(allPhotos);
-            /*placeViewModel.getPhotosForAPlace(placeId).observe(this, new Observer<List<Photo>>() {
-                @Override
-                public void onChanged(List<Photo> photos) {
-                    updateUi(photos);
-                }
-            });*/
             placeViewModel.getAddress(placeId).observe(this, new Observer<Address>() {
                 @Override
                 public void onChanged(Address address) {
@@ -175,6 +168,8 @@ public class AddFormActivity extends AppCompatActivity {
                 }
             });
         } else {
+            configureRecyclerViewForAddActivity();
+            configureOnClickRecyclerView();
             displayRealEstateManagerName();
         }
     }
@@ -271,20 +266,14 @@ public class AddFormActivity extends AppCompatActivity {
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
             File imgFile = new  File(currentPhotoPath);
             if(imgFile.exists())            {
-                Toast.makeText(this, "file exists",Toast.LENGTH_SHORT).show();
                 Photo photo = new Photo(currentPhotoPath);
                 photoList.add(photo);
-                System.out.println("photo list = " + photoList);
                 if (status != 1) {
-                    System.out.println("here for camera and add");
                     adapter.notifyDataSetChanged();
                 } else {
-                    System.out.println("here for camera and edit");
-                    //allPhotos.addAll(photoList);
                     allPhotos.add(photo);
                     adapter.notifyDataSetChanged();
                 }
-
             }
         }
     }
@@ -305,7 +294,6 @@ public class AddFormActivity extends AppCompatActivity {
     private void configureRecyclerView(long placeId) {
         //final list of photos
         allPhotos = new ArrayList<>();
-
         //get the photos already saved for this place
         placeViewModel.getPhotosForAPlace(placeId).observe(this, new Observer<List<Photo>>() {
             @Override
@@ -320,7 +308,7 @@ public class AddFormActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayout.HORIZONTAL, false));
     }
 
-    private void configureOnClickRecyclerViewForAddActivity() {
+    private void configureRecyclerViewForAddActivity() {
         adapter = new PhotoRecyclerViewAdapter(photoList, Glide.with(this));
         this.recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayout.HORIZONTAL, false));
@@ -387,12 +375,6 @@ public class AddFormActivity extends AppCompatActivity {
     //----------------------------------------------
     //UPDATE UI
     //-----------------------------------------------
-    /*private void updateUi(List<Photo> photosOThePlace) {
-        //photoListForThePlace.addAll(photos);
-        allPhotos.addAll(photosOThePlace);
-        adapter.notifyDataSetChanged();
-    }*/
-
     private void displayRealEstateManagerName() {
         if (preferences.getString(USER_NAME, null) != null) {
             String realEstateManagerName = preferences.getString(USER_NAME, null);
@@ -465,19 +447,58 @@ public class AddFormActivity extends AppCompatActivity {
         builder.setItems(longClickFunctionality, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                placeViewModel.deletePhoto(photo.getId());
-                long photoId = photo.getId();
+                switch (which) {
+                    case 0:
+                        placeViewModel.deletePhoto(photo.getId());
+                        long photoId = photo.getId();
 
-                for (int i = 0; i<allPhotos.size(); i++) {
-                    if (allPhotos.get(i).getId() == photoId) {
-                        allPhotos.remove(allPhotos.get(i));
-                    }
+                        for (int i = 0; i < allPhotos.size(); i++) {
+                            if (allPhotos.get(i).getId() == photoId) {
+                                allPhotos.remove(allPhotos.get(i));
+                            }
+                        }
+                        adapter.notifyDataSetChanged();
+                        break;
+                    case 1:
+                        //display dialog with edit text to add description
+                        displayAddDescriptionDialog(photo);
+                        break;
+                    case 2:
+                        Toast.makeText(getApplicationContext(), "This photo is saved as main photo", Toast.LENGTH_SHORT).show();
+                        //here need to create the update method
+                        photo.setMainPhoto(true);
+                        placeViewModel.updatePhoto(photo);
+                        break;
+                        default:
+                            break;
                 }
-               adapter.notifyDataSetChanged();
             }
         });
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    private void displayAddDescriptionDialog(Photo photo) {
+        final androidx.appcompat.app.AlertDialog.Builder dialog = new androidx.appcompat.app.AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogLayout = inflater.inflate(R.layout.dialog_add_description, null);
+        final TextInputEditText description = dialogLayout.findViewById(R.id.text_edit_description_dialog);
+
+        dialog.setMessage("Add description:")
+                .setView(dialogLayout)
+                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        String descriptionOfPlace = description.getText().toString();
+                        //update photo with new description
+                        photo.setDescription(descriptionOfPlace);
+                        //now update photo with viewmodel method
+                        placeViewModel.updatePhoto(photo);
+                        System.out.println("all photos = " + allPhotos.size());
+                        Toast.makeText(getApplicationContext(), "Description added!", Toast.LENGTH_SHORT).show();
+                    }})
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 
     private File createImageFile() throws IOException {
@@ -496,7 +517,6 @@ public class AddFormActivity extends AppCompatActivity {
     }
 
     private void dispatchTakePictureIntent() {
-        System.out.println("dispatch picture");
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
 
@@ -533,13 +553,9 @@ public class AddFormActivity extends AppCompatActivity {
                 String path = getRealPathFromURI(uri);
                 Photo photo = new Photo(path);
                 photoList.add(photo);
-                System.out.println("photo list here in gallery = " + photoList);
                 if (status != 1) {
-                    System.out.println("here for pick gallery and add");
                     adapter.notifyDataSetChanged();
                 } else {
-                    System.out.println("here for pick gallery and edit");
-                    //allPhotos.addAll(photoList);
                     allPhotos.add(photo);
                     adapter.notifyDataSetChanged();
                 }
@@ -571,8 +587,7 @@ public class AddFormActivity extends AppCompatActivity {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
 
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
-        inboxStyle.setBigContentTitle("Notification sent");
-        inboxStyle.addLine(message);
+        inboxStyle.setBigContentTitle(message);
 
         String channelId = "fcm_default_channel";
 
@@ -629,7 +644,9 @@ public class AddFormActivity extends AppCompatActivity {
                 int currentYear = calendar.get(Calendar.YEAR);
                 int newMonth = month + 1;
                 //check if selected date is passed or not
-                if (year< currentYear) {
+                if (year < currentYear) {
+                    saleDateButton.setText(dayOfMonth + "/" + newMonth + "/" + year);
+                    preferences.edit().putString(DATE_OF_SALE, dayOfMonth +"/"+ newMonth +  "/" + year).apply();
                 } else if(year == currentYear) {
                     if ((month+1) < currentMonth) {
                         Toast.makeText(getApplicationContext(), "ok", Toast.LENGTH_SHORT).show();

@@ -33,6 +33,10 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceViewHold
     private Context context;
     private RequestManager glide;
 
+    public interface OnItemClickListener {
+        void onItemClick(Place item);
+    }
+
     public PlaceRecyclerViewAdapter(RequestManager glide) {
         this.placeList = new ArrayList<>();
         this.addressList = new ArrayList<>();

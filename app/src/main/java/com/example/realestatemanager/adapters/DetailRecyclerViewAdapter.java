@@ -22,7 +22,7 @@ import java.util.List;
 public class DetailRecyclerViewAdapter extends RecyclerView.Adapter<DetailViewHolder> {
 
     private List<Interest> interestList;
-    Context context;
+    private Context context;
 
     public DetailRecyclerViewAdapter() {
         this.interestList = new ArrayList<>();
@@ -34,10 +34,6 @@ public class DetailRecyclerViewAdapter extends RecyclerView.Adapter<DetailViewHo
         context = viewGroup.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.fragment_detail_recycler_view_interest_item, viewGroup, false);
-
-        /*ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(context);
-        PlaceViewModel viewModel = ViewModelProviders.of((FragmentActivity) context, viewModelFactory).get(PlaceViewModel.class);*/
-
         return new DetailViewHolder(view);
     }
 

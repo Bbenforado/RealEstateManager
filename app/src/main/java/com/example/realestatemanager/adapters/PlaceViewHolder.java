@@ -81,8 +81,9 @@ public class PlaceViewHolder extends RecyclerView.ViewHolder {
             //get the main photo
             if (photos.get(i).isMainPhoto()) {
                 return photos.get(i);
+            }else {
+                return photos.get(0);
             }
         }
-    }
-*/
+    }*/
 }

@@ -40,13 +40,18 @@ public class SettingsActivity extends AppCompatActivity {
         preferences = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE);
 
         configureToolbar();
-        if (preferences.getString(USER_NAME, null) == null) {
-            ConnectionFragment fragment = new ConnectionFragment();
+        if (preferences.getString(USER_NAME, null) != null) {
+         /*   ConnectionFragment fragment = new ConnectionFragment();
             showFragment(fragment);
-        } else {
+            if (!fragment.isVisible()) {
+                displayInfo();
+            }
+        } else {*/
             displayInfo();
         }
     }
+
+
 
     //----------------------------------------
     //ACTIONS
@@ -65,12 +70,12 @@ public class SettingsActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
-    private void showFragment(Fragment fragment) {
+    /*private void showFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.content, fragment)
                 .commit();
-    }
+    }*/
 
     //------------------------------------------
     private void displayInfo() {

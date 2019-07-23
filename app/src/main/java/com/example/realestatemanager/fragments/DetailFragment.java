@@ -18,9 +18,11 @@ import androidx.viewpager.widget.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.daimajia.slider.library.SliderLayout;
 import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.daimajia.slider.library.SliderTypes.DefaultSliderView;
@@ -28,6 +30,7 @@ import com.daimajia.slider.library.SliderTypes.TextSliderView;
 import com.example.realestatemanager.R;
 import com.example.realestatemanager.activities.AddFormActivity;
 import com.example.realestatemanager.adapters.DetailFragmentAdapter;
+import com.example.realestatemanager.adapters.DetailPhotoRecyclerViewAdapter;
 import com.example.realestatemanager.adapters.DetailRecyclerViewAdapter;
 import com.example.realestatemanager.adapters.PlaceRecyclerViewAdapter;
 import com.example.realestatemanager.injections.Injection;
@@ -56,26 +59,12 @@ public class DetailFragment extends Fragment {
     //----------------------------------------------
     //BIND VIEWS
     //------------------------------------------------
- /*   @BindView(R.id.text_view_type_of_place_detail_fragment)
-    TextView typeOfPlaceTextView;
-    @BindView(R.id.text_view_price_detail_fragment)
-    TextView priceTextView;
-    @BindView(R.id.text_view_surface_detail_fragment)
-    TextView surfaceTextView;
-    @BindView(R.id.text_view_nbr_rooms_detail_fragment)
-    TextView nbrOfRoomsTextView;
-    @BindView(R.id.text_view_nbr_bathrooms_detail_fragment)
-    TextView nbrOfBathroomsTextView;
-    @BindView(R.id.text_view_nbr_bedrooms_detail_fragment)
-    TextView nbrOfBedroomsTextView;
-    @BindView(R.id.text_view_description_detail_fragment)
-    TextView descriptionTextView;*/
     @BindView(R.id.edit_floating_action_button_detail_fragment)
     FloatingActionButton editFloatingActionButton;
     //@BindView(R.id.recycler_view_detail_interest)
     //RecyclerView recyclerViewInterest;
-    @BindView(R.id.slider)
-    SliderLayout sliderLayout;
+    /*@BindView(R.id.slider)
+    SliderLayout sliderLayout;*/
  /*   @BindView(R.id.status_text_view_detail_fragment) TextView statusTextView;
     @BindView(R.id.real_estate_manager_text_view_detail_fragment) TextView managerOfPlaceTextView;
     @BindView(R.id.creation_date_detail_text_view) TextView creationDateTextView;*/
@@ -88,12 +77,16 @@ public class DetailFragment extends Fragment {
     private String[] titles = {"Information", "View location"};
     private int[] iconTabLayout = {R.drawable.house_white, R.drawable.ic_address_white};
     private DefaultSliderView sliderView;
+    private DetailPhotoRecyclerViewAdapter adapter;
 
     @BindView(R.id.viewpager) ViewPager viewPager;
     @BindView(R.id.main_tabs) TabLayout tabLayout;
     @BindView(R.id.nested_scroll_view)
     NestedScrollView scrollView;
     @BindView(R.id.layout) LinearLayout linearLayout;
+    @BindView(R.id.recycler_view_detail_photos) RecyclerView recyclerViewPhotos;
+    @BindView(R.id.image_view_detail)
+    ImageView imageViewPhoto;
 
     public DetailFragment() {
         // Required empty public constructor
@@ -107,22 +100,24 @@ public class DetailFragment extends Fragment {
         ButterKnife.bind(this, view);
         configureViewpagerAndTabs();
         configureViewModel();
-        displayGenericPhoto();
+        configureRecyclerView();
+        //displayGenericPhoto();
+
         long placeId = preferences.getLong(PLACE_ID, -1);
-        viewModel.getPlace(placeId).observe(this, new Observer<Place>() {
+        getPhotos(placeId);
+        /*viewModel.getPlace(placeId).observe(this, new Observer<Place>() {
             @Override
             public void onChanged(Place place) {
-                //updateUi(place);
-                //configureRecyclerView();
-                displayPhotosOfPlace(placeId);
+                //displayPhotosOfPlace(placeId);
+
             }
-        });
+        });*/
         return view;
     }
 
     @Override
     public void onStop() {
-        sliderLayout.stopAutoCycle();
+        //sliderLayout.stopAutoCycle();
         super.onStop();
     }
 
@@ -164,7 +159,6 @@ public class DetailFragment extends Fragment {
     }
 
     private void configureViewpagerAndTabs() {
-        System.out.println("configure tabs");
         viewPager.setAdapter(new DetailFragmentAdapter(getActivity().getSupportFragmentManager(), titles) {
         });
         tabLayout.setupWithViewPager(viewPager);
@@ -173,9 +167,31 @@ public class DetailFragment extends Fragment {
         }
         tabLayout.setTabMode(TabLayout.MODE_FIXED);
     }
-    //----------------------------------------------------
 
-    private void displayGenericPhoto() {
+    private void configureRecyclerView() {
+        this.adapter = new DetailPhotoRecyclerViewAdapter(Glide.with(this));
+        this.recyclerViewPhotos.setAdapter(adapter);
+        recyclerViewPhotos.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayout.HORIZONTAL, false));
+    }
+
+    private void getPhotos(long placeId) {
+        viewModel.getPhotosForAPlace(placeId).observe(this, this::updatePhotoList);
+    }
+
+    private void updatePhotoList(List<Photo> photos) {
+        if (photos.size() > 0) {
+            this.adapter.updatePhotoData(photos);
+            recyclerViewPhotos.setVisibility(View.VISIBLE);
+            imageViewPhoto.setVisibility(View.GONE);
+        } else {
+            recyclerViewPhotos.setVisibility(View.GONE);
+            imageViewPhoto.setVisibility(View.VISIBLE);
+            imageViewPhoto.setImageResource(R.drawable.no_image);
+        }
+    }
+
+    //----------------------------------------------------
+    /*private void displayGenericPhoto() {
         sliderView = new DefaultSliderView(getContext());
         // initialize a SliderLayout
         sliderView.image(R.drawable.no_image);
@@ -208,5 +224,5 @@ public class DetailFragment extends Fragment {
                 }
             }
         });
-    }
+    }*/
 }

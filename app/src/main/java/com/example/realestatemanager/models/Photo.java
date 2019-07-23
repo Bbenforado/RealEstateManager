@@ -14,11 +14,8 @@ public class Photo {
     private String uri;
     private long placeId;
     private boolean isMainPhoto;
+    private String description;
 
-    /*public Photo(String uri, long placeId) {
-        this.uri = uri;
-        this.placeId = placeId;
-    }*/
 
     public Photo(String uri) {
         this.uri = uri;
@@ -54,5 +51,13 @@ public class Photo {
 
     public void setPlaceId(long placeId) {
         this.placeId = placeId;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

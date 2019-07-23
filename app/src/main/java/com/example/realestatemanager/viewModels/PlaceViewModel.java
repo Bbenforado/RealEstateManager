@@ -165,6 +165,25 @@ public class PlaceViewModel extends ViewModel {
         return photoDataSource.getPhotosForAPlace(placeId);
     }
 
+    public void updatePhoto(Photo photo) {
+        /*Callable<Integer> insertCallable = () -> photoDataSource.updatePhoto(photo);
+        int rowId = 0;
+
+        ExecutorService executorService = Executors.newFixedThreadPool(10);
+        Future<Integer> future = executorService.submit(insertCallable);
+        try {
+            rowId = future.get();
+        } catch (InterruptedException e1) {
+            e1.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return rowId;*/
+        executor.execute(() -> {
+            photoDataSource.updatePhoto(photo);
+        });
+    }
+
     public void deletePhoto(long photoId) {
         executor.execute(() -> {
             photoDataSource.deletePhoto(photoId);

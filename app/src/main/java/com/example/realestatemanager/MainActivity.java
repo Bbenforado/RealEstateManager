@@ -1,5 +1,6 @@
 package com.example.realestatemanager;
 
+import android.content.Context;
 import android.content.Intent;
 
 import androidx.annotation.Nullable;
@@ -10,16 +11,22 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.realestatemanager.activities.DetailActivity;
 import com.example.realestatemanager.activities.MapActivity;
 import com.example.realestatemanager.activities.SettingsActivity;
+import com.example.realestatemanager.adapters.DetailRecyclerViewAdapter;
+import com.example.realestatemanager.adapters.PlaceRecyclerViewAdapter;
 import com.example.realestatemanager.fragments.DetailFragment;
 import com.example.realestatemanager.fragments.ListFragment;
+import com.example.realestatemanager.models.Place;
 import com.example.realestatemanager.utils.Utils;
 import com.facebook.stetho.Stetho;
 import com.google.android.material.navigation.NavigationView;
@@ -39,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     SharedPreferences preferences;
     public static final String APP_PREFERENCES = "appPreferences";
     public static final String USER_NAME = "userName";
+    private static final String PLACE_ID = "placeId";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,25 +158,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void configureAndShowListFragment(){
-        listFragment = (ListFragment) getSupportFragmentManager().findFragmentById(R.id.frame_layout_main);
+        listFragment = (ListFragment) getSupportFragmentManager().findFragmentById(R.id.frame_layout_main_list);
         if (listFragment == null) {
             listFragment = new ListFragment();
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.frame_layout_main, listFragment)
+                    .add(R.id.frame_layout_main_list, listFragment)
                     .commit();
         }
     }
 
     private void configureAndShowDetailFragment(){
-        detailFragment = (DetailFragment) getSupportFragmentManager().findFragmentById(R.id.frame_layout_detail);
+        detailFragment = (DetailFragment) getSupportFragmentManager().findFragmentById(R.id.frame_layout_main_detail);
 
-        if (detailFragment == null && findViewById(R.id.frame_layout_detail) != null) {
+        if (detailFragment == null && findViewById(R.id.frame_layout_main_detail) != null) {
             detailFragment = new DetailFragment();
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.frame_layout_detail, detailFragment)
+                    .add(R.id.frame_layout_main_detail, detailFragment)
                     .commit();
         }
     }
 
+    public static void getDataFromFragment(SharedPreferences preferences, Context context, PlaceRecyclerViewAdapter placeAdapter, int position) {
+        Place place = placeAdapter.getPlace(position);
+        preferences.edit().putLong(PLACE_ID, place.getId()).apply();
+        Intent editIntent = new Intent(context, DetailActivity.class);
+        context.startActivity(editIntent);
+    }
 
 }
