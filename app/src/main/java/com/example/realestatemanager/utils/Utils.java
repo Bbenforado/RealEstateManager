@@ -1,21 +1,14 @@
 package com.example.realestatemanager.utils;
 
-import android.app.Activity;
+
 import android.content.Context;
 import android.location.Address;
-import android.location.Criteria;
+
 import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
+
 import android.net.wifi.WifiManager;
-import android.widget.Toast;
 
-import androidx.lifecycle.ViewModelProviders;
-
-import com.example.realestatemanager.injections.Injection;
-import com.example.realestatemanager.injections.ViewModelFactory;
-import com.example.realestatemanager.viewModels.PlaceViewModel;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.IOException;
@@ -53,7 +46,9 @@ public class Utils {
      * @return
      */
     public static Boolean isInternetAvailable(Context context){
+
         System.out.println("coming here is internet");
+
         WifiManager wifi = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
         return wifi.isWifiEnabled();
     }
@@ -80,27 +75,26 @@ public class Utils {
     }
 
     public static LatLng getLocationFromAddress(Context context, String strAddress) {
+
         System.out.println("get location from address");
+
         Geocoder coder = new Geocoder(context);
         List<Address> address;
         LatLng latLng = null;
 
         try {
             // May throw an IOException
-            System.out.println("come here or not");
+
             address = coder.getFromLocationName(strAddress, 5);
             if (address == null) {
-                System.out.println("return null");
                 return null;
             }
             if (address.size() != 0) {
-                System.out.println("ok ");
                 Address location = address.get(0);
                 latLng = new LatLng(location.getLatitude(), location.getLongitude());
             }
 
         } catch (IOException ex) {
-            System.out.println("else here? + " + ex);
             ex.printStackTrace();
         }
 

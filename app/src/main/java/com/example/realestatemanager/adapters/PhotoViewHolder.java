@@ -11,8 +11,6 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.realestatemanager.R;
 import com.example.realestatemanager.models.Photo;
 
-import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -27,7 +25,9 @@ public class PhotoViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void updateUi(Photo photo, RequestManager glide) {
+
         System.out.println("update ui holder photo");
+
         String image = photo.getUri();
         glide.load(image).apply(RequestOptions.noTransformation()).into(imageView);
     }

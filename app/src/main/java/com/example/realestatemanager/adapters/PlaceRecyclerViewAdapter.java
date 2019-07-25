@@ -33,9 +33,9 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceViewHold
     private Context context;
     private RequestManager glide;
 
-    public interface OnItemClickListener {
+    /*public interface OnItemClickListener {
         void onItemClick(Place item);
-    }
+    }*/
 
     public PlaceRecyclerViewAdapter(RequestManager glide) {
         this.placeList = new ArrayList<>();
@@ -50,9 +50,6 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceViewHold
         context = viewGroup.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.fragment_list_item, viewGroup, false);
-
-        /*ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(context);
-        viewModel = ViewModelProviders.of((FragmentActivity) context, viewModelFactory).get(PlaceViewModel.class);*/
         return new PlaceViewHolder(view);
     }
 

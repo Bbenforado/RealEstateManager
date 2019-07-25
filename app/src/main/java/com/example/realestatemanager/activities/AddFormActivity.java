@@ -71,8 +71,6 @@ import pub.devrel.easypermissions.EasyPermissions;
 
 public class AddFormActivity extends AppCompatActivity {
 
-
-
     //----------------------------------
     //BIND VIEWS
     //------------------------------------
@@ -105,7 +103,7 @@ public class AddFormActivity extends AppCompatActivity {
     private String type;
     private SharedPreferences preferences;
     public static final String APP_PREFERENCES = "appPreferences";
-    public static final String SWITCH_BUTTON_MODE = "switchButtonMode";
+    //public static final String SWITCH_BUTTON_MODE = "switchButtonMode";
     public static final String STATUS_FORM_ACTIVITY = "statusFormActivity";
     public static final String DATE_OF_SALE = "dateOfSale";
     public static final String USER_NAME = "userName";
@@ -210,10 +208,10 @@ public class AddFormActivity extends AppCompatActivity {
                         }
                         //create address
                         createAddress(id);
-                        sendNotification("Place created");
+                        sendNotification(this.getString(R.string.place_created));
                         launchMainActivity();
                     } else {
-                        Toast.makeText(this, "You have to enter at least a price, a type of place, an address and the real estate manager in charge of this place!",
+                        Toast.makeText(this, getString(R.string.field_missing),
                                 Toast.LENGTH_LONG).show();
                     }
                 } else {
@@ -238,7 +236,7 @@ public class AddFormActivity extends AppCompatActivity {
                             updateAddress(address);
                         }
                     });
-                    sendNotification("Place updated");
+                    sendNotification(this.getString(R.string.place_updated));
                     //return to main activity
                     launchMainActivity();
 
@@ -284,9 +282,9 @@ public class AddFormActivity extends AppCompatActivity {
     private void configureToolbar() {
         setSupportActionBar(toolbar);
         if (status == 1) {
-            getSupportActionBar().setTitle("Edit place");
+            getSupportActionBar().setTitle(getString(R.string.toolbar_title_edit));
         } else {
-            getSupportActionBar().setTitle("Add a new place");
+            getSupportActionBar().setTitle(getString(R.string.toolbar_title_add));
         }
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
@@ -343,10 +341,10 @@ public class AddFormActivity extends AppCompatActivity {
     public void onClickAddFile() {
         if (!EasyPermissions.hasPermissions(this, PERMS)) {
             EasyPermissions.requestPermissions(this, getString(R.string.popup_title_permission_files_access), RC_IMAGE_PERMS, PERMS);
-            Toast.makeText(this, "Permissions granted", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.permissions_granted), Toast.LENGTH_SHORT).show();
             return;
         }
-        String[] wayToGetPicture = {"Pick from gallery", "Take from camera"};
+        String[] wayToGetPicture = {getString(R.string.way_to_get_photos_gallery), getString(R.string.way_to_get_photos_camera)};
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setItems(wayToGetPicture, new DialogInterface.OnClickListener() {
             @Override
@@ -390,27 +388,27 @@ public class AddFormActivity extends AppCompatActivity {
         if (place.getDescription() != null) {
             editTextDescription.setText(place.getDescription());
         } else {
-            editTextDescription.setText("Not informed yet");
+            editTextDescription.setText(getString(R.string.not_informed_yet));
         }
         if (place.getSurface() != 0) {
             editTextSurface.setText(String.valueOf(place.getSurface()));
         }else {
-            editTextSurface.setText("Not informed yet");
+            editTextSurface.setText(getString(R.string.not_informed_yet));
         }
         if (place.getNbrOfRooms() != 0) {
             editTextNbrOfRooms.setText(String.valueOf(place.getNbrOfRooms()));
         } else {
-            editTextNbrOfRooms.setText("Not informed yet");
+            editTextNbrOfRooms.setText(getString(R.string.not_informed_yet));
         }
         if (place.getNbrOfBathrooms() != 0) {
             editTextNbrOfBathrooms.setText(String.valueOf(place.getNbrOfBathrooms()));
         } else {
-            editTextNbrOfBathrooms.setText("Not informed yet");
+            editTextNbrOfBathrooms.setText(getString(R.string.not_informed_yet));
         }
         if (place.getNbrOfBedrooms() != 0) {
             editTextNbrOfBedrooms.setText(String.valueOf(place.getNbrOfBedrooms()));
         } else {
-            editTextNbrOfBedrooms.setText("Not informed yet");
+            editTextNbrOfBedrooms.setText(getString(R.string.not_informed_yet));
         }
     }
 
@@ -423,7 +421,7 @@ public class AddFormActivity extends AppCompatActivity {
         if (address.getComplement() != null) {
             editTextComplement.setText(address.getComplement());
         } else {
-            editTextComplement.setText("Not informed");
+            editTextComplement.setText(getString(R.string.not_informed));
         }
     }
 
@@ -464,8 +462,8 @@ public class AddFormActivity extends AppCompatActivity {
                         displayAddDescriptionDialog(photo);
                         break;
                     case 2:
-                        Toast.makeText(getApplicationContext(), "This photo is saved as main photo", Toast.LENGTH_SHORT).show();
-                        //here need to create the update method
+                        Toast.makeText(getApplicationContext(), getString(R.string.toast_message_main_photo), Toast.LENGTH_SHORT).show();
+
                         photo.setMainPhoto(true);
                         placeViewModel.updatePhoto(photo);
                         break;
@@ -484,9 +482,9 @@ public class AddFormActivity extends AppCompatActivity {
         View dialogLayout = inflater.inflate(R.layout.dialog_add_description, null);
         final TextInputEditText description = dialogLayout.findViewById(R.id.text_edit_description_dialog);
 
-        dialog.setMessage("Add description:")
+        dialog.setMessage(getString(R.string.title_dialog_add_description))
                 .setView(dialogLayout)
-                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                .setPositiveButton(getString(R.string.save), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         String descriptionOfPlace = description.getText().toString();
@@ -494,10 +492,12 @@ public class AddFormActivity extends AppCompatActivity {
                         photo.setDescription(descriptionOfPlace);
                         //now update photo with viewmodel method
                         placeViewModel.updatePhoto(photo);
+
                         System.out.println("all photos = " + allPhotos.size());
-                        Toast.makeText(getApplicationContext(), "Description added!", Toast.LENGTH_SHORT).show();
+
+                        Toast.makeText(getApplicationContext(), getString(R.string.toast_message_description_added), Toast.LENGTH_SHORT).show();
                     }})
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(getString(R.string.cancel), null)
                 .show();
     }
 
@@ -524,7 +524,7 @@ public class AddFormActivity extends AppCompatActivity {
             try {
                 photoFile = createImageFile();
             } catch (IOException ex) {
-                Toast.makeText(this, "Error occurred", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.toast_message_error_occurred), Toast.LENGTH_SHORT).show();
             }
             if (photoFile != null) {
                 Uri photoUri = FileProvider.getUriForFile(this,
@@ -561,7 +561,7 @@ public class AddFormActivity extends AppCompatActivity {
                 }
 
             } else {
-                Toast.makeText(this, "No image chosen", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.toast_message_no_image_chosen), Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -594,7 +594,7 @@ public class AddFormActivity extends AppCompatActivity {
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
                         .setSmallIcon(R.drawable.house)
-                        .setContentTitle("Real estate manager")
+                        .setContentTitle(getString(R.string.notification_title))
                         .setAutoCancel(true)
                         .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                         .setContentIntent(pendingIntent)
@@ -617,7 +617,7 @@ public class AddFormActivity extends AppCompatActivity {
 
     private void displayDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Choose a type of place: ");
+        builder.setTitle(getString(R.string.title_dialog_choose_type_of_place));
         builder.setItems(typesOfPlace, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -671,7 +671,8 @@ public class AddFormActivity extends AppCompatActivity {
     }
 
     private boolean paramsAreOk() {
-        return !TextUtils.isEmpty(editTextPrice.getText().toString()) && typeOfPlaceButton.getText().toString() != "Type of place" &&
+        return !TextUtils.isEmpty(editTextPrice.getText().toString()) &&
+                !typeOfPlaceButton.getText().toString().equals(getString(R.string.button_generic_text_type_of_place)) &&
                 !TextUtils.isEmpty(editTextAuthor.getText().toString()) && !TextUtils.isEmpty(editTextStreetNbr.getText().toString()) &&
                 !TextUtils.isEmpty(editTextStreetName.getText().toString()) && !TextUtils.isEmpty(editTextPostalCode.getText().toString()) &&
                 !TextUtils.isEmpty(editTextCity.getText().toString()) && !TextUtils.isEmpty(editTextCountry.getText().toString());
@@ -751,8 +752,6 @@ public class AddFormActivity extends AppCompatActivity {
             description = editTextDescription.getText().toString();
             place.setDescription(description);
         }
-        /*int status = preferences.getInt(SWITCH_BUTTON_MODE, -1);
-        place.setStatus(status);*/
 
         if (preferences.getString(DATE_OF_SALE, null) != null) {
             place.setDateOfSale(preferences.getString(DATE_OF_SALE, null));
@@ -760,8 +759,6 @@ public class AddFormActivity extends AppCompatActivity {
 
         String author = editTextAuthor.getText().toString();
         place.setAuthor(author);
-        /*String date = new Date().toString();
-        place.setCreationDate(date);*/
         placeViewModel.updatePlace(place);
     }
 

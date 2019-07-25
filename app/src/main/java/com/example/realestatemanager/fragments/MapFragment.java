@@ -48,22 +48,30 @@ import static com.example.realestatemanager.utils.Utils.getLocationFromAddress;
  */
 public class MapFragment extends Fragment implements OnMapReadyCallback{
 
-   // public static final String KEY_POSITION_MAP = "positionMap";
+    //-----------------------------------
+    //BIND VIEWS
+    //-------------------------------
     @BindView(R.id.map_view)
     MapView mapView;
-    private GoogleMap gmap;
+    //------------------------------------
+    //-----------------------------------------
     private static final String APP_PREFERENCES = "appPreferences";
     private static final String PLACE_ID = "placeId";
+    //-------------------------------------------
+    //-----------------------------------------------
     private SharedPreferences preferences;
     private PlaceViewModel viewModel;
     private long id;
+    private GoogleMap gmap;
 
     public MapFragment() {
         // Required empty public constructor
     }
 
     public static MapFragment newInstance(int position) {
+
         System.out.println("new instance frag 2");
+
         MapFragment fragment = new MapFragment();
         /*Bundle args = new Bundle();
         args.putInt(KEY_POSITION_MAP, position);
@@ -75,13 +83,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         System.out.println("on create map frag");
+
         View view = inflater.inflate(R.layout.fragment_map, container, false);
         preferences = getActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         ButterKnife.bind(this, view);
         configureViewModel();
         id = preferences.getLong(PLACE_ID, -1);
+
         System.out.println("place id in map frag = " + id);
+
         if (id != 0 && id != -1) {
             mapView.onCreate(savedInstanceState);
             mapView.getMapAsync(this);
@@ -112,16 +124,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                                     .position(latLng));
 
                     }else {
-                        Toast.makeText(getContext(), "Location not found", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), getString(R.string.toast_message_place_location_not_found), Toast.LENGTH_SHORT).show();
                     }
                 }
             });
         } else {
-            Toast.makeText(getContext(), "Address not found", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), getString(R.string.toast_message_address_not_found), Toast.LENGTH_SHORT).show();
         }
-
-
-
     }
 
 

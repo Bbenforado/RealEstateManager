@@ -1,12 +1,8 @@
 package com.example.realestatemanager.models;
 
-import android.content.pm.PackageManager;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
-
-import java.util.Date;
-
 @Entity(tableName = "places")
 public class Place {
 
@@ -27,21 +23,6 @@ public class Place {
 
     }
 
-  /*  //constructor with date of sale
-    public Place(int nbrOfRooms, int nbrOfBathrooms, int nbrOfBedrooms, String type, long price,
-                 int status, String creationDate, String dateOfSale, String author, String description, long surface) {
-        this.nbrOfRooms = nbrOfRooms;
-        this.nbrOfBathrooms = nbrOfBathrooms;
-        this.nbrOfBedrooms = nbrOfBedrooms;
-        this.type = type;
-        this.price = price;
-        this.creationDate = creationDate;
-        this.dateOfSale = dateOfSale;
-        this.author = author;
-        this.description = description;
-        this.surface = surface;
-    }*/
-
     public Place(int nbrOfRooms, int nbrOfBathrooms, int nbrOfBedrooms, String type, long price, String creationDate, String dateOfSale, String author, String description, long surface) {
         this.nbrOfRooms = nbrOfRooms;
         this.nbrOfBathrooms = nbrOfBathrooms;
@@ -54,21 +35,6 @@ public class Place {
         this.description = description;
         this.surface = surface;
     }
-
-    /*//constructor without date of sale
-    public Place(int nbrOfRooms, int nbrOfBathrooms, int nbrOfBedrooms, String type, long price,
-                 int status, String creationDate, String author, String description, long surface) {
-        this.nbrOfRooms = nbrOfRooms;
-        this.nbrOfBathrooms = nbrOfBathrooms;
-        this.nbrOfBedrooms = nbrOfBedrooms;
-        this.type = type;
-        this.price = price;
-        this.status = status;
-        this.creationDate = creationDate;
-        this.author = author;
-        this.description = description;
-        this.surface = surface;
-    }*/
 
     //----------------------------------
     //GETTERS
@@ -98,9 +64,6 @@ public class Place {
         return price;
     }
 
-    /*public int getStatus() {
-        return status;
-    }*/
 
     public String getCreationDate() {
         return creationDate;
@@ -149,10 +112,6 @@ public class Place {
     public void setPrice(long price) {
         this.price = price;
     }
-
-    /*public void setStatus(int status) {
-        this.status = status;
-    }*/
 
     public void setCreationDate(String creationDate) {
         this.creationDate = creationDate;

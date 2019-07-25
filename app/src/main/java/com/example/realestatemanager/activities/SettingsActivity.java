@@ -66,7 +66,7 @@ public class SettingsActivity extends AppCompatActivity {
     //---------------------------------
     private void configureToolbar() {
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Settings");
+        getSupportActionBar().setTitle(getString(R.string.toolbar_title_settings));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
@@ -89,9 +89,9 @@ public class SettingsActivity extends AppCompatActivity {
         final TextInputEditText lastName = dialogLayout.findViewById(R.id.text_edit_dialog_last_name);
         TextInputEditText firstName = dialogLayout.findViewById(R.id.text_edit_dialog_first_name);
 
-        dialog.setMessage("Enter new name")
+        dialog.setMessage(getString(R.string.dialog_title_enter_new_name))
                 .setView(dialogLayout)
-                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                .setPositiveButton(getString(R.string.save), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         String userLastName = lastName.getText().toString();
@@ -99,7 +99,7 @@ public class SettingsActivity extends AppCompatActivity {
                         preferences.edit().putString(USER_NAME, userFirstName + " " + userLastName).apply();
                         displayInfo();
                     }})
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(getString(R.string.cancel), null)
                 .show();
     }
 }

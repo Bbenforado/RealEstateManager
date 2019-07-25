@@ -10,10 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.RequestManager;
 import com.example.realestatemanager.R;
-import com.example.realestatemanager.models.Interest;
 import com.example.realestatemanager.models.Photo;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class PhotoRecyclerViewAdapter extends RecyclerView.Adapter<PhotoViewHolder> {

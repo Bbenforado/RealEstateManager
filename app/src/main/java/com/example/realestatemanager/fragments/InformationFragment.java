@@ -45,6 +45,9 @@ public class InformationFragment extends Fragment {
     private static final String KEY_POSITION = "position";
     private static final String APP_PREFERENCES = "appPreferences";
     private static final String PLACE_ID = "placeId";
+    //------------------------------------------
+    //BIND VIEWS
+    //--------------------------------------------
     @BindView(R.id.status_text_view_detail_fragment) TextView statusTextView;
     @BindView(R.id.real_estate_manager_text_view_detail_fragment) TextView managerOfPlaceTextView;
     @BindView(R.id.creation_date_detail_text_view) TextView creationDateTextView;
@@ -68,6 +71,8 @@ public class InformationFragment extends Fragment {
     @BindView(R.id.country_text_view_information) TextView countryTextView;
     @BindView(R.id.text_view_price_detail_fragment) TextView priceTextView;
     @BindView(R.id.material_convert_price_button) MaterialButton convertPriceButton;
+    //---------------------------------------------------
+    //-----------------------------------------------------------
     private PlaceViewModel viewModel;
     private DetailRecyclerViewAdapter adapter;
     private SharedPreferences preferences;
@@ -78,7 +83,9 @@ public class InformationFragment extends Fragment {
     }
 
     public static InformationFragment newInstance(int position) {
+
         System.out.println("new instance frag 1");
+
         InformationFragment fragment = new InformationFragment();
         Bundle args = new Bundle();
         args.putInt(KEY_POSITION, position);
@@ -90,13 +97,17 @@ public class InformationFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         System.out.println("on create info frag");
+
         View result = inflater.inflate(R.layout.fragment_information, container, false);
         preferences = getActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         ButterKnife.bind(this, result);
         configureViewModel();
         long placeId = preferences.getLong(PLACE_ID, -1);
+
         System.out.println("place id in information frag = " + placeId);
+
         if (placeId != 0 && placeId != -1) {
             viewModel.getPlace(placeId).observe(this, new Observer<Place>() {
                 @Override
@@ -127,13 +138,13 @@ public class InformationFragment extends Fragment {
     //----------------------------------------------------
     @OnClick(R.id.material_convert_price_button)
     public void convertPrice() {
-        if (convertPriceButton.getText().toString().equals("Convert to euros")) {
+        if (convertPriceButton.getText().toString().equals(getString(R.string.button_text_convert_to_euros))) {
             int priceInEuros = convertDollarToEuro((int)price);
             priceTextView.setText(String.valueOf(priceInEuros));
-            convertPriceButton.setText("Convert to dollars");
-        } else if (convertPriceButton.getText().toString().equals("Convert to dollars")) {
+            convertPriceButton.setText(getString(R.string.button_text_convert_to_dollars));
+        } else if (convertPriceButton.getText().toString().equals(getString(R.string.button_text_convert_to_dollars))) {
             priceTextView.setText(String.valueOf(price));
-            convertPriceButton.setText("Convert to euros");
+            convertPriceButton.setText(getString(R.string.button_text_convert_to_euros));
         }
     }
 
@@ -210,14 +221,15 @@ public class InformationFragment extends Fragment {
 
     public void updateUi(Place place) {
 
-        System.out.println("update ui info frag");
+        System.out.println("update ui info frag")
+        ;
         if (place.getDateOfSale() == null) {
             layoutDateOfSale.setVisibility(View.GONE);
-            statusTextView.setText("Available");
+            statusTextView.setText(getString(R.string.status_available));
         } else {
             layoutDateOfSale.setVisibility(View.VISIBLE);
             dateOfSaleTextView.setText(place.getDateOfSale());
-            statusTextView.setText("Sold");
+            statusTextView.setText(getString(R.string.status_sold));
             statusTextView.setTextColor(getResources().getColor(R.color.red));
         }
         managerOfPlaceTextView.setText(place.getAuthor());
@@ -227,27 +239,27 @@ public class InformationFragment extends Fragment {
         if (place.getDescription() != null) {
             descriptionTextView.setText(place.getDescription());
         } else {
-            descriptionTextView.setText("Not informed yet");
+            descriptionTextView.setText(getString(R.string.not_informed_yet));
         }
         if (place.getSurface() != 0) {
             surfaceTextView.setText(String.valueOf(place.getSurface()));
         } else {
-            surfaceTextView.setText("Not informed yet");
+            surfaceTextView.setText(getString(R.string.not_informed_yet));
         }
         if (place.getNbrOfRooms() != 0) {
             nbrOfRoomsTextView.setText(String.valueOf(place.getNbrOfRooms()));
         } else {
-            nbrOfRoomsTextView.setText("Not informed yet");
+            nbrOfRoomsTextView.setText(getString(R.string.not_informed_yet));
         }
         if (place.getNbrOfBathrooms() != 0) {
             nbrOfBathroomsTextView.setText(String.valueOf(place.getNbrOfBathrooms()));
         } else {
-            nbrOfBathroomsTextView.setText("Not informed yet");
+            nbrOfBathroomsTextView.setText(getString(R.string.not_informed_yet));
         }
         if (place.getNbrOfBedrooms() != 0) {
             nbrOfBedroomsTextView.setText(String.valueOf(place.getNbrOfBedrooms()));
         } else {
-            nbrOfBedroomsTextView.setText("Not informed yet");
+            nbrOfBedroomsTextView.setText(getString(R.string.not_informed_yet));
         }
         getInterests(place.getId());
         viewModel.getAddress(place.getId()).observe(this, new Observer<Address>() {
@@ -255,7 +267,7 @@ public class InformationFragment extends Fragment {
             public void onChanged(Address address) {
                 streetAddressTextView.setText(address.getStreetNumber() + " " + address.getStreetName());
                 if (address.getComplement() != null) {
-                    if (!address.getComplement().equals("Not informed")) {
+                    if (!address.getComplement().equals(getString(R.string.not_informed))) {
                         complementTextView.setText(address.getComplement());
                     } else {
                         complementTextView.setVisibility(View.GONE);

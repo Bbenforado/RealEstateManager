@@ -117,9 +117,11 @@ public class ListFragment extends Fragment {
                     public void onItemClicked(RecyclerView recyclerView, int position, View v) {
                         Place place = adapter.getPlace(position);
                         preferences.edit().putLong(PLACE_ID, place.getId()).apply();
+
                         System.out.println("place id in on click method = " + place.getId());
+
                         String appMode = preferences.getString(APP_MODE, null);
-                        if (appMode.equals("tablet")) {
+                        if (appMode.equals(getString(R.string.app_mode_tablet))) {
                             ((MainActivity)getActivity()).refreshFragmentInfo(place);
 
                         } else {

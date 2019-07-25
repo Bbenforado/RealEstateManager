@@ -4,11 +4,8 @@ package com.example.realestatemanager.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-
 import androidx.annotation.Nullable;
-import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -24,31 +21,20 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.daimajia.slider.library.SliderLayout;
-import com.daimajia.slider.library.SliderTypes.BaseSliderView;
-import com.daimajia.slider.library.SliderTypes.DefaultSliderView;
-import com.daimajia.slider.library.SliderTypes.TextSliderView;
 import com.example.realestatemanager.R;
 import com.example.realestatemanager.activities.AddFormActivity;
 import com.example.realestatemanager.adapters.DetailFragmentAdapter;
 import com.example.realestatemanager.adapters.DetailPhotoRecyclerViewAdapter;
-import com.example.realestatemanager.adapters.DetailRecyclerViewAdapter;
 import com.example.realestatemanager.adapters.PhotoRecyclerViewAdapter;
-import com.example.realestatemanager.adapters.PlaceRecyclerViewAdapter;
 import com.example.realestatemanager.injections.Injection;
 import com.example.realestatemanager.injections.ViewModelFactory;
 import com.example.realestatemanager.models.Address;
-import com.example.realestatemanager.models.Interest;
 import com.example.realestatemanager.models.Photo;
 import com.example.realestatemanager.models.Place;
 import com.example.realestatemanager.viewModels.PlaceViewModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
@@ -123,8 +109,6 @@ public class DetailFragment extends Fragment {
     private int[] iconTabLayout = {R.drawable.house_white, R.drawable.ic_address_white};
     private DetailPhotoRecyclerViewAdapter adapter;
     private DetailFragmentAdapter viewPagerAdapter;
-    /*private ViewPager viewPager;
-    private TabLayout tabLayout;*/
     private long placeId;
 
 
@@ -135,20 +119,22 @@ public class DetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
+
         System.out.println("on create detail frag");
         //------------------------------------------------
         preferences = getActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         ButterKnife.bind(this, view);
         placeId = preferences.getLong(PLACE_ID, -1);
+
         System.out.println("place id detail frag = " + placeId);
 
         if (placeId != 0 && placeId != -1) {
             configureViewModel();
-            if (preferences.getString(APP_MODE, null).equals("phone")) {
+            if (preferences.getString(APP_MODE, null).equals(getString(R.string.app_mode_phone))) {
                 configureViewpagerAndTabs();
                 configureRecyclerView();
                 getPhotos(placeId);
-            } else if (preferences.getString(APP_MODE, null).equals("tablet")) {
+            } else if (preferences.getString(APP_MODE, null).equals(getString(R.string.app_mode_tablet))) {
                 configureRecyclerViewForTablet();
                 viewModel.getPlace(placeId).observe(this, new Observer<Place>() {
                     @Override
@@ -175,13 +161,14 @@ public class DetailFragment extends Fragment {
     public void updateUi(Place place) {
 
         System.out.println("update ui info frag");
+
         if (place.getDateOfSale() == null) {
             layoutDateOfSaleTabletMode.setVisibility(View.GONE);
-            textViewStatusTabletMode.setText("Available");
+            textViewStatusTabletMode.setText(getString(R.string.status_available));
         } else {
             layoutDateOfSaleTabletMode.setVisibility(View.VISIBLE);
             textViewDateOfSaleTabletMode.setText(place.getDateOfSale());
-            textViewStatusTabletMode.setText("Sold");
+            textViewStatusTabletMode.setText(getString(R.string.status_sold));
             textViewStatusTabletMode.setTextColor(getResources().getColor(R.color.red));
         }
         textViewManagerTabletMode.setText(place.getAuthor());
@@ -191,27 +178,27 @@ public class DetailFragment extends Fragment {
         if (place.getDescription() != null) {
             textViewDescriptionTabletMode.setText(place.getDescription());
         } else {
-            textViewDescriptionTabletMode.setText("Not informed yet");
+            textViewDescriptionTabletMode.setText(getString(R.string.not_informed_yet));
         }
         if (place.getSurface() != 0) {
             textViewSurfaceTabletMode.setText(String.valueOf(place.getSurface()));
         } else {
-            textViewSurfaceTabletMode.setText("Not informed yet");
+            textViewSurfaceTabletMode.setText(getString(R.string.not_informed_yet));
         }
         if (place.getNbrOfRooms() != 0) {
             textViewNbrOfRoomsTabletMode.setText(String.valueOf(place.getNbrOfRooms()));
         } else {
-            textViewNbrOfRoomsTabletMode.setText("Not informed yet");
+            textViewNbrOfRoomsTabletMode.setText(getString(R.string.not_informed_yet));
         }
         if (place.getNbrOfBathrooms() != 0) {
             textViewNbrOfBathroomsTabletMode.setText(String.valueOf(place.getNbrOfBathrooms()));
         } else {
-            textViewNbrOfBathroomsTabletMode.setText("Not informed yet");
+            textViewNbrOfBathroomsTabletMode.setText(getString(R.string.not_informed_yet));
         }
         if (place.getNbrOfBedrooms() != 0) {
             textViewNbrOfBedroomsTabletMode.setText(String.valueOf(place.getNbrOfBedrooms()));
         } else {
-            textViewNbrOfBedroomsTabletMode.setText("Not informed yet");
+            textViewNbrOfBedroomsTabletMode.setText(getString(R.string.not_informed_yet));
         }
         //getInterests(place.getId());
         viewModel.getAddress(place.getId()).observe(this, new Observer<Address>() {
@@ -219,7 +206,7 @@ public class DetailFragment extends Fragment {
             public void onChanged(Address address) {
                 textViewStreetTabletMode.setText(address.getStreetNumber() + " " + address.getStreetName());
                 if (address.getComplement() != null) {
-                    if (!address.getComplement().equals("Not informed")) {
+                    if (!address.getComplement().equals(getString(R.string.not_informed))) {
                         textViewComplementTabletMode.setText(address.getComplement());
                     } else {
                         textViewComplementTabletMode.setVisibility(View.GONE);

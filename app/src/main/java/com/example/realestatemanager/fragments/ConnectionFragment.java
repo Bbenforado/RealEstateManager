@@ -26,12 +26,16 @@ import butterknife.OnClick;
  */
 public class ConnectionFragment extends Fragment {
 
-
+    //---------------------------------------
+    //BIND VIEWS
+    //-------------------------------------------
     @BindView(R.id.material_button_save_user)
     MaterialButton buttonSaveUser;
     @BindView(R.id.user_first_name_text_edit)
     TextInputEditText firstNameEditText;
     @BindView(R.id.user_last_name_text_edit) TextInputEditText lastNameEditText;
+    //--------------------------------------
+    //--------------------------------------------
     private SharedPreferences preferences;
     public static final String APP_PREFERENCES = "appPreferences";
     public static final String USER_NAME = "userName";

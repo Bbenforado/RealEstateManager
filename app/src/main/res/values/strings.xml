@@ -9,4 +9,56 @@
 
     <string name="popup_title_permission_files_access">Cette application a besoin de permission pour fonctionner.</string>
     <string name="title_activity_maps">Map</string>
+
+    //ADD FORM ACTIVITY
+    <string name="place_created">Place created</string>
+    <string name="field_missing">You have to enter at least a price, a type of place, an address and the real estate manager in charge of this place!</string>
+    <string name="place_updated">Place updated</string>
+    <string name="toolbar_title_edit">Edit place</string>
+    <string name="toolbar_title_add">Add a new place</string>
+    <string name="permissions_granted">Permissions granted</string>
+    <string name="way_to_get_photos_gallery">Pick from gallery</string>
+    <string name="way_to_get_photos_camera">Take from camera</string>
+    <string name="not_informed_yet">Not informed yet</string>
+    <string name="not_informed">Not informed</string>
+    <string name="toast_message_main_photo">This photo is saved as main photo</string>
+    <string name="title_dialog_add_description">Add description :</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="toast_message_description_added">Description added!</string>
+    <string name="toast_message_error_occurred">Error occurred</string>
+    <string name="toast_message_no_image_chosen">No image chosen</string>
+    <string name="notification_title">Real estate manager</string>
+    <string name="title_dialog_choose_type_of_place">Choose a type of place :</string>
+    <string name="button_generic_text_type_of_place">Type of place</string>
+
+    //FOR MAP ACTIVITY
+    <string name="permission_granted">Permission granted</string>
+    <string name="permission_denied">Permission denied</string>
+    <string name="toast_message_user_location_not_found">User location not found, try again later</string>
+    <string name="toast_message_place_location_not_found">Place location not found, try again later</string>
+    <string name="toast_message_no_location_provider">No location provider found, try again later</string>
+
+    //FOR SETTINGS ACTIVITY
+    <string name="toolbar_title_settings">Settings</string>
+    <string name="dialog_title_enter_new_name">Enter a new name :</string>
+
+    //FOR PLACE VIEWHOLDER
+    <string name="status_sold">Sold</string>
+    <string name="status_available">Available</string>
+
+    //FOR DETAIL FRAGMENT
+    <string name="app_mode_phone">phone</string>
+    <string name="app_mode_tablet">tablet</string>
+
+    //FOR INFORMATION FRAGMENT
+    <string name="button_text_convert_to_euros">Convert to euros</string>
+    <string name="button_text_convert_to_dollars">Convert to dollars</string>
+
+    //FOR MAP FRAGMENT
+    <string name="toast_message_address_not_found">Address not found</string>
+
+    //FOR MAIN ACTIVITY
+    <string name="toast_message_no_internet_cant_access_to_map">You don\'t have internet, you can\'t access to this screen</string>
+    <string name="toolbar_title">Real Estate Manager</string>
 </resources>

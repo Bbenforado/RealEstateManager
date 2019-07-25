@@ -68,10 +68,10 @@ public class PlaceViewHolder extends RecyclerView.ViewHolder {
         }
 
         if (place.getDateOfSale() != null) {
-            statusTextView.setText("Sold");
+            statusTextView.setText(context.getString(R.string.status_sold));
             statusTextView.setTextColor(context.getResources().getColor(R.color.red));
         } else {
-            statusTextView.setText("Available");
+            statusTextView.setText(context.getString(R.string.status_available));
             statusTextView.setTextColor(context.getResources().getColor(R.color.green));
         }
     }

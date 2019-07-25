@@ -31,8 +31,8 @@ public class PlaceViewModel extends ViewModel {
     private final PhotoDataRepository photoDataSource;
     private final Executor executor;
 
-    @Nullable
-    private LiveData<Place> currentPlace;
+    /*@Nullable
+    private LiveData<Place> currentPlace;*/
 
     public PlaceViewModel(PlaceDataRepository placeDataSource, AddressDataRepository addressDataSource,
                           InterestDataRepository interestDataSource, PhotoDataRepository photoDataRepository, Executor executor) {
@@ -166,19 +166,6 @@ public class PlaceViewModel extends ViewModel {
     }
 
     public void updatePhoto(Photo photo) {
-        /*Callable<Integer> insertCallable = () -> photoDataSource.updatePhoto(photo);
-        int rowId = 0;
-
-        ExecutorService executorService = Executors.newFixedThreadPool(10);
-        Future<Integer> future = executorService.submit(insertCallable);
-        try {
-            rowId = future.get();
-        } catch (InterruptedException e1) {
-            e1.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-        return rowId;*/
         executor.execute(() -> {
             photoDataSource.updatePhoto(photo);
         });

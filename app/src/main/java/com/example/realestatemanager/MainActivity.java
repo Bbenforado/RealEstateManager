@@ -1,6 +1,5 @@
 package com.example.realestatemanager;
 
-import android.content.Context;
 import android.content.Intent;
 
 import androidx.annotation.Nullable;
@@ -8,28 +7,19 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.SharedPreferences;
-import android.icu.text.IDNA;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.realestatemanager.activities.DetailActivity;
 import com.example.realestatemanager.activities.MapActivity;
 import com.example.realestatemanager.activities.SettingsActivity;
-import com.example.realestatemanager.adapters.DetailRecyclerViewAdapter;
-import com.example.realestatemanager.adapters.PlaceRecyclerViewAdapter;
 import com.example.realestatemanager.fragments.DetailFragment;
-import com.example.realestatemanager.fragments.InformationFragment;
 import com.example.realestatemanager.fragments.ListFragment;
 import com.example.realestatemanager.models.Place;
-import com.example.realestatemanager.utils.Utils;
 import com.facebook.stetho.Stetho;
 import com.google.android.material.navigation.NavigationView;
 
@@ -57,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //
     //----------------------------------------------------
     public static final String APP_PREFERENCES = "appPreferences";
-    public static final String USER_NAME = "userName";
+    //public static final String USER_NAME = "userName";
     private static final String PLACE_ID = "placeId";
     public static final String APP_MODE = "appMode";
 
@@ -111,9 +101,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void getAppMode() {
         if (findViewById(R.id.frame_layout_main_detail) != null) {
-            preferences.edit().putString(APP_MODE, "tablet").apply();
+            preferences.edit().putString(APP_MODE, getString(R.string.app_mode_tablet)).apply();
         } else {
-            preferences.edit().putString(APP_MODE, "phone").apply();
+            preferences.edit().putString(APP_MODE, getString(R.string.app_mode_phone)).apply();
         }
     }
 
@@ -147,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     Intent mapIntent = new Intent(this, MapActivity.class);
                     startActivity(mapIntent);
                 } else {
-                    Toast.makeText(this, "You don't have internet, you can't access to this screen", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.toast_message_no_internet_cant_access_to_map), Toast.LENGTH_SHORT).show();
                 }
                 break;
             default:
@@ -162,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //-------------------------------------------
     private void configureToolbar() {
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Real estate manager");
+        getSupportActionBar().setTitle(getString(R.string.toolbar_title));
     }
 
     private void configureDrawerLayout() {
@@ -187,7 +177,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void configureAndShowDetailFragment(){
+
         System.out.println("place id in show detail frag = " + preferences.getLong(PLACE_ID, -1));
+
         detailFragment = (DetailFragment) getSupportFragmentManager().findFragmentById(R.id.frame_layout_main_detail);
 
         if (detailFragment == null && findViewById(R.id.frame_layout_main_detail) != null) {

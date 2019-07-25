@@ -22,7 +22,9 @@ public class DetailFragmentAdapter extends FragmentPagerAdapter {
 
     public DetailFragmentAdapter(FragmentManager fragmentManager, String[] titles) {
         super(fragmentManager);
+
         System.out.println("view pager adapter constructor");
+
         this.titles = titles;
     }
 
@@ -31,11 +33,15 @@ public class DetailFragmentAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
+
                 System.out.println("adapter getitem method frag 1");
+
                 //return InformationFragment.newInstance(position);
                 return new InformationFragment();
             case 1:
+
                 System.out.println("adapter getitem method frag 2");
+
                 //return MapFragment.newInstance(position);
                 return new MapFragment();
             default:
