@@ -1,5 +1,6 @@
 package com.example.realestatemanager.fragments;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -50,25 +51,28 @@ import butterknife.OnClick;
  */
 public class ListFragment extends Fragment {
 
+    //----------------------------------------
+    //BIND VIEWS
+    //----------------------------------------
     @BindView(R.id.fragment_list_recycler_view)
     RecyclerView recyclerView;
     @BindView(R.id.add_floating_action_button)
     FloatingActionButton floatingButtonAddPlace;
+    //-------------------------------------------
+    //
+    //---------------------------------------------
     private PlaceRecyclerViewAdapter adapter;
-    //private List<Place> placeList;
     private PlaceViewModel viewModel;
     private SharedPreferences preferences;
+    private String[] longClickFunctionality = {"Edit place"};
+    //----------------------------------------------
+    //
+    //----------------------------------------------
     private static final String APP_PREFERENCES = "appPreferences";
     private static final String PLACE_ID = "placeId";
     private static final String STATUS_FORM_ACTIVITY = "statusFormActivity";
-    private String[] longClickFunctionality = {"Edit place"};
-    //private OnItemClickListener listenerItemClicked;
-   // private MainActivity mainActivity;
+    private static final String APP_MODE = "appMode";
 
-    /*public interface OnItemClickedListener {
-        void onItemClicked(PlaceRecyclerViewAdapter adapter, RecyclerView recyclerView, int position, View v);
-
-    }*/
 
     public ListFragment() {
         // Required empty public constructor
@@ -76,19 +80,13 @@ public class ListFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        //return inflater.inflate(R.layout.fragment_list, container, false);
         View result = inflater.inflate(R.layout.fragment_list, container, false);
         ButterKnife.bind(this, result);
         preferences = this.getActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
 
-        //List<Address> addressList = new ArrayList<>();
         configureRecyclerView();
-
         configureOnClickRecyclerView();
-
-        ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(getContext());
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(PlaceViewModel.class);
-
+        configureViewModel();
 
         //get data to display in recycler view
         getPlaces();
@@ -101,6 +99,11 @@ public class ListFragment extends Fragment {
     //-------------------------------------------
     //CONFIGURATION
     //-------------------------------------------
+    private void configureViewModel() {
+        ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(getContext());
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(PlaceViewModel.class);
+    }
+
     private void configureRecyclerView() {
         this.adapter = new PlaceRecyclerViewAdapter(Glide.with(this));
         this.recyclerView.setAdapter(adapter);
@@ -112,13 +115,17 @@ public class ListFragment extends Fragment {
                 .setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
                     @Override
                     public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                        /*Place place = adapter.getPlace(position);
+                        Place place = adapter.getPlace(position);
                         preferences.edit().putLong(PLACE_ID, place.getId()).apply();
-                        Intent editIntent = new Intent(getContext(), DetailActivity.class);
-                        startActivity(editIntent);*/
-                        MainActivity.getDataFromFragment(preferences, getContext(), adapter, position);
+                        System.out.println("place id in on click method = " + place.getId());
+                        String appMode = preferences.getString(APP_MODE, null);
+                        if (appMode.equals("tablet")) {
+                            ((MainActivity)getActivity()).refreshFragmentInfo(place);
 
-                        //listenerItemClicked.onItemClicked(recyclerView, position, v);
+                        } else {
+                            Intent editIntent = new Intent(getContext(), DetailActivity.class);
+                            startActivity(editIntent);
+                        }
                     }
                 })
                 .setOnItemLongClickListener(new ItemClickSupport.OnItemLongClickListener() {
@@ -131,20 +138,6 @@ public class ListFragment extends Fragment {
                     }
                 });
     }
-
-    /*@Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        createCallbackToParentActivity();
-    }*/
-
-    /*private void createCallbackToParentActivity() {
-        try {
-            listenerItemClicked = (ItemClickSupport.OnItemClickListener) getActivity();
-        } catch (ClassCastException e) {
-            throw new ClassCastException(e.toString() + "error");
-        }
-    }*/
 
     //----------------------------------------------
     //ACTIONS

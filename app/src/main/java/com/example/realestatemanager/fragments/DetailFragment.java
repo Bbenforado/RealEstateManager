@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -32,13 +33,16 @@ import com.example.realestatemanager.activities.AddFormActivity;
 import com.example.realestatemanager.adapters.DetailFragmentAdapter;
 import com.example.realestatemanager.adapters.DetailPhotoRecyclerViewAdapter;
 import com.example.realestatemanager.adapters.DetailRecyclerViewAdapter;
+import com.example.realestatemanager.adapters.PhotoRecyclerViewAdapter;
 import com.example.realestatemanager.adapters.PlaceRecyclerViewAdapter;
 import com.example.realestatemanager.injections.Injection;
 import com.example.realestatemanager.injections.ViewModelFactory;
+import com.example.realestatemanager.models.Address;
 import com.example.realestatemanager.models.Interest;
 import com.example.realestatemanager.models.Photo;
 import com.example.realestatemanager.models.Place;
 import com.example.realestatemanager.viewModels.PlaceViewModel;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 
@@ -61,32 +65,68 @@ public class DetailFragment extends Fragment {
     //------------------------------------------------
     @BindView(R.id.edit_floating_action_button_detail_fragment)
     FloatingActionButton editFloatingActionButton;
-    //@BindView(R.id.recycler_view_detail_interest)
-    //RecyclerView recyclerViewInterest;
-    /*@BindView(R.id.slider)
-    SliderLayout sliderLayout;*/
- /*   @BindView(R.id.status_text_view_detail_fragment) TextView statusTextView;
-    @BindView(R.id.real_estate_manager_text_view_detail_fragment) TextView managerOfPlaceTextView;
-    @BindView(R.id.creation_date_detail_text_view) TextView creationDateTextView;*/
-    private static final String APP_PREFERENCES = "appPreferences";
-    private static final String PLACE_ID = "placeId";
-    public static final String STATUS_FORM_ACTIVITY = "statusFormActivity";
-    private PlaceViewModel viewModel;
-    private SharedPreferences preferences;
-    //private DetailRecyclerViewAdapter adapter;
-    private String[] titles = {"Information", "View location"};
-    private int[] iconTabLayout = {R.drawable.house_white, R.drawable.ic_address_white};
-    private DefaultSliderView sliderView;
-    private DetailPhotoRecyclerViewAdapter adapter;
-
+    @Nullable
     @BindView(R.id.viewpager) ViewPager viewPager;
+    @Nullable
     @BindView(R.id.main_tabs) TabLayout tabLayout;
-    @BindView(R.id.nested_scroll_view)
-    NestedScrollView scrollView;
-    @BindView(R.id.layout) LinearLayout linearLayout;
+    /*@BindView(R.id.nested_scroll_view)
+    NestedScrollView scrollView;*/
+    //@BindView(R.id.layout) LinearLayout linearLayout;
     @BindView(R.id.recycler_view_detail_photos) RecyclerView recyclerViewPhotos;
     @BindView(R.id.image_view_detail)
     ImageView imageViewPhoto;
+    @BindView(R.id.text_view_detail_fragment_no_item_selected) TextView textViewNoItemSelected;
+    //FOR TABLET MODE
+    @Nullable
+    @BindView(R.id.layout_date_of_sale_tablet_mode) LinearLayout layoutDateOfSaleTabletMode;
+    @Nullable
+    @BindView(R.id.creation_date_detail_tablet_mode_text_view) TextView textViewCreationDateTabletMode;
+    @Nullable
+    @BindView(R.id.status_text_view_detail_tablet_mode_fragment) TextView textViewStatusTabletMode;
+    @Nullable
+    @BindView(R.id.date_of_sale_detail_tablet_mode_text_view) TextView textViewDateOfSaleTabletMode;
+    @Nullable
+    @BindView(R.id.text_view_description_detail_tablet_mode_fragment) TextView textViewDescriptionTabletMode;
+    @Nullable
+    @BindView(R.id.text_view_price_detail_tablet_mode_fragment) TextView textViewPriceTabletMode;
+    @Nullable
+    @BindView(R.id.material_convert_price_button_tablet_mode) MaterialButton buttonConvertPriceTabletMode;
+    @Nullable
+    @BindView(R.id.text_view_surface_detail_table_mode_fragment) TextView textViewSurfaceTabletMode;
+    @Nullable
+    @BindView(R.id.text_view_nbr_rooms_detail_tablet_mode_fragment) TextView textViewNbrOfRoomsTabletMode;
+    @Nullable
+    @BindView(R.id.text_view_nbr_bedrooms_detail_tablet_mode_fragment) TextView textViewNbrOfBedroomsTabletMode;
+    @Nullable
+    @BindView(R.id.text_view_nbr_bathrooms_detail_tablet_mode_fragment) TextView textViewNbrOfBathroomsTabletMode;
+    @Nullable
+    @BindView(R.id.street_address_text_view_detail_fragment_tablet_mode) TextView textViewStreetTabletMode;
+    @Nullable
+    @BindView(R.id.postal_code_and_city_text_view_detail_fragment_tablet_mode) TextView textViewPostalCodeAndCityTabletMode;
+    @Nullable
+    @BindView(R.id.real_estate_manager_text_view_detail_fragment_tablet_mode) TextView textViewManagerTabletMode;
+    @Nullable
+    @BindView(R.id.complement_text_view_detail_fragment_tablet_mode) TextView textViewComplementTabletMode;
+    @Nullable
+    @BindView(R.id.country_text_view_detail_fragment_tablet_mode) TextView textViewCountryTabletMode;
+    //--------------------------------------------------
+    //--------------------------------------------------
+    private static final String APP_PREFERENCES = "appPreferences";
+    private static final String PLACE_ID = "placeId";
+    private static final String STATUS_FORM_ACTIVITY = "statusFormActivity";
+    private static final String APP_MODE = "appMode";
+    //----------------------------------------------------
+    //-----------------------------------------------------
+    private PlaceViewModel viewModel;
+    private SharedPreferences preferences;
+    private String[] titles = {"Information", "View location"};
+    private int[] iconTabLayout = {R.drawable.house_white, R.drawable.ic_address_white};
+    private DetailPhotoRecyclerViewAdapter adapter;
+    private DetailFragmentAdapter viewPagerAdapter;
+    /*private ViewPager viewPager;
+    private TabLayout tabLayout;*/
+    private long placeId;
+
 
     public DetailFragment() {
         // Required empty public constructor
@@ -95,48 +135,107 @@ public class DetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
+        System.out.println("on create detail frag");
         //------------------------------------------------
         preferences = getActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         ButterKnife.bind(this, view);
-        configureViewpagerAndTabs();
-        configureViewModel();
-        configureRecyclerView();
-        //displayGenericPhoto();
+        placeId = preferences.getLong(PLACE_ID, -1);
+        System.out.println("place id detail frag = " + placeId);
 
-        long placeId = preferences.getLong(PLACE_ID, -1);
-        getPhotos(placeId);
-        /*viewModel.getPlace(placeId).observe(this, new Observer<Place>() {
-            @Override
-            public void onChanged(Place place) {
-                //displayPhotosOfPlace(placeId);
-
+        if (placeId != 0 && placeId != -1) {
+            configureViewModel();
+            if (preferences.getString(APP_MODE, null).equals("phone")) {
+                configureViewpagerAndTabs();
+                configureRecyclerView();
+                getPhotos(placeId);
+            } else if (preferences.getString(APP_MODE, null).equals("tablet")) {
+                configureRecyclerViewForTablet();
+                viewModel.getPlace(placeId).observe(this, new Observer<Place>() {
+                    @Override
+                    public void onChanged(Place place) {
+                        updateUi(place);
+                    }
+                });
             }
-        });*/
+
+
+            textViewNoItemSelected.setVisibility(View.GONE);
+
+            /*if (preferences.getString(APP_MODE, null).equals("tablet")) {
+                viewPagerAdapter.someMethod();
+            }*/
+
+        } else {
+            textViewNoItemSelected.setVisibility(View.VISIBLE);
+        }
+
         return view;
+    }
+
+    public void updateUi(Place place) {
+
+        System.out.println("update ui info frag");
+        if (place.getDateOfSale() == null) {
+            layoutDateOfSaleTabletMode.setVisibility(View.GONE);
+            textViewStatusTabletMode.setText("Available");
+        } else {
+            layoutDateOfSaleTabletMode.setVisibility(View.VISIBLE);
+            textViewDateOfSaleTabletMode.setText(place.getDateOfSale());
+            textViewStatusTabletMode.setText("Sold");
+            textViewStatusTabletMode.setTextColor(getResources().getColor(R.color.red));
+        }
+        textViewManagerTabletMode.setText(place.getAuthor());
+        textViewCreationDateTabletMode.setText(place.getCreationDate());
+        textViewPriceTabletMode.setText(String.valueOf(place.getPrice()));
+
+        if (place.getDescription() != null) {
+            textViewDescriptionTabletMode.setText(place.getDescription());
+        } else {
+            textViewDescriptionTabletMode.setText("Not informed yet");
+        }
+        if (place.getSurface() != 0) {
+            textViewSurfaceTabletMode.setText(String.valueOf(place.getSurface()));
+        } else {
+            textViewSurfaceTabletMode.setText("Not informed yet");
+        }
+        if (place.getNbrOfRooms() != 0) {
+            textViewNbrOfRoomsTabletMode.setText(String.valueOf(place.getNbrOfRooms()));
+        } else {
+            textViewNbrOfRoomsTabletMode.setText("Not informed yet");
+        }
+        if (place.getNbrOfBathrooms() != 0) {
+            textViewNbrOfBathroomsTabletMode.setText(String.valueOf(place.getNbrOfBathrooms()));
+        } else {
+            textViewNbrOfBathroomsTabletMode.setText("Not informed yet");
+        }
+        if (place.getNbrOfBedrooms() != 0) {
+            textViewNbrOfBedroomsTabletMode.setText(String.valueOf(place.getNbrOfBedrooms()));
+        } else {
+            textViewNbrOfBedroomsTabletMode.setText("Not informed yet");
+        }
+        //getInterests(place.getId());
+        viewModel.getAddress(place.getId()).observe(this, new Observer<Address>() {
+            @Override
+            public void onChanged(Address address) {
+                textViewStreetTabletMode.setText(address.getStreetNumber() + " " + address.getStreetName());
+                if (address.getComplement() != null) {
+                    if (!address.getComplement().equals("Not informed")) {
+                        textViewComplementTabletMode.setText(address.getComplement());
+                    } else {
+                        textViewComplementTabletMode.setVisibility(View.GONE);
+                    }
+                } else {
+                    textViewComplementTabletMode.setVisibility(View.GONE);
+                }
+                textViewPostalCodeAndCityTabletMode.setText(address.getPostalCode() + " " + address.getCity());
+                textViewCountryTabletMode.setText(address.getCountry());
+            }
+        });
     }
 
     @Override
     public void onStop() {
-        //sliderLayout.stopAutoCycle();
         super.onStop();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        System.out.println("on start");
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        System.out.println("on resume");
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        System.out.println("on pause");
     }
 
     //----------------------------------------------
@@ -149,7 +248,6 @@ public class DetailFragment extends Fragment {
         startActivity(intent);
     }
 
-
     //----------------------------------------------
     //CONFIGURATION
     //-----------------------------------------------
@@ -159,8 +257,12 @@ public class DetailFragment extends Fragment {
     }
 
     private void configureViewpagerAndTabs() {
-        viewPager.setAdapter(new DetailFragmentAdapter(getActivity().getSupportFragmentManager(), titles) {
-        });
+        //viewPager = getView().findViewById(R.id.viewpager);
+        viewPagerAdapter = new DetailFragmentAdapter(getActivity().getSupportFragmentManager(), titles);
+
+        viewPager.setAdapter(viewPagerAdapter);
+
+        //tabLayout = getActivity().findViewById(R.id.main_tabs);
         tabLayout.setupWithViewPager(viewPager);
         for (int i = 0; i < tabLayout.getTabCount(); i++) {
             tabLayout.getTabAt(i).setIcon(iconTabLayout[i]);
@@ -172,6 +274,18 @@ public class DetailFragment extends Fragment {
         this.adapter = new DetailPhotoRecyclerViewAdapter(Glide.with(this));
         this.recyclerViewPhotos.setAdapter(adapter);
         recyclerViewPhotos.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayout.HORIZONTAL, false));
+    }
+
+    private void configureRecyclerViewForTablet() {
+        viewModel.getPhotosForAPlace(placeId).observe(getViewLifecycleOwner(), new Observer<List<Photo>>() {
+            @Override
+            public void onChanged(List<Photo> photos) {
+                PhotoRecyclerViewAdapter adapter = new PhotoRecyclerViewAdapter(photos, Glide.with(getContext()));
+                recyclerViewPhotos.setAdapter(adapter);
+                recyclerViewPhotos.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayout.HORIZONTAL, false));
+            }
+        });
+
     }
 
     private void getPhotos(long placeId) {
@@ -189,40 +303,6 @@ public class DetailFragment extends Fragment {
             imageViewPhoto.setImageResource(R.drawable.no_image);
         }
     }
-
     //----------------------------------------------------
-    /*private void displayGenericPhoto() {
-        sliderView = new DefaultSliderView(getContext());
-        // initialize a SliderLayout
-        sliderView.image(R.drawable.no_image);
-        sliderView.setScaleType(BaseSliderView.ScaleType.Fit);
 
-        sliderLayout.addSlider(sliderView);
-    }
-
-    private void displayPhotosOfPlace(long placeId) {
-
-        viewModel.getPhotosForAPlace(placeId).observe(this, new Observer<List<Photo>>() {
-            @Override
-            public void onChanged(List<Photo> photos) {
-
-                HashMap<String, File> file_maps = new HashMap<String, File>();
-
-                for (int i = 0; i < photos.size(); i++) {
-
-                    String path = photos.get(i).getUri();
-                    File file = new File(path);
-
-                    file_maps.put("Photo n " + i, file);
-
-                }
-                for (String name : file_maps.keySet()) {
-                    sliderLayout.removeAllSliders();
-                    sliderView = new DefaultSliderView(getContext());
-                    sliderView.image(file_maps.get(name));
-                    sliderLayout.addSlider(sliderView);
-                }
-            }
-        });
-    }*/
 }

@@ -63,6 +63,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     }
 
     public static MapFragment newInstance(int position) {
+        System.out.println("new instance frag 2");
         MapFragment fragment = new MapFragment();
         /*Bundle args = new Bundle();
         args.putInt(KEY_POSITION_MAP, position);
@@ -74,16 +75,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        System.out.println("on create map frag");
         View view = inflater.inflate(R.layout.fragment_map, container, false);
         preferences = getActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         ButterKnife.bind(this, view);
         configureViewModel();
         id = preferences.getLong(PLACE_ID, -1);
-
-
-
-        mapView.onCreate(savedInstanceState);
-        mapView.getMapAsync(this);
+        System.out.println("place id in map frag = " + id);
+        if (id != 0 && id != -1) {
+            mapView.onCreate(savedInstanceState);
+            mapView.getMapAsync(this);
+        }
 
         return view;
     }
@@ -92,7 +94,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     public void onMapReady(GoogleMap googleMap) {
         gmap = googleMap;
         MapsInitializer.initialize(this.getActivity());
-        if (id != -1) {
+        if (id != -1 && id != 0) {
             viewModel.getAddress(id).observe(this, new Observer<com.example.realestatemanager.models.Address>() {
                 @Override
                 public void onChanged(com.example.realestatemanager.models.Address adressOfPlace) {
@@ -127,20 +129,26 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
 
     @Override
     public void onResume() {
-        mapView.onResume();
+        if (id != -1 && id != 0) {
+            mapView.onResume();
+        }
         super.onResume();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mapView.onDestroy();
+        if (id != -1 && id != 0) {
+            mapView.onDestroy();
+        }
     }
 
     @Override
     public void onLowMemory() {
         super.onLowMemory();
-        mapView.onLowMemory();
+        if (id != -1 && id != 0) {
+            mapView.onLowMemory();
+        }
     }
 
     private void configureViewModel() {

@@ -8,6 +8,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.SharedPreferences;
+import android.icu.text.IDNA;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,6 +26,7 @@ import com.example.realestatemanager.activities.SettingsActivity;
 import com.example.realestatemanager.adapters.DetailRecyclerViewAdapter;
 import com.example.realestatemanager.adapters.PlaceRecyclerViewAdapter;
 import com.example.realestatemanager.fragments.DetailFragment;
+import com.example.realestatemanager.fragments.InformationFragment;
 import com.example.realestatemanager.fragments.ListFragment;
 import com.example.realestatemanager.models.Place;
 import com.example.realestatemanager.utils.Utils;
@@ -37,16 +39,28 @@ import butterknife.ButterKnife;
 import static com.example.realestatemanager.utils.Utils.isInternetAvailable;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+
+    //-----------------------------------------
+    //BIND VIEWS
+    //----------------------------------------
     @Nullable
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.drawer_layout) DrawerLayout drawerLayout;
     @BindView(R.id.nav_view) NavigationView navigationView;
+    //--------------------------------------------
+    //
+    //-----------------------------------------------
     private ListFragment listFragment;
     private DetailFragment detailFragment;
-    SharedPreferences preferences;
+    private SharedPreferences preferences;
+    //-------------------------------------------------
+    //
+    //----------------------------------------------------
     public static final String APP_PREFERENCES = "appPreferences";
     public static final String USER_NAME = "userName";
     private static final String PLACE_ID = "placeId";
+    public static final String APP_MODE = "appMode";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
         preferences = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE);
         ButterKnife.bind(this);
-
+        preferences.edit().putLong(PLACE_ID, -1).apply();
         Stetho.initializeWithDefaults(this);
 
         //this.textViewMain = findViewById(R.id.activity_second_activity_text_view_main);
@@ -63,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         configureDrawerLayout();
         configureAndShowListFragment();
         configureAndShowDetailFragment();
+        getAppMode();
 
     }
 
@@ -89,12 +104,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (menuItem.getItemId()) {
             case R.id.menu_search:
                 return true;
-            case R.id.menu_settings:
-                Intent settingIntent = new Intent(this, SettingsActivity.class);
-                startActivity(settingIntent);
-                return true;
             default:
                 return super.onOptionsItemSelected(menuItem);
+        }
+    }
+
+    private void getAppMode() {
+        if (findViewById(R.id.frame_layout_main_detail) != null) {
+            preferences.edit().putString(APP_MODE, "tablet").apply();
+        } else {
+            preferences.edit().putString(APP_MODE, "phone").apply();
         }
     }
 
@@ -168,6 +187,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void configureAndShowDetailFragment(){
+        System.out.println("place id in show detail frag = " + preferences.getLong(PLACE_ID, -1));
         detailFragment = (DetailFragment) getSupportFragmentManager().findFragmentById(R.id.frame_layout_main_detail);
 
         if (detailFragment == null && findViewById(R.id.frame_layout_main_detail) != null) {
@@ -178,11 +198,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    public static void getDataFromFragment(SharedPreferences preferences, Context context, PlaceRecyclerViewAdapter placeAdapter, int position) {
-        Place place = placeAdapter.getPlace(position);
-        preferences.edit().putLong(PLACE_ID, place.getId()).apply();
-        Intent editIntent = new Intent(context, DetailActivity.class);
-        context.startActivity(editIntent);
+    public void refreshFragmentInfo(Place place) {
+        /*detailFragment = new DetailFragment();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.frame_layout_main_detail, detailFragment)
+                .commit();*/
+        //detailFragment.updateData();
+        detailFragment = new DetailFragment();
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.frame_layout_main_detail, detailFragment)
+                .commit();
+        //detailFragment.updateViewPager();
+
+
     }
 
 }

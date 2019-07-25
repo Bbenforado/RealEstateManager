@@ -4,16 +4,10 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
 
 <item
     android:id="@+id/menu_search"
-    app:showAsAction="never"
+    app:showAsAction="ifRoom"
     android:icon="@drawable/search_small"
     android:title="Search">
 </item>
 
-    <item
-        android:id="@+id/menu_settings"
-        app:showAsAction="never"
-        android:icon="@drawable/ic_setting_toolbar"
-        android:title="Settings">
-    </item>
 
 </menu>
