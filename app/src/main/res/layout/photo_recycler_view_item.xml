@@ -11,4 +11,14 @@
         android:layout_height="100dip"
         android:scaleType="centerCrop"
         android:src="@drawable/living_room"/>
+
+    <TextView
+        android:id="@+id/text_view_description_detail_fragment_tablet_mode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="description here"
+        android:textSize="9sp"
+        android:gravity="center"
+        android:textStyle="italic"
+        android:layout_marginTop="5dp"/>
 </LinearLayout>

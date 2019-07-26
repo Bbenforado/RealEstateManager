@@ -42,6 +42,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.realestatemanager.MainActivity;
 import com.example.realestatemanager.adapters.PhotoRecyclerViewAdapter;
+import com.example.realestatemanager.fragments.ListFragment;
 import com.example.realestatemanager.models.Address;
 import com.example.realestatemanager.models.Interest;
 import com.example.realestatemanager.models.Photo;
@@ -116,10 +117,10 @@ public class AddFormActivity extends AppCompatActivity {
     private static final int RC_IMAGE_PERMS = 100;
     private static final int RC_CHOOSE_PHOTO = 200;
     private static final int REQUEST_TAKE_PHOTO = 1;
+    public static final String CODE_DESCRIPTION = "codeDescription";
     private List<Photo> photoList;
     private String currentPhotoPath;
     private PhotoRecyclerViewAdapter adapter;
-    private List<Photo> photoListForThePlace;
     private String[] longClickFunctionality = {"Delete photo", "Add description to photo", "Choose as main photo"};
     private List<Photo> allPhotos;
 
@@ -128,6 +129,7 @@ public class AddFormActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        System.out.println("oncreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_form);
         ButterKnife.bind(this);
@@ -136,6 +138,7 @@ public class AddFormActivity extends AppCompatActivity {
         status = preferences.getInt(STATUS_FORM_ACTIVITY, -1);
         configureToolbar();
         photoList = new ArrayList<>();
+        allPhotos = new ArrayList<>();
 
         configureViewModel();
         checkBoxes = Arrays.asList(checkBoxSchool, checkBoxMarketPlace, checkBoxPark, checkBoxHospital, checkBoxCinema, checkBoxTheater);
@@ -144,13 +147,14 @@ public class AddFormActivity extends AppCompatActivity {
         if (status == 1) {
             placeId = preferences.getLong(PLACE_ID, -1);
 
-            configureRecyclerView(placeId);
+            configureRecyclerView(allPhotos);
             configureOnClickRecyclerView();
+
             //update ui
             placeViewModel.getPlace(placeId).observe(this, new Observer<Place>() {
                 @Override
                 public void onChanged(Place place) {
-                    completeFormWithData(place);
+                    completeFormWithPlaceData(place);
                 }
             });
             placeViewModel.getAddress(placeId).observe(this, new Observer<Address>() {
@@ -165,12 +169,25 @@ public class AddFormActivity extends AppCompatActivity {
                     completeInterestFormWithData(interests);
                 }
             });
+
+            placeViewModel.getPhotosForAPlace(placeId).observe(this, photos -> {
+                // update UI if it s not called from add description
+                if (preferences.getInt(CODE_DESCRIPTION, -1) != 300) {
+                    allPhotos.addAll(photos);
+                    adapter.notifyDataSetChanged();
+                }
+                preferences.edit().putInt(CODE_DESCRIPTION, 0).apply();
+            });
+
         } else {
-            configureRecyclerViewForAddActivity();
+            //if it s to add one new place
+            configureRecyclerView(photoList);
             configureOnClickRecyclerView();
             displayRealEstateManagerName();
         }
     }
+
+
 
     @Override
     protected void onDestroy() {
@@ -193,7 +210,6 @@ public class AddFormActivity extends AppCompatActivity {
                     if (paramsAreOk()) {
                         //create place
                         long id = createPlace();
-                        //CheckBox[] checkBoxes = {checkBoxSchool, checkBoxMarketPlace, checkBoxPark, checkBoxHospital, checkBoxCinema, checkBoxTheater};
                         //create interest
                         for (CheckBox checkBox : checkBoxes) {
                             if (checkBox.isChecked()) {
@@ -221,7 +237,6 @@ public class AddFormActivity extends AppCompatActivity {
                         @Override
                         public void onChanged(Place place) {
                             updatePlace(place);
-
                         }
                     });
                     //create photo
@@ -239,7 +254,6 @@ public class AddFormActivity extends AppCompatActivity {
                     sendNotification(this.getString(R.string.place_updated));
                     //return to main activity
                     launchMainActivity();
-
                 }
                 return true;
             default:
@@ -257,7 +271,6 @@ public class AddFormActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        // 6 - Calling the appropriate method after activity result
         this.handleResponse(requestCode, resultCode, data);
 
         //WHEN TAKE PICTURE WITH CAMERA
@@ -289,38 +302,18 @@ public class AddFormActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
-    private void configureRecyclerView(long placeId) {
-        //final list of photos
-        allPhotos = new ArrayList<>();
-        //get the photos already saved for this place
-        placeViewModel.getPhotosForAPlace(placeId).observe(this, new Observer<List<Photo>>() {
-            @Override
-            public void onChanged(List<Photo> photos) {
-                photoListForThePlace = photos;
-                //add the photos to the final list of photos
-                allPhotos.addAll(photoListForThePlace);
-            }
-        });
-        adapter = new PhotoRecyclerViewAdapter(allPhotos, Glide.with(this));
-        this.recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayout.HORIZONTAL, false));
-    }
-
-    private void configureRecyclerViewForAddActivity() {
-        adapter = new PhotoRecyclerViewAdapter(photoList, Glide.with(this));
+    private void configureRecyclerView(List<Photo> photos) {
+        adapter = new PhotoRecyclerViewAdapter(photos, Glide.with(this));
         this.recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayout.HORIZONTAL, false));
     }
 
     private void configureOnClickRecyclerView() {
         ItemClickSupport.addTo(recyclerView, R.layout.photo_recycler_view_item)
-                .setOnItemLongClickListener(new ItemClickSupport.OnItemLongClickListener() {
-                    @Override
-                    public boolean onItemLongClicked(RecyclerView recyclerView, int position, View v) {
-                        Photo photo = adapter.getItem(position);
-                        displayLongClickDialog(photo);
-                        return false;
-                    }
+                .setOnItemLongClickListener((recyclerView, position, v) -> {
+                    Photo photo = adapter.getItem(position);
+                    displayLongClickDialog(photo);
+                    return false;
                 });
     }
 
@@ -380,7 +373,7 @@ public class AddFormActivity extends AppCompatActivity {
         }
     }
 
-    private void completeFormWithData(Place place) {
+    private void completeFormWithPlaceData(Place place) {
         typeOfPlaceButton.setText(place.getType());
         editTextPrice.setText(String.valueOf(place.getPrice()));
         editTextAuthor.setText(place.getAuthor());
@@ -487,13 +480,12 @@ public class AddFormActivity extends AppCompatActivity {
                 .setPositiveButton(getString(R.string.save), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        preferences.edit().putInt(CODE_DESCRIPTION, 300).apply();
                         String descriptionOfPlace = description.getText().toString();
                         //update photo with new description
                         photo.setDescription(descriptionOfPlace);
                         //now update photo with viewmodel method
                         placeViewModel.updatePhoto(photo);
-
-                        System.out.println("all photos = " + allPhotos.size());
 
                         Toast.makeText(getApplicationContext(), getString(R.string.toast_message_description_added), Toast.LENGTH_SHORT).show();
                     }})
@@ -553,9 +545,11 @@ public class AddFormActivity extends AppCompatActivity {
                 String path = getRealPathFromURI(uri);
                 Photo photo = new Photo(path);
                 photoList.add(photo);
+                //ADD ACTIVITY
                 if (status != 1) {
                     adapter.notifyDataSetChanged();
                 } else {
+                    //EDIT
                     allPhotos.add(photo);
                     adapter.notifyDataSetChanged();
                 }
@@ -679,7 +673,7 @@ public class AddFormActivity extends AppCompatActivity {
     }
 
     //-------------------------------------------------------------------------
-    //CREATE IN DATABASE
+    //CREATE/UPDATE IN DATABASE
     //-------------------------------------------------------------------------
 
     private long createPlace() {
@@ -726,7 +720,7 @@ public class AddFormActivity extends AppCompatActivity {
         int nbrOfBathrooms;
         int nbrOfBedrooms;
         String description;
-        String dateOfSale;
+        //String dateOfSale;
         String type = typeOfPlaceButton.getText().toString();
         place.setType(type);
         long price = Long.parseLong(editTextPrice.getText().toString());
