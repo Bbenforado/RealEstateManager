@@ -83,9 +83,6 @@ public class InformationFragment extends Fragment {
     }
 
     public static InformationFragment newInstance(int position) {
-
-        System.out.println("new instance frag 1");
-
         InformationFragment fragment = new InformationFragment();
         Bundle args = new Bundle();
         args.putInt(KEY_POSITION, position);
@@ -98,15 +95,11 @@ public class InformationFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        System.out.println("on create info frag");
-
         View result = inflater.inflate(R.layout.fragment_information, container, false);
         preferences = getActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         ButterKnife.bind(this, result);
         configureViewModel();
         long placeId = preferences.getLong(PLACE_ID, -1);
-
-        System.out.println("place id in information frag = " + placeId);
 
         if (placeId != 0 && placeId != -1) {
             viewModel.getPlace(placeId).observe(this, new Observer<Place>() {
@@ -151,81 +144,11 @@ public class InformationFragment extends Fragment {
     //--------------------------------------------------
     //UPDATE UI
     //---------------------------------------------------
-    /*public void refreshFrag() {
-        System.out.println("refresh info frag");
-
-        long id = preferences.getLong(PLACE_ID, -1);
-        viewModel.getPlace(id).observe(this, new Observer<Place>() {
-            @Override
-            public void onChanged(Place place) {
-                if (place.getDateOfSale() == null) {
-                    layoutDateOfSale.setVisibility(View.GONE);
-                    statusTextView.setText("Available");
-                } else {
-                    layoutDateOfSale.setVisibility(View.VISIBLE);
-                    dateOfSaleTextView.setText(place.getDateOfSale());
-                    statusTextView.setText("Sold");
-                    statusTextView.setTextColor(getResources().getColor(R.color.red));
-                }
-                managerOfPlaceTextView.setText(place.getAuthor());
-                creationDateTextView.setText(place.getCreationDate());
-                priceTextView.setText(String.valueOf(place.getPrice()));
-
-                if (place.getDescription() != null) {
-                    descriptionTextView.setText(place.getDescription());
-                } else {
-                    descriptionTextView.setText("Not informed yet");
-                }
-                if (place.getSurface() != 0) {
-                    surfaceTextView.setText(String.valueOf(place.getSurface()));
-                } else {
-                    surfaceTextView.setText("Not informed yet");
-                }
-                if (place.getNbrOfRooms() != 0) {
-                    nbrOfRoomsTextView.setText(String.valueOf(place.getNbrOfRooms()));
-                } else {
-                    nbrOfRoomsTextView.setText("Not informed yet");
-                }
-                if (place.getNbrOfBathrooms() != 0) {
-                    nbrOfBathroomsTextView.setText(String.valueOf(place.getNbrOfBathrooms()));
-                } else {
-                    nbrOfBathroomsTextView.setText("Not informed yet");
-                }
-                if (place.getNbrOfBedrooms() != 0) {
-                    nbrOfBedroomsTextView.setText(String.valueOf(place.getNbrOfBedrooms()));
-                } else {
-                    nbrOfBedroomsTextView.setText("Not informed yet");
-                }
-                getInterests(place.getId());
-            }
-        });
-        viewModel.getAddress(id).observe(this, new Observer<Address>() {
-            @Override
-            public void onChanged(Address address) {
-                streetAddressTextView.setText(address.getStreetNumber() + " " + address.getStreetName());
-                if (address.getComplement() != null) {
-                    if (!address.getComplement().equals("Not informed")) {
-                        complementTextView.setText(address.getComplement());
-                    } else {
-                        complementTextView.setVisibility(View.GONE);
-                    }
-                } else {
-                    complementTextView.setVisibility(View.GONE);
-                }
-                postalCodeAndCityTextView.setText(address.getPostalCode() + " " + address.getCity());
-                countryTextView.setText(address.getCountry());
-            }
-        });
-    }*/
-
-
     public void updateUi(Place place) {
-
-        System.out.println("update ui info frag")
-        ;
         if (place.getDateOfSale() == null) {
             layoutDateOfSale.setVisibility(View.GONE);
             statusTextView.setText(getString(R.string.status_available));
+            statusTextView.setTextColor(getResources().getColor(R.color.green));
         } else {
             layoutDateOfSale.setVisibility(View.VISIBLE);
             dateOfSaleTextView.setText(place.getDateOfSale());

@@ -2,13 +2,17 @@ package com.example.realestatemanager.utils;
 
 
 import android.content.Context;
-import android.location.Address;
 
+import android.content.SharedPreferences;
+import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 
 import android.net.wifi.WifiManager;
+import android.widget.Button;
+import android.widget.Toast;
 
+import com.example.realestatemanager.R;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.IOException;
@@ -46,9 +50,6 @@ public class Utils {
      * @return
      */
     public static Boolean isInternetAvailable(Context context){
-
-        System.out.println("coming here is internet");
-
         WifiManager wifi = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
         return wifi.isWifiEnabled();
     }
@@ -59,32 +60,54 @@ public class Utils {
     }
 
     public static String addZeroToDate(String string) {
+        System.out.println("string add = " + string);
         if (string.length() == 1) {
+            System.out.println("come here?");
             string = "0" + string;
+            System.out.println("new string  = " + string);
+            return string;
         }
         return string;
     }
 
-    /**
-     * format a Location to a String format (latitude,longitude)
-     * @param location location of the user
-     * @return
-     */
-    public static String formatLocation(Location location) {
-        return location.getLatitude() + "," + location.getLongitude();
+    public static void checkIfDateIsPassedOrCurrent(Context context, String selectedDay, String selectedMonth, int selectedYear, int currentDay,
+                                                    int currentMonth, int currentYear, Button button, SharedPreferences preferences,
+                                                    final String KEY) {
+        if (selectedYear < currentYear) {
+            button.setText(selectedDay + "/" + selectedMonth + "/" + selectedYear);
+            preferences.edit().putString(KEY, selectedDay +"/"+ selectedMonth +  "/" + selectedYear).apply();
+        } else if(selectedYear == currentYear) {
+            if (Integer.parseInt(selectedMonth) < currentMonth) {
+                button.setText(selectedDay + "/" + selectedMonth + "/" + selectedYear);
+                preferences.edit().putString(KEY, selectedDay +"/"+ selectedMonth +  "/" + selectedYear).apply();
+            } else if (Integer.parseInt(selectedMonth) == currentMonth) {
+                if (Integer.parseInt(selectedDay) <= currentDay) {
+                    button.setText(selectedDay + "/" + selectedMonth + "/" + selectedYear);
+                    preferences.edit().putString(KEY, selectedDay +"/"+ selectedMonth +  "/" + selectedYear).apply();
+                } else {
+                    Toast.makeText(context, context.getString(R.string.toast_message_date_not_correct), Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(context, context.getString(R.string.toast_message_date_not_correct), Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(context, context.getString(R.string.toast_message_date_not_correct), Toast.LENGTH_SHORT).show();
+        }
     }
 
-    public static LatLng getLocationFromAddress(Context context, String strAddress) {
 
-        System.out.println("get location from address");
+    /*public static String formatLocation(Location location) {
+        return location.getLatitude() + "," + location.getLongitude();
+    }*/
 
+    public static String getLocationFromAddress(Context context, String strAddress) {
         Geocoder coder = new Geocoder(context);
         List<Address> address;
         LatLng latLng = null;
+        String latLngOfAddress = null;
 
         try {
             // May throw an IOException
-
             address = coder.getFromLocationName(strAddress, 5);
             if (address == null) {
                 return null;
@@ -92,13 +115,24 @@ public class Utils {
             if (address.size() != 0) {
                 Address location = address.get(0);
                 latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                latLngOfAddress = getParenthesesContent(latLng.toString());
             }
-
         } catch (IOException ex) {
             ex.printStackTrace();
         }
 
-        return latLng;
+        return latLngOfAddress;
+    }
+
+    public static String getParenthesesContent(String str){
+        return str.substring(str.indexOf('(')+1,str.indexOf(')'));
+    }
+
+    public static LatLng getLatLngOfPlace(String latlng) {
+        String[] retrievedLatLng = latlng.split(",");
+        double latitude = Double.parseDouble(retrievedLatLng[0]);
+        double longitude = Double.parseDouble(retrievedLatLng[1]);
+        return new LatLng(latitude, longitude);
     }
 
 

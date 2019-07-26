@@ -48,11 +48,13 @@ import com.example.realestatemanager.models.Address;
 import com.example.realestatemanager.models.Interest;
 import com.example.realestatemanager.models.Photo;
 import com.example.realestatemanager.utils.ItemClickSupport;
+import com.example.realestatemanager.utils.Utils;
 import com.example.realestatemanager.viewModels.PlaceViewModel;
 import com.example.realestatemanager.R;
 import com.example.realestatemanager.injections.Injection;
 import com.example.realestatemanager.injections.ViewModelFactory;
 import com.example.realestatemanager.models.Place;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -191,8 +193,6 @@ public class AddFormActivity extends AppCompatActivity {
         }
     }
 
-
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -204,8 +204,6 @@ public class AddFormActivity extends AppCompatActivity {
         return true;
     }
 
-    /**
-     */
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.menu_save_place:
@@ -215,8 +213,6 @@ public class AddFormActivity extends AppCompatActivity {
                     if (paramsAreOk()) {
                         //if there is at least one photo
                         if (photoList.size()>0) {
-
-                            System.out.println("boolean = " + allPhotosHaveDescription(photoList));
                             //if photos have all descriptions
                             if (allPhotosHaveDescription(photoList)) {
 
@@ -256,7 +252,6 @@ public class AddFormActivity extends AppCompatActivity {
                     if (paramsAreOk()) {
                         //if there is at least one photo
                         if (allPhotos.size()>0) {
-                            System.out.println("boolean all photos = " + allPhotosHaveDescription(allPhotos));
                             if (allPhotosHaveDescription(allPhotos)) {
                                 //get existing place
                                 placeViewModel.getPlace(placeId).observe(this, new Observer<Place>() {
@@ -317,7 +312,6 @@ public class AddFormActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        // 2 - Forward results to EasyPermissions
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }
 
@@ -455,6 +449,9 @@ public class AddFormActivity extends AppCompatActivity {
             editTextNbrOfBedrooms.setText(String.valueOf(place.getNbrOfBedrooms()));
         } else {
             editTextNbrOfBedrooms.setText(getString(R.string.not_informed_yet));
+        }
+        if (place.getDateOfSale() != null) {
+            saleDateButton.setText(place.getDateOfSale());
         }
     }
 
@@ -616,7 +613,6 @@ public class AddFormActivity extends AppCompatActivity {
                     allPhotos.add(photo);
                     adapter.notifyDataSetChanged();
                 }
-
             } else {
                 Toast.makeText(this, getString(R.string.toast_message_no_image_chosen), Toast.LENGTH_SHORT).show();
             }
@@ -700,28 +696,11 @@ public class AddFormActivity extends AppCompatActivity {
                 int currentMonth = calendar.get(Calendar.MONTH)+1;
                 int currentYear = calendar.get(Calendar.YEAR);
                 int newMonth = month + 1;
-                //check if selected date is passed or not
-                if (year < currentYear) {
-                    saleDateButton.setText(dayOfMonth + "/" + newMonth + "/" + year);
-                    preferences.edit().putString(DATE_OF_SALE, dayOfMonth +"/"+ newMonth +  "/" + year).apply();
-                } else if(year == currentYear) {
-                    if ((month+1) < currentMonth) {
-                        Toast.makeText(getApplicationContext(), "ok", Toast.LENGTH_SHORT).show();
-                        saleDateButton.setText(dayOfMonth + "/" + newMonth + "/" + year);
-                        preferences.edit().putString(DATE_OF_SALE, dayOfMonth +"/"+ newMonth +  "/" + year).apply();
-                    } else if ((month+1) == currentMonth) {
-                        if (dayOfMonth <= currentDay) {
-                            saleDateButton.setText(dayOfMonth + "/" + newMonth + "/" + year);
-                            preferences.edit().putString(DATE_OF_SALE, dayOfMonth +"/"+ newMonth +  "/" + year).apply();
-                        } else {
-                            Toast.makeText(getApplicationContext(), "not ok", Toast.LENGTH_SHORT).show();
-                        }
-                    } else {
-                        Toast.makeText(getApplicationContext(), "not ok", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    Toast.makeText(getApplicationContext(), "not ok", Toast.LENGTH_SHORT).show();
-                }
+                String  day = Utils.addZeroToDate(String.valueOf(dayOfMonth));
+                String formattedMonth = Utils.addZeroToDate(String.valueOf(newMonth));
+
+                Utils.checkIfDateIsPassedOrCurrent(getApplicationContext(), day, formattedMonth, year, currentDay, currentMonth, currentYear,
+                        saleDateButton, preferences, DATE_OF_SALE);
             }
         }, year, month, day);
         datePickerDialog.show();
@@ -736,20 +715,9 @@ public class AddFormActivity extends AppCompatActivity {
 
     }
 
-    /*private boolean photosHaveDescriptions(List<Photo> photos) {
-        if (photos.size() > 0) {
-            for (int i = 0; i < photos.size(); i++) {
-                return true;
-            }
-        } else {
-            return false;
-        }
-    }*/
-
     //-------------------------------------------------------------------------
     //CREATE/UPDATE IN DATABASE
     //-------------------------------------------------------------------------
-
     private long createPlace() {
         long surface = 0;
         int nbrOfRooms = 0;
@@ -773,9 +741,8 @@ public class AddFormActivity extends AppCompatActivity {
         if (!TextUtils.isEmpty(editTextDescription.getText().toString())) {
             description = editTextDescription.getText().toString();
         }
-        //int status = preferences.getInt(SWITCH_BUTTON_MODE, -1);
         String author = editTextAuthor.getText().toString();
-        String date = new Date().toString();
+        String date = Utils.getTodayDate();
         Place place;
         if (TextUtils.isEmpty(saleDateButton.getText())) {
             //is available
@@ -794,7 +761,6 @@ public class AddFormActivity extends AppCompatActivity {
         int nbrOfBathrooms;
         int nbrOfBedrooms;
         String description;
-        //String dateOfSale;
         String type = typeOfPlaceButton.getText().toString();
         place.setType(type);
         long price = Long.parseLong(editTextPrice.getText().toString());
@@ -843,7 +809,18 @@ public class AddFormActivity extends AppCompatActivity {
         String country = editTextCountry.getText().toString();
 
         Address address = new Address(placeId, streetNumber, streetName, complement, postalCode, city, country);
+        getAndSetLatLngOfPlace(address);
         placeViewModel.createAddress(address);
+
+    }
+
+    private void getAndSetLatLngOfPlace(Address address) {
+        String finalAddress = address.getStreetNumber() + " " + address.getStreetName() + "," +
+                address.getCity() + "," + address.getPostalCode() + " " +
+                address.getCountry();
+
+        String latLng = Utils.getLocationFromAddress(this, finalAddress);
+        address.setLatLng(latLng);
     }
 
     private void updateAddress(Address address) {
@@ -862,6 +839,8 @@ public class AddFormActivity extends AppCompatActivity {
         address.setCity(city);
         String country = editTextCountry.getText().toString();
         address.setCountry(country);
+
+        getAndSetLatLngOfPlace(address);
 
         placeViewModel.updateAddress(address);
     }

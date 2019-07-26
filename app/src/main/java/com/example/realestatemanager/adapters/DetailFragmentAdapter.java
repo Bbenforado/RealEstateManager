@@ -22,9 +22,6 @@ public class DetailFragmentAdapter extends FragmentPagerAdapter {
 
     public DetailFragmentAdapter(FragmentManager fragmentManager, String[] titles) {
         super(fragmentManager);
-
-        System.out.println("view pager adapter constructor");
-
         this.titles = titles;
     }
 
@@ -33,26 +30,15 @@ public class DetailFragmentAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-
-                System.out.println("adapter getitem method frag 1");
-
                 //return InformationFragment.newInstance(position);
                 return new InformationFragment();
             case 1:
-
-                System.out.println("adapter getitem method frag 2");
-
                 //return MapFragment.newInstance(position);
                 return new MapFragment();
             default:
                 return InformationFragment.newInstance(position);
         }
     }
-
-    /*@Override
-    public int getItemPosition(@NonNull Object object) {
-        return POSITION_NONE;
-    }*/
 
     @NonNull
     @Override
@@ -69,20 +55,6 @@ public class DetailFragmentAdapter extends FragmentPagerAdapter {
         }
         return createdFragment;
     }
-
-    /*public void someMethod() {
-        System.out.println("somemethod");
-        // do work on the referenced Fragments, but first check if they
-        // even exist yet, otherwise you'll get an NPE.
-
-        if (informationFragment != null) {
-            informationFragment.refreshFrag();
-        }
-
-        if (mapFragment != null) {
-            // m2ndFragment.doSomeWorkToo();
-        }
-    }*/
 
     @Override
     public int getCount() {

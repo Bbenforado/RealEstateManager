@@ -32,7 +32,7 @@ public class PhotoViewHolder extends RecyclerView.ViewHolder {
 
         String image = photo.getUri();
         glide.load(image).apply(RequestOptions.noTransformation()).into(imageView);
-
+        System.out.println("status activity = " + statusActivity);
         if (statusActivity == 1 || statusActivity == 0) {
             textViewDescription.setVisibility(View.GONE);
         } else {

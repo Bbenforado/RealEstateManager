@@ -41,6 +41,7 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.example.realestatemanager.utils.Utils.getLatLngOfPlace;
 import static com.example.realestatemanager.utils.Utils.getLocationFromAddress;
 
 /**
@@ -111,19 +112,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                 @Override
                 public void onChanged(com.example.realestatemanager.models.Address adressOfPlace) {
 
-                    String finalAddress = adressOfPlace.getStreetNumber() + " " + adressOfPlace.getStreetName() + "," +
-                            adressOfPlace.getCity() + "," + adressOfPlace.getPostalCode() + " " +
-                            adressOfPlace.getCountry();
+                    if (adressOfPlace.getLatLng() != null) {
+                        String latLng = adressOfPlace.getLatLng();
+                        LatLng latLngOfAddress = getLatLngOfPlace(latLng);
 
-                    LatLng latLng = getLocationFromAddress(getContext(), finalAddress);
 
-                    if (latLng != null) {
-                        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 16);
-                        gmap.animateCamera(cameraUpdate);
-                        gmap.addMarker(new MarkerOptions()
-                                    .position(latLng));
+                            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLngOfAddress, 16);
+                            gmap.animateCamera(cameraUpdate);
+                            gmap.addMarker(new MarkerOptions()
+                                    .position(latLngOfAddress));
 
-                    }else {
+                        } else {
                         Toast.makeText(getContext(), getString(R.string.toast_message_place_location_not_found), Toast.LENGTH_SHORT).show();
                     }
                 }

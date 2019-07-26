@@ -33,6 +33,7 @@
     <string name="notification_title">Real estate manager</string>
     <string name="title_dialog_choose_type_of_place">Choose a type of place :</string>
     <string name="button_generic_text_type_of_place">Type of place</string>
+    <string name="toast_message_date_not_correct">You have to choose a passed or present date</string>
 
     //FOR MAP ACTIVITY
     <string name="permission_granted">Permission granted</string>

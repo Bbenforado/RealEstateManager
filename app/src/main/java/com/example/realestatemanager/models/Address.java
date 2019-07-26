@@ -4,6 +4,8 @@ import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
+import com.google.android.gms.maps.model.LatLng;
+
 @Entity(tableName = "addresses", foreignKeys =
         @ForeignKey(entity = Place.class,
                 parentColumns = "id",
@@ -20,6 +22,7 @@ public class Address {
     private String country;
     private long idPlace;
     private long idInterest;
+    private String latLng;
 
     //for interest
     /*public Address(int streetNumber, String streetName, String complement, String postalCode,
@@ -45,9 +48,28 @@ public class Address {
         this.idPlace = idPlace;
     }
 
+    /*public Address(long idPlace, String latLng, int streetNumber, String streetName, String complement, String postalCode, String city,
+                   String country) {
+        this.streetNumber = streetNumber;
+        this.streetName = streetName;
+        this.complement = complement;
+        this.postalCode = postalCode;
+        this.country = country;
+        this.city = city;
+        this.idPlace = idPlace;
+        this.latLng = latLng;
+    }*/
+
     //---------------------------------
     //GETTERS
     //---------------------------------
+
+
+    public String getLatLng() {
+        return latLng;
+    }
+
+
 
     public long getId() {
         return id;
@@ -87,7 +109,9 @@ public class Address {
     //---------------------------------------
     //SETTERS
     //----------------------------------------
-
+    public void setLatLng(String latLng) {
+        this.latLng = latLng;
+    }
     public void setId(long id) {
         this.id = id;
     }

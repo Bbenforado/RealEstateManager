@@ -120,7 +120,7 @@ public class DetailFragment extends Fragment {
         preferences = getActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         ButterKnife.bind(this, view);
         placeId = preferences.getLong(PLACE_ID, -1);
-        preferences.edit().putInt(STATUS_FORM_ACTIVITY, 0).apply();
+        preferences.edit().putInt(STATUS_FORM_ACTIVITY, -1).apply();
 
         if (placeId != 0 && placeId != -1) {
             configureViewModel();
@@ -137,14 +137,7 @@ public class DetailFragment extends Fragment {
                     }
                 });
             }
-
-
             textViewNoItemSelected.setVisibility(View.GONE);
-
-            /*if (preferences.getString(APP_MODE, null).equals("tablet")) {
-                viewPagerAdapter.someMethod();
-            }*/
-
         } else {
             textViewNoItemSelected.setVisibility(View.VISIBLE);
         }
@@ -153,12 +146,10 @@ public class DetailFragment extends Fragment {
     }
 
     public void updateUi(Place place) {
-
-        System.out.println("update ui info frag");
-
         if (place.getDateOfSale() == null) {
             layoutDateOfSaleTabletMode.setVisibility(View.GONE);
             textViewStatusTabletMode.setText(getString(R.string.status_available));
+            textViewStatusTabletMode.setTextColor(getResources().getColor(R.color.green));
         } else {
             layoutDateOfSaleTabletMode.setVisibility(View.VISIBLE);
             textViewDateOfSaleTabletMode.setText(place.getDateOfSale());
@@ -238,12 +229,8 @@ public class DetailFragment extends Fragment {
     }
 
     private void configureViewpagerAndTabs() {
-        //viewPager = getView().findViewById(R.id.viewpager);
         viewPagerAdapter = new DetailFragmentAdapter(getActivity().getSupportFragmentManager(), titles);
-
         viewPager.setAdapter(viewPagerAdapter);
-
-        //tabLayout = getActivity().findViewById(R.id.main_tabs);
         tabLayout.setupWithViewPager(viewPager);
         for (int i = 0; i < tabLayout.getTabCount(); i++) {
             tabLayout.getTabAt(i).setIcon(iconTabLayout[i]);
@@ -285,5 +272,4 @@ public class DetailFragment extends Fragment {
         }
     }
     //----------------------------------------------------
-
 }

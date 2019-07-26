@@ -36,6 +36,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
+
+import static com.example.realestatemanager.utils.Utils.getLatLngOfPlace;
 import static com.example.realestatemanager.utils.Utils.getLocationFromAddress;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener, GoogleMap.OnMarkerClickListener {
@@ -43,7 +45,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private GoogleMap googleMap;
     private static final int REQUEST_ID_ACCESS_COURSE_FINE_LOCATION = 100;
     private PlaceViewModel viewModel;
-    private List<LatLng> latLngs;
+    //private List<String> latLngs;
     private SharedPreferences preferences;
     private static final String APP_PREFERENCES = "appPreferences";
     private static final String PLACE_ID = "placeId";
@@ -55,7 +57,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         ButterKnife.bind(this);
         preferences = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE);
         configureViewModel();
-        latLngs = new ArrayList<>();
+        //latLngs = new ArrayList<>();
         SupportMapFragment map = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map_fragment_map_activity);
         map.getMapAsync(this);
     }
@@ -152,27 +154,22 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             public void onChanged(List<Address> addresses) {
 
                 for(int i = 0; i<addresses.size(); i++) {
-                    String finalAddress = addresses.get(i).getStreetNumber() + " " + addresses.get(i).getStreetName() + "," +
-                            addresses.get(i).getCity() + "," + addresses.get(i).getPostalCode() + " " +
-                            addresses.get(i).getCountry();
-                    LatLng latLng = getLocationFromAddress(context, finalAddress);
-
-                    System.out.println("latlong = " + latLng);
-
-                    latLngs.add(latLng);
-                    long placeId = addresses.get(i).getIdPlace();
-                    showPlaceOnMap(placeId, latLng);
+                    if (addresses.get(i).getLatLng() != null) {
+                        String latLng = addresses.get(i).getLatLng();
+                        //latLngs.add(latLng);
+                        long placeId = addresses.get(i).getIdPlace();
+                        LatLng latLngOfPlace = getLatLngOfPlace(latLng);
+                        showPlaceOnMap(placeId, latLngOfPlace);
+                    } else {
+                        Toast.makeText(getApplicationContext(), getString(R.string.toast_message_place_location_not_found), Toast.LENGTH_SHORT).show();
+                    }
                 }
-                //showAllPlacesOnMap(latLngs);
             }
         });
     }
 
     private void showPlaceOnMap(long id, LatLng latLng) {
         if (latLng != null) {
-
-            System.out.println("come here show place on map");
-
             CameraUpdateFactory.newLatLng(latLng);
             Marker placeMarker = googleMap.addMarker(new MarkerOptions()
             .position(latLng));
@@ -181,19 +178,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             Toast.makeText(this, getString(R.string.toast_message_place_location_not_found), Toast.LENGTH_SHORT).show();
         }
     }
-
-  /*  private void showAllPlacesOnMap(List<LatLng> placesLatLngs) {
-        for (int i = 0; i<placesLatLngs.size(); i++) {
-            if (placesLatLngs.get(i) != null) {
-                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(placesLatLngs.get(i), 16);
-                googleMap.animateCamera(cameraUpdate);
-                googleMap.addMarker(new MarkerOptions()
-                        .position(placesLatLngs.get(i)));
-            } else {
-                Toast.makeText(this, "Location not found", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }*/
 
     public Location getUserLocation(LocationListener listener) {
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
