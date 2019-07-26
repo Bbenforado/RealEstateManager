@@ -28,6 +28,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
@@ -123,13 +124,14 @@ public class AddFormActivity extends AppCompatActivity {
     private PhotoRecyclerViewAdapter adapter;
     private String[] longClickFunctionality = {"Delete photo", "Add description to photo", "Choose as main photo"};
     private List<Photo> allPhotos;
+    private List<Long> deletedPhotosId;
+    private List<Photo> updatedPhoto;
 
 
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        System.out.println("oncreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_form);
         ButterKnife.bind(this);
@@ -139,6 +141,8 @@ public class AddFormActivity extends AppCompatActivity {
         configureToolbar();
         photoList = new ArrayList<>();
         allPhotos = new ArrayList<>();
+        deletedPhotosId = new ArrayList<>();
+        updatedPhoto = new ArrayList<>();
 
         configureViewModel();
         checkBoxes = Arrays.asList(checkBoxSchool, checkBoxMarketPlace, checkBoxPark, checkBoxHospital, checkBoxCinema, checkBoxTheater);
@@ -207,53 +211,102 @@ public class AddFormActivity extends AppCompatActivity {
             case R.id.menu_save_place:
                 //if it s to save a new place
                 if (status != 1) {
+                    //if fields are correctly filled
                     if (paramsAreOk()) {
-                        //create place
-                        long id = createPlace();
-                        //create interest
-                        for (CheckBox checkBox : checkBoxes) {
-                            if (checkBox.isChecked()) {
-                                Interest interest = new Interest(checkBox.getText().toString(), id);
-                                placeViewModel.createInterest(interest);
+                        //if there is at least one photo
+                        if (photoList.size()>0) {
+
+                            System.out.println("boolean = " + allPhotosHaveDescription(photoList));
+                            //if photos have all descriptions
+                            if (allPhotosHaveDescription(photoList)) {
+
+                                //create place
+                                long id = createPlace();
+                                //create interest
+                                for (CheckBox checkBox : checkBoxes) {
+                                    if (checkBox.isChecked()) {
+                                        Interest interest = new Interest(checkBox.getText().toString(), id);
+                                        placeViewModel.createInterest(interest);
+                                    }
+                                }
+                                //create photo
+                                for (Photo photo : photoList) {
+                                    photo.setPlaceId(id);
+                                    placeViewModel.createPhoto(photo);
+                                }
+                                //create address
+                                createAddress(id);
+                                sendNotification(this.getString(R.string.place_created));
+                                launchMainActivity();
+                            }else {
+                                Toast.makeText(this, getString(R.string.description_photo_missing), Toast.LENGTH_SHORT).show();
                             }
+                        } else {
+                            Toast.makeText(this, getString(R.string.photo_missing),
+                                    Toast.LENGTH_LONG).show();
                         }
-                        //create photo
-                        for (Photo photo : photoList) {
-                            photo.setPlaceId(id);
-                            placeViewModel.createPhoto(photo);
-                        }
-                        //create address
-                        createAddress(id);
-                        sendNotification(this.getString(R.string.place_created));
-                        launchMainActivity();
                     } else {
                         Toast.makeText(this, getString(R.string.field_missing),
                                 Toast.LENGTH_LONG).show();
                     }
                 } else {
                     //if it s to update an existing place
-                    //get existing place
-                    placeViewModel.getPlace(placeId).observe(this, new Observer<Place>() {
-                        @Override
-                        public void onChanged(Place place) {
-                            updatePlace(place);
-                        }
-                    });
-                    //create photo
-                    for (Photo photo : photoList) {
-                        photo.setPlaceId(placeId);
-                        placeViewModel.createPhoto(photo);
-                    }
 
-                    placeViewModel.getAddress(placeId).observe(this, new Observer<Address>() {
-                        @Override
-                        public void onChanged(Address address) {
-                            updateAddress(address);
+                    //if fields are correctly filled
+                    if (paramsAreOk()) {
+                        //if there is at least one photo
+                        if (allPhotos.size()>0) {
+                            System.out.println("boolean all photos = " + allPhotosHaveDescription(allPhotos));
+                            if (allPhotosHaveDescription(allPhotos)) {
+                                //get existing place
+                                placeViewModel.getPlace(placeId).observe(this, new Observer<Place>() {
+                                    @Override
+                                    public void onChanged(Place place) {
+                                        updatePlace(place);
+                                    }
+                                });
+                                //create newly added photo
+                                if (photoList.size() > 0) {
+                                    for (Photo photo : photoList) {
+                                        photo.setPlaceId(placeId);
+                                        placeViewModel.createPhoto(photo);
+                                    }
+                                }
+
+                                //delete photos if some have been deleted
+                                if (deletedPhotosId.size() > 0) {
+                                    for (Long id : deletedPhotosId) {
+                                        placeViewModel.deletePhoto(id);
+                                    }
+                                }
+
+                                //update photos if some have been updated
+                                if (updatedPhoto.size() > 0) {
+                                    for (Photo photo : updatedPhoto) {
+                                        placeViewModel.updatePhoto(photo);
+                                    }
+                                }
+
+                                placeViewModel.getAddress(placeId).observe(this, new Observer<Address>() {
+                                    @Override
+                                    public void onChanged(Address address) {
+                                        updateAddress(address);
+                                    }
+                                });
+                                sendNotification(this.getString(R.string.place_updated));
+                                //return to main activity
+                                launchMainActivity();
+                            } else {
+                                Toast.makeText(this, getString(R.string.description_photo_missing), Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            Toast.makeText(this, getString(R.string.photo_missing),
+                                    Toast.LENGTH_LONG).show();
                         }
-                    });
-                    sendNotification(this.getString(R.string.place_updated));
-                    //return to main activity
-                    launchMainActivity();
+                    }else {
+                        Toast.makeText(this, getString(R.string.field_missing),
+                                Toast.LENGTH_LONG).show();
+                    }
                 }
                 return true;
             default:
@@ -431,6 +484,14 @@ public class AddFormActivity extends AppCompatActivity {
     //--------------------------------------------
     //METHODS
     //---------------------------------------------
+    private boolean allPhotosHaveDescription(List<Photo> photos) {
+        for (Photo photo : photos) {
+            if (photo.getDescription() == null) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     private void displayLongClickDialog(Photo photo) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -440,8 +501,8 @@ public class AddFormActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 switch (which) {
                     case 0:
-                        placeViewModel.deletePhoto(photo.getId());
                         long photoId = photo.getId();
+                        deletedPhotosId.add(photoId);
 
                         for (int i = 0; i < allPhotos.size(); i++) {
                             if (allPhotos.get(i).getId() == photoId) {
@@ -474,6 +535,9 @@ public class AddFormActivity extends AppCompatActivity {
         LayoutInflater inflater = getLayoutInflater();
         View dialogLayout = inflater.inflate(R.layout.dialog_add_description, null);
         final TextInputEditText description = dialogLayout.findViewById(R.id.text_edit_description_dialog);
+        if (photo.getDescription() != null) {
+            description.setText(photo.getDescription());
+        }
 
         dialog.setMessage(getString(R.string.title_dialog_add_description))
                 .setView(dialogLayout)
@@ -484,8 +548,7 @@ public class AddFormActivity extends AppCompatActivity {
                         String descriptionOfPlace = description.getText().toString();
                         //update photo with new description
                         photo.setDescription(descriptionOfPlace);
-                        //now update photo with viewmodel method
-                        placeViewModel.updatePhoto(photo);
+                        updatedPhoto.add(photo);
 
                         Toast.makeText(getApplicationContext(), getString(R.string.toast_message_description_added), Toast.LENGTH_SHORT).show();
                     }})
@@ -670,7 +733,18 @@ public class AddFormActivity extends AppCompatActivity {
                 !TextUtils.isEmpty(editTextAuthor.getText().toString()) && !TextUtils.isEmpty(editTextStreetNbr.getText().toString()) &&
                 !TextUtils.isEmpty(editTextStreetName.getText().toString()) && !TextUtils.isEmpty(editTextPostalCode.getText().toString()) &&
                 !TextUtils.isEmpty(editTextCity.getText().toString()) && !TextUtils.isEmpty(editTextCountry.getText().toString());
+
     }
+
+    /*private boolean photosHaveDescriptions(List<Photo> photos) {
+        if (photos.size() > 0) {
+            for (int i = 0; i < photos.size(); i++) {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }*/
 
     //-------------------------------------------------------------------------
     //CREATE/UPDATE IN DATABASE

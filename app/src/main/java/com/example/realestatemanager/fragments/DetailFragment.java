@@ -55,9 +55,6 @@ public class DetailFragment extends Fragment {
     @BindView(R.id.viewpager) ViewPager viewPager;
     @Nullable
     @BindView(R.id.main_tabs) TabLayout tabLayout;
-    /*@BindView(R.id.nested_scroll_view)
-    NestedScrollView scrollView;*/
-    //@BindView(R.id.layout) LinearLayout linearLayout;
     @BindView(R.id.recycler_view_detail_photos) RecyclerView recyclerViewPhotos;
     @BindView(R.id.image_view_detail)
     ImageView imageViewPhoto;
@@ -119,14 +116,11 @@ public class DetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
-
-        System.out.println("on create detail frag");
         //------------------------------------------------
         preferences = getActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         ButterKnife.bind(this, view);
         placeId = preferences.getLong(PLACE_ID, -1);
-
-        System.out.println("place id detail frag = " + placeId);
+        preferences.edit().putInt(STATUS_FORM_ACTIVITY, 0).apply();
 
         if (placeId != 0 && placeId != -1) {
             configureViewModel();

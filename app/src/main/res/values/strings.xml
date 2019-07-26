@@ -13,6 +13,8 @@
     //ADD FORM ACTIVITY
     <string name="place_created">Place created</string>
     <string name="field_missing">You have to enter at least a price, a type of place, an address and the real estate manager in charge of this place!</string>
+    <string name="photo_missing">You have to upload at least one photo</string>
+    <string name="description_photo_missing">You have to write a description for each photo</string>
     <string name="place_updated">Place updated</string>
     <string name="toolbar_title_edit">Edit place</string>
     <string name="toolbar_title_add">Add a new place</string>

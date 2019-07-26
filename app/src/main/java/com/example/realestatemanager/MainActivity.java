@@ -178,8 +178,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void configureAndShowDetailFragment(){
 
-        System.out.println("place id in show detail frag = " + preferences.getLong(PLACE_ID, -1));
-
         detailFragment = (DetailFragment) getSupportFragmentManager().findFragmentById(R.id.frame_layout_main_detail);
 
         if (detailFragment == null && findViewById(R.id.frame_layout_main_detail) != null) {
@@ -190,19 +188,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    public void refreshFragmentInfo(Place place) {
-        /*detailFragment = new DetailFragment();
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.frame_layout_main_detail, detailFragment)
-                .commit();*/
-        //detailFragment.updateData();
+    public void refreshFragmentInfo() {
         detailFragment = new DetailFragment();
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.frame_layout_main_detail, detailFragment)
                 .commit();
-        //detailFragment.updateViewPager();
-
-
     }
 
 }

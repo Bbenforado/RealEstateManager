@@ -118,11 +118,9 @@ public class ListFragment extends Fragment {
                         Place place = adapter.getPlace(position);
                         preferences.edit().putLong(PLACE_ID, place.getId()).apply();
 
-                        System.out.println("place id in on click method = " + place.getId());
-
                         String appMode = preferences.getString(APP_MODE, null);
                         if (appMode.equals(getString(R.string.app_mode_tablet))) {
-                            ((MainActivity)getActivity()).refreshFragmentInfo(place);
+                            ((MainActivity)getActivity()).refreshFragmentInfo();
 
                         } else {
                             Intent editIntent = new Intent(getContext(), DetailActivity.class);
@@ -146,7 +144,7 @@ public class ListFragment extends Fragment {
     //------------------------------------------------
     @OnClick(R.id.add_floating_action_button)
     public void launchAddPlaceFormActivity() {
-        preferences.edit().putInt(STATUS_FORM_ACTIVITY, -1).apply();
+        preferences.edit().putInt(STATUS_FORM_ACTIVITY, 0).apply();
         Intent intent = new Intent(getContext(), AddFormActivity.class);
         startActivity(intent);
     }

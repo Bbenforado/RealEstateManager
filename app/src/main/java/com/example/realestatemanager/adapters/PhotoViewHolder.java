@@ -28,11 +28,17 @@ public class PhotoViewHolder extends RecyclerView.ViewHolder {
         ButterKnife.bind(this, itemView);
     }
 
-    public void updateUi(Photo photo, RequestManager glide) {
+    public void updateUi(Photo photo, RequestManager glide, int statusActivity) {
+
         String image = photo.getUri();
         glide.load(image).apply(RequestOptions.noTransformation()).into(imageView);
-        if (photo.getDescription() != null) {
-            textViewDescription.setText(photo.getDescription());
+
+        if (statusActivity == 1 || statusActivity == 0) {
+            textViewDescription.setVisibility(View.GONE);
+        } else {
+            if (photo.getDescription() != null) {
+                textViewDescription.setText(photo.getDescription());
+            }
         }
     }
 }
