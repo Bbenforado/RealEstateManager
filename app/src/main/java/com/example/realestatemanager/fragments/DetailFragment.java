@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.realestatemanager.R;
@@ -32,6 +33,14 @@ import com.example.realestatemanager.models.Address;
 import com.example.realestatemanager.models.Photo;
 import com.example.realestatemanager.models.Place;
 import com.example.realestatemanager.viewModels.PlaceViewModel;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
@@ -40,11 +49,15 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.Optional;
+
+import static com.example.realestatemanager.utils.Utils.convertDollarToEuro;
+import static com.example.realestatemanager.utils.Utils.getLatLngOfPlace;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class DetailFragment extends Fragment {
+public class DetailFragment extends Fragment implements OnMapReadyCallback {
 
     //----------------------------------------------
     //BIND VIEWS
@@ -60,6 +73,8 @@ public class DetailFragment extends Fragment {
     ImageView imageViewPhoto;
     @BindView(R.id.text_view_detail_fragment_no_item_selected) TextView textViewNoItemSelected;
     //FOR TABLET MODE
+    @Nullable
+    @BindView(R.id.type_of_place_text_view_detail_frag_tablet_mode) TextView textViewTypeOfPlaceTabletMode;
     @Nullable
     @BindView(R.id.layout_date_of_sale_tablet_mode) LinearLayout layoutDateOfSaleTabletMode;
     @Nullable
@@ -92,6 +107,8 @@ public class DetailFragment extends Fragment {
     @BindView(R.id.complement_text_view_detail_fragment_tablet_mode) TextView textViewComplementTabletMode;
     @Nullable
     @BindView(R.id.country_text_view_detail_fragment_tablet_mode) TextView textViewCountryTabletMode;
+    @Nullable
+    @BindView(R.id.map_view_detail_fragment_tablet_mode) MapView mapView;
     //--------------------------------------------------
     //--------------------------------------------------
     private static final String APP_PREFERENCES = "appPreferences";
@@ -107,6 +124,8 @@ public class DetailFragment extends Fragment {
     private DetailPhotoRecyclerViewAdapter adapter;
     private DetailFragmentAdapter viewPagerAdapter;
     private long placeId;
+    private GoogleMap googleMap;
+    private long price;
 
 
     public DetailFragment() {
@@ -134,8 +153,11 @@ public class DetailFragment extends Fragment {
                     @Override
                     public void onChanged(Place place) {
                         updateUi(place);
+                        price = place.getPrice();
                     }
                 });
+                mapView.onCreate(savedInstanceState);
+                mapView.getMapAsync(this::onMapReady);
             }
             textViewNoItemSelected.setVisibility(View.GONE);
         } else {
@@ -145,7 +167,24 @@ public class DetailFragment extends Fragment {
         return view;
     }
 
+    //------------------------------------------------
+    //ACTIONS
+    //------------------------------------------------
+    @Optional
+    @OnClick(R.id.material_convert_price_button_tablet_mode)
+    public void convertPrice() {
+        if (buttonConvertPriceTabletMode.getText().toString().equals(getString(R.string.button_text_convert_to_euros))) {
+            int priceInEuros = convertDollarToEuro((int)price);
+            textViewPriceTabletMode.setText(String.valueOf(priceInEuros));
+            buttonConvertPriceTabletMode.setText(getString(R.string.button_text_convert_to_dollars));
+        } else if (buttonConvertPriceTabletMode.getText().toString().equals(getString(R.string.button_text_convert_to_dollars))) {
+            textViewPriceTabletMode.setText(String.valueOf(price));
+            buttonConvertPriceTabletMode.setText(getString(R.string.button_text_convert_to_euros));
+        }
+    }
+
     public void updateUi(Place place) {
+        textViewTypeOfPlaceTabletMode.setText(place.getType());
         if (place.getDateOfSale() == null) {
             layoutDateOfSaleTabletMode.setVisibility(View.GONE);
             textViewStatusTabletMode.setText(getString(R.string.status_available));
@@ -204,10 +243,34 @@ public class DetailFragment extends Fragment {
             }
         });
     }
+    @Override
+    public void onResume() {
+        if (preferences.getString(APP_MODE, null).equals("tablet")) {
+            if (placeId != -1 && placeId != 0) {
+                mapView.onResume();
+            }
+        }
+        super.onResume();
+    }
 
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onDestroy() {
+        super.onDestroy();
+        if (preferences.getString(APP_MODE, null).equals("tablet")) {
+            if (placeId != -1 && placeId != 0) {
+                mapView.onDestroy();
+            }
+        }
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        if (preferences.getString(APP_MODE, null).equals("tablet")) {
+            if (placeId != -1 && placeId != 0) {
+                mapView.onLowMemory();
+            }
+        }
     }
 
     //----------------------------------------------
@@ -269,6 +332,33 @@ public class DetailFragment extends Fragment {
             recyclerViewPhotos.setVisibility(View.GONE);
             imageViewPhoto.setVisibility(View.VISIBLE);
             imageViewPhoto.setImageResource(R.drawable.no_image);
+        }
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        this.googleMap = googleMap;
+        MapsInitializer.initialize(getContext());
+        if (placeId != -1 && placeId != 0) {
+            viewModel.getAddress(placeId).observe(this, new Observer<com.example.realestatemanager.models.Address>() {
+                @Override
+                public void onChanged(com.example.realestatemanager.models.Address adressOfPlace) {
+
+                    if (adressOfPlace.getLatLng() != null) {
+                        String latLng = adressOfPlace.getLatLng();
+                        LatLng latLngOfAddress = getLatLngOfPlace(latLng);
+
+                        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLngOfAddress, 16);
+                        googleMap.animateCamera(cameraUpdate);
+                        googleMap.addMarker(new MarkerOptions()
+                                .position(latLngOfAddress));
+                    } else {
+                        Toast.makeText(getContext(), getString(R.string.toast_message_place_location_not_found), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        } else {
+            Toast.makeText(getContext(), getString(R.string.toast_message_address_not_found), Toast.LENGTH_SHORT).show();
         }
     }
     //----------------------------------------------------

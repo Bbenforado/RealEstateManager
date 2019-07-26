@@ -55,8 +55,10 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceViewHold
 
     @Override
     public void onBindViewHolder(@NonNull PlaceViewHolder holder, int position) {
-        holder.updateUi(placeList.get(position), addressList.get(position),
-                photoList, context, this.glide);
+        if (placeList.size()>0) {
+            holder.updateUi(placeList.get(position), addressList.get(position),
+                    photoList, context, this.glide);
+        }
     }
 
     @Override

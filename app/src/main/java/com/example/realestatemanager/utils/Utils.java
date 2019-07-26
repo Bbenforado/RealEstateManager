@@ -12,7 +12,11 @@ import android.net.wifi.WifiManager;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.realestatemanager.R;
+import com.example.realestatemanager.adapters.DetailRecyclerViewAdapter;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.IOException;
@@ -133,6 +137,13 @@ public class Utils {
         double latitude = Double.parseDouble(retrievedLatLng[0]);
         double longitude = Double.parseDouble(retrievedLatLng[1]);
         return new LatLng(latitude, longitude);
+    }
+
+    //for recycler view interests
+    public static void configureRecyclerViewForInterests(Context context, DetailRecyclerViewAdapter adapter, RecyclerView recyclerViewInterest) {
+        //adapter = new DetailRecyclerViewAdapter();
+        recyclerViewInterest.setAdapter(adapter);
+        recyclerViewInterest.setLayoutManager(new LinearLayoutManager(context));
     }
 
 

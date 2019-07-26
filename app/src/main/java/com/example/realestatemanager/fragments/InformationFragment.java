@@ -26,6 +26,7 @@ import com.example.realestatemanager.injections.ViewModelFactory;
 import com.example.realestatemanager.models.Address;
 import com.example.realestatemanager.models.Interest;
 import com.example.realestatemanager.models.Place;
+import com.example.realestatemanager.utils.Utils;
 import com.example.realestatemanager.viewModels.PlaceViewModel;
 import com.google.android.material.button.MaterialButton;
 
@@ -106,7 +107,8 @@ public class InformationFragment extends Fragment {
                 @Override
                 public void onChanged(Place place) {
                     updateUi(place);
-                    configureRecyclerView();
+                    adapter = new DetailRecyclerViewAdapter();
+                    Utils.configureRecyclerViewForInterests(getContext(), adapter, recyclerViewInterest);
                     price = place.getPrice();
                 }
             });
@@ -114,17 +116,16 @@ public class InformationFragment extends Fragment {
         return result;
     }
 
-
     private void configureViewModel() {
         ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(getContext());
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(PlaceViewModel.class);
     }
 
-    private void configureRecyclerView() {
+    /*private void configureRecyclerViewForInterests() {
         this.adapter = new DetailRecyclerViewAdapter();
         this.recyclerViewInterest.setAdapter(adapter);
         recyclerViewInterest.setLayoutManager(new LinearLayoutManager(getContext()));
-    }
+    }*/
 
     //--------------------------------------------------
     //ACTIONS
@@ -209,7 +210,9 @@ public class InformationFragment extends Fragment {
     }
 
     private void updateInterestsList(List<Interest> interests) {
-        this.adapter.updateInterestData(interests);
+        if (interests.size()>0) {
+            this.adapter.updateInterestData(interests);
+        }
     }
 
 }

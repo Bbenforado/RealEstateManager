@@ -69,23 +69,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         // Required empty public constructor
     }
 
-    public static MapFragment newInstance(int position) {
-
-        System.out.println("new instance frag 2");
-
+    /*public static MapFragment newInstance(int position) {
         MapFragment fragment = new MapFragment();
-        /*Bundle args = new Bundle();
+        *//*Bundle args = new Bundle();
         args.putInt(KEY_POSITION_MAP, position);
-        fragment.setArguments(args);*/
+        fragment.setArguments(args);*//*
         return fragment;
-    }
-
+    }*/
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-        System.out.println("on create map frag");
 
         View view = inflater.inflate(R.layout.fragment_map, container, false);
         preferences = getActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
@@ -93,13 +87,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         configureViewModel();
         id = preferences.getLong(PLACE_ID, -1);
 
-        System.out.println("place id in map frag = " + id);
-
         if (id != 0 && id != -1) {
             mapView.onCreate(savedInstanceState);
             mapView.getMapAsync(this);
         }
-
         return view;
     }
 

@@ -1,9 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--<ScrollView android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android" >-->
-
 <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -29,21 +24,36 @@
     <TextView
         android:paddingTop="16dp"
         android:paddingLeft="16dp"
-        android:id="@+id/type_of_place_text_view_detail_frag"
+        android:id="@+id/type_of_place_text_view_detail_frag_tablet_mode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textStyle="bold"
-        android:text="Type of place"/>
+        android:textStyle="bold"/>
 
     <RelativeLayout
+        android:id="@+id/relative_layout"
         android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="150dp">
 
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/image_view_detail"/>
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/edit_floating_action_button_detail_fragment"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:src="@drawable/ic_edit_white"
+                android:clickable="true"
+                android:layout_margin="20dp"
+                android:layout_gravity="bottom|right"
+                android:focusable="true" />
+
+        </FrameLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view_detail_photos"
@@ -53,6 +63,11 @@
         </androidx.recyclerview.widget.RecyclerView>
 
     </RelativeLayout>
+
+    <ScrollView android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -132,8 +147,7 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="7dp"
             android:layout_marginTop="10dp"
-            android:layout_marginBottom="20dp"
-            android:text="this is description blah bla blabla this is cool place nice location and all very cool place." />
+            android:layout_marginBottom="20dp" />
 
         <View
             android:layout_width="match_parent"
@@ -192,17 +206,18 @@
                                 android:layout_height="wrap_content"
                                 android:text="price here"/>
 
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/material_convert_price_button_tablet_mode"
+                                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/button_text_convert_to_euros"
+                                android:textSize="9sp"
+                                android:textAllCaps="false"/>
+
                         </LinearLayout>
 
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/material_convert_price_button_tablet_mode"
-                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Convert to euros"
-                            android:textSize="9sp"
-                            android:layout_alignParentRight="true"
-                            android:textAllCaps="false"/>
+
 
                     </RelativeLayout>
 
@@ -420,31 +435,24 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:layout_weight="1">
 
                 <com.google.android.gms.maps.MapView
-                    android:layout_weight="1"
-                    android:id="@+id/map_view"
-                    android:layout_width="150dp"
-                    android:layout_height="150dp"
+                    android:id="@+id/map_view_detail_fragment_tablet_mode"
+                    android:layout_margin="10dp"
+                    android:layout_width="250dp"
+                    android:layout_height="250dp"
                     app:liteMode="true">
                 </com.google.android.gms.maps.MapView>
             </LinearLayout>
 
             </LinearLayout>
 
-
+        <!--add interests here-->
 
         </LinearLayout>
+    </ScrollView>
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/edit_floating_action_button_detail_fragment"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:src="@drawable/ic_edit_white"
-            android:clickable="true"
-            android:padding="16dp"
-            app:layout_anchor="@id/layout_detail_frag"
-            app:layout_anchorGravity="bottom|end"
-            android:focusable="true" />
+
     </LinearLayout>
