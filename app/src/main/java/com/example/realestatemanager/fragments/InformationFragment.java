@@ -186,6 +186,7 @@ public class InformationFragment extends Fragment {
             nbrOfBedroomsTextView.setText(getString(R.string.not_informed_yet));
         }
         getInterests(place.getId());
+        //Utils.getInterests(place.getId(), viewModel, this, getContext(), adapter);
         viewModel.getAddress(place.getId()).observe(this, new Observer<Address>() {
             @Override
             public void onChanged(Address address) {

@@ -12,11 +12,15 @@ import android.net.wifi.WifiManager;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.realestatemanager.R;
 import com.example.realestatemanager.adapters.DetailRecyclerViewAdapter;
+import com.example.realestatemanager.models.Interest;
+import com.example.realestatemanager.viewModels.PlaceViewModel;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.IOException;
@@ -128,7 +132,7 @@ public class Utils {
         return latLngOfAddress;
     }
 
-    public static String getParenthesesContent(String str){
+    private static String getParenthesesContent(String str){
         return str.substring(str.indexOf('(')+1,str.indexOf(')'));
     }
 
@@ -139,12 +143,30 @@ public class Utils {
         return new LatLng(latitude, longitude);
     }
 
-    //for recycler view interests
+    //for recycler view interests (detail frag tablet mode & information frag)
+
     public static void configureRecyclerViewForInterests(Context context, DetailRecyclerViewAdapter adapter, RecyclerView recyclerViewInterest) {
         //adapter = new DetailRecyclerViewAdapter();
         recyclerViewInterest.setAdapter(adapter);
         recyclerViewInterest.setLayoutManager(new LinearLayoutManager(context));
     }
+
+    /*public static void getInterests(long placeId, PlaceViewModel viewModel, LifecycleOwner owner, Context context, DetailRecyclerViewAdapter adapter) {
+        viewModel.getInterests(placeId).observe(owner, new Observer<List<Interest>>() {
+            @Override
+            public void onChanged(List<Interest> interests) {
+                if (interests.size()>0) {
+                    updateInterestsList(interests, adapter);
+                }
+            }
+        });
+    }
+
+    private static void updateInterestsList(List<Interest> interests, DetailRecyclerViewAdapter adapter) {
+        if (interests.size()>0) {
+            adapter.updateInterestData(interests);
+        }
+    }*/
 
 
 }

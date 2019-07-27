@@ -29,13 +29,9 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceViewHold
     private List<Address> addressList;
     private List<Interest> interestList;
     private List<Photo> photoList;
-    //private PlaceViewModel viewModel;
     private Context context;
     private RequestManager glide;
 
-    /*public interface OnItemClickListener {
-        void onItemClick(Place item);
-    }*/
 
     public PlaceRecyclerViewAdapter(RequestManager glide) {
         this.placeList = new ArrayList<>();

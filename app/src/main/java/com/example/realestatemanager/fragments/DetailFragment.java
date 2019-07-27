@@ -11,6 +11,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Update;
 import androidx.viewpager.widget.ViewPager;
 
 import android.view.LayoutInflater;
@@ -26,12 +27,15 @@ import com.example.realestatemanager.R;
 import com.example.realestatemanager.activities.AddFormActivity;
 import com.example.realestatemanager.adapters.DetailFragmentAdapter;
 import com.example.realestatemanager.adapters.DetailPhotoRecyclerViewAdapter;
+import com.example.realestatemanager.adapters.DetailRecyclerViewAdapter;
 import com.example.realestatemanager.adapters.PhotoRecyclerViewAdapter;
 import com.example.realestatemanager.injections.Injection;
 import com.example.realestatemanager.injections.ViewModelFactory;
 import com.example.realestatemanager.models.Address;
+import com.example.realestatemanager.models.Interest;
 import com.example.realestatemanager.models.Photo;
 import com.example.realestatemanager.models.Place;
+import com.example.realestatemanager.utils.Utils;
 import com.example.realestatemanager.viewModels.PlaceViewModel;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -109,6 +113,8 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
     @BindView(R.id.country_text_view_detail_fragment_tablet_mode) TextView textViewCountryTabletMode;
     @Nullable
     @BindView(R.id.map_view_detail_fragment_tablet_mode) MapView mapView;
+    @Nullable
+    @BindView(R.id.recycler_view_detail_interest_detail_fragment_tablet_mode) RecyclerView recyclerViewInterests;
     //--------------------------------------------------
     //--------------------------------------------------
     private static final String APP_PREFERENCES = "appPreferences";
@@ -122,6 +128,7 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
     private String[] titles = {"Information", "View location"};
     private int[] iconTabLayout = {R.drawable.house_white, R.drawable.ic_address_white};
     private DetailPhotoRecyclerViewAdapter adapter;
+    private DetailRecyclerViewAdapter adapterForInterests;
     private DetailFragmentAdapter viewPagerAdapter;
     private long placeId;
     private GoogleMap googleMap;
@@ -149,6 +156,9 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
                 getPhotos(placeId);
             } else if (preferences.getString(APP_MODE, null).equals(getString(R.string.app_mode_tablet))) {
                 configureRecyclerViewForTablet();
+                adapterForInterests = new DetailRecyclerViewAdapter();
+                Utils.configureRecyclerViewForInterests(getContext(), adapterForInterests, recyclerViewInterests);
+
                 viewModel.getPlace(placeId).observe(this, new Observer<Place>() {
                     @Override
                     public void onChanged(Place place) {
@@ -224,7 +234,7 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
         } else {
             textViewNbrOfBedroomsTabletMode.setText(getString(R.string.not_informed_yet));
         }
-        //getInterests(place.getId());
+        getInterests(place.getId());
         viewModel.getAddress(place.getId()).observe(this, new Observer<Address>() {
             @Override
             public void onChanged(Address address) {
@@ -359,6 +369,18 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
             });
         } else {
             Toast.makeText(getContext(), getString(R.string.toast_message_address_not_found), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+
+    private void getInterests(long placeId) {
+        viewModel.getInterests(placeId).observe(this, this::updateInterestsList);
+    }
+
+    private void updateInterestsList(List<Interest> interests) {
+        if (interests.size()>0) {
+            this.adapterForInterests.updateInterestData(interests);
         }
     }
     //----------------------------------------------------
