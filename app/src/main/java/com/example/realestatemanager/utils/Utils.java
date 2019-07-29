@@ -1,8 +1,10 @@
 package com.example.realestatemanager.utils;
 
 
+import android.app.AlertDialog;
 import android.content.Context;
 
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
@@ -24,6 +26,7 @@ import com.example.realestatemanager.adapters.DetailRecyclerViewAdapter;
 import com.example.realestatemanager.models.Interest;
 import com.example.realestatemanager.viewModels.PlaceViewModel;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.material.button.MaterialButton;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -81,11 +84,8 @@ public class Utils {
     }
 
     public static String addZeroToDate(String string) {
-        System.out.println("string add = " + string);
         if (string.length() == 1) {
-            System.out.println("come here?");
             string = "0" + string;
-            System.out.println("new string  = " + string);
             return string;
         }
         return string;
@@ -164,22 +164,21 @@ public class Utils {
         recyclerViewInterest.setLayoutManager(new LinearLayoutManager(context));
     }
 
-    /*public static void getInterests(long placeId, PlaceViewModel viewModel, LifecycleOwner owner, Context context, DetailRecyclerViewAdapter adapter) {
-        viewModel.getInterests(placeId).observe(owner, new Observer<List<Interest>>() {
+    /*public static AlertDialog displayDialogForTypeOfPlace(Context context, String[] typesOfPlace, MaterialButton button) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle(context.getString(R.string.title_dialog_choose_type_of_place));
+        builder.setItems(typesOfPlace, new DialogInterface.OnClickListener() {
             @Override
-            public void onChanged(List<Interest> interests) {
-                if (interests.size()>0) {
-                    updateInterestsList(interests, adapter);
-                }
+            public void onClick(DialogInterface dialog, int which) {
+                String type = typesOfPlace[which];
+                button.setText(type);
             }
         });
-    }
-
-    private static void updateInterestsList(List<Interest> interests, DetailRecyclerViewAdapter adapter) {
-        if (interests.size()>0) {
-            adapter.updateInterestData(interests);
-        }
+        return builder.create();
+        //dialog.show();
     }*/
+
+
 
 
 }

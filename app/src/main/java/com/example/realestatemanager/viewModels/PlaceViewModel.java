@@ -6,6 +6,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
+import androidx.sqlite.db.SupportSQLiteQuery;
+
 import com.example.realestatemanager.models.Address;
 import com.example.realestatemanager.models.Interest;
 import com.example.realestatemanager.models.Photo;
@@ -52,6 +54,10 @@ public class PlaceViewModel extends ViewModel {
 
     public LiveData<List<Place>> getPlaces() {
         return placeDataSource.getPlaces();
+    }
+
+    public LiveData<List<Place>> getPlaceForGivenParameters(SupportSQLiteQuery query) {
+        return placeDataSource.getPlacesForGivenParameters(query);
     }
 
     public long createPlace(Place place) {

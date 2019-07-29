@@ -128,8 +128,6 @@ public class AddFormActivity extends AppCompatActivity {
     private List<Photo> allPhotos;
     private List<Long> deletedPhotosId;
     private List<Photo> updatedPhoto;
-    private List<Interest> deletedInterests;
-    private List<Interest> newInterests;
     private List<Interest> oldInterests;
 
 
@@ -149,8 +147,8 @@ public class AddFormActivity extends AppCompatActivity {
         deletedPhotosId = new ArrayList<>();
         updatedPhoto = new ArrayList<>();
         //for interests
-        deletedInterests = new ArrayList<>();
-        newInterests = new ArrayList<>();
+        List<Interest> deletedInterests = new ArrayList<>();
+        List<Interest> newInterests = new ArrayList<>();
         oldInterests = new ArrayList<>();
 
         configureViewModel();
@@ -282,22 +280,6 @@ public class AddFormActivity extends AppCompatActivity {
                                         placeViewModel.updatePhoto(photo);
                                     }
                                 }
-
-                                //for interests
-                                /*for (int i = 0; i<checkBoxes.size(); i++) {
-                                    if (checkBoxes.get(i).isChecked()) {
-                                        //Interest interest = new Interest(checkBox.getText().toString(), id);
-                                        //placeViewModel.createInterest(interest);
-                                        //voir si le tableau des interets anciennement sauvegarder sont coché
-                                        if (oldInterests.get(i).getType() == checkBoxes.get(i).getText()) {
-
-                                        }
-                                        //sinon enregistrer ceux des anciens interets dans deleted interets et les supprimer et
-                                        //ensuite regarder si des nouveau sont cochés et les créer
-
-
-                                    }
-                                }*/
                                 placeViewModel.deleteInterests(placeId);
                                 createInterestsForAPlace(placeId);
 
@@ -401,6 +383,8 @@ public class AddFormActivity extends AppCompatActivity {
     //----------------------------------
     @OnClick(R.id.material_type_of_place_button)
     public void chooseATypeOfPlace() {
+        /*AlertDialog dialog = Utils.displayDialogForTypeOfPlace(getApplicationContext(), typesOfPlace, typeOfPlaceButton);
+        dialog.show();*/
         displayDialog();
     }
 
@@ -873,16 +857,6 @@ public class AddFormActivity extends AppCompatActivity {
 
         placeViewModel.updateAddress(address);
     }
-
-    /*private void updateInterests(long placeId) {
-        for (CheckBox checkBox : checkBoxes) {
-            if (checkBox.isChecked()) {
-                if (placeViewModel.getInterest(placeId, ))
-                Interest interest = new Interest(checkBox.getText().toString(), placeId);
-                placeViewModel.updateInterest(interest);
-            }
-        }
-    }*/
 
     //----------------------------------------------------
     //METHODS
