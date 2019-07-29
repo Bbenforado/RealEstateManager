@@ -435,13 +435,28 @@
                 android:gravity="center"
                 android:layout_weight="1">
 
-                <com.google.android.gms.maps.MapView
-                    android:id="@+id/map_view_detail_fragment_tablet_mode"
-                    android:layout_margin="10dp"
-                    android:layout_width="250dp"
-                    android:layout_height="250dp"
-                    app:liteMode="true">
-                </com.google.android.gms.maps.MapView>
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <com.google.android.gms.maps.MapView
+                        android:id="@+id/map_view_detail_fragment_tablet_mode"
+                        android:layout_margin="10dp"
+                        android:layout_width="250dp"
+                        android:layout_height="250dp"
+                        app:liteMode="true">
+                    </com.google.android.gms.maps.MapView>
+                    <TextView
+                        android:id="@+id/text_view_no_internet_detail_fragment_tablet_mode"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/toast_message_no_internet"
+                        android:gravity="center"
+                        android:layout_marginTop="80dp"
+                        android:visibility="gone"/>
+
+                </RelativeLayout>
+
             </LinearLayout>
 
             </LinearLayout>

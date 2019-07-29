@@ -16,6 +16,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import com.example.realestatemanager.activities.MapActivity;
+import com.example.realestatemanager.activities.SearchActivity;
 import com.example.realestatemanager.activities.SettingsActivity;
 import com.example.realestatemanager.fragments.DetailFragment;
 import com.example.realestatemanager.fragments.ListFragment;
@@ -94,6 +95,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.menu_search:
+                Intent searchActivityIntent = new Intent(this, SearchActivity.class);
+                startActivity(searchActivityIntent);
                 return true;
             default:
                 return super.onOptionsItemSelected(menuItem);

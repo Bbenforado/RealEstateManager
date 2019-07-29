@@ -57,6 +57,7 @@ import butterknife.Optional;
 
 import static com.example.realestatemanager.utils.Utils.convertDollarToEuro;
 import static com.example.realestatemanager.utils.Utils.getLatLngOfPlace;
+import static com.example.realestatemanager.utils.Utils.isNetworkAvailable;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -115,6 +116,8 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
     @BindView(R.id.map_view_detail_fragment_tablet_mode) MapView mapView;
     @Nullable
     @BindView(R.id.recycler_view_detail_interest_detail_fragment_tablet_mode) RecyclerView recyclerViewInterests;
+    @Nullable
+    @BindView(R.id.text_view_no_internet_detail_fragment_tablet_mode) TextView textViewNoInternet;
     //--------------------------------------------------
     //--------------------------------------------------
     private static final String APP_PREFERENCES = "appPreferences";
@@ -255,7 +258,7 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
     }
     @Override
     public void onResume() {
-        if (preferences.getString(APP_MODE, null).equals("tablet")) {
+        if (preferences.getString(APP_MODE, null).equals("tablet") && isNetworkAvailable(getContext())) {
             if (placeId != -1 && placeId != 0) {
                 mapView.onResume();
             }
@@ -266,7 +269,7 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (preferences.getString(APP_MODE, null).equals("tablet")) {
+        if (preferences.getString(APP_MODE, null).equals("tablet") && isNetworkAvailable(getContext())) {
             if (placeId != -1 && placeId != 0) {
                 mapView.onDestroy();
             }
@@ -276,7 +279,7 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onLowMemory() {
         super.onLowMemory();
-        if (preferences.getString(APP_MODE, null).equals("tablet")) {
+        if (preferences.getString(APP_MODE, null).equals("tablet") && isNetworkAvailable(getContext())) {
             if (placeId != -1 && placeId != 0) {
                 mapView.onLowMemory();
             }
@@ -349,26 +352,31 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
         MapsInitializer.initialize(getContext());
-        if (placeId != -1 && placeId != 0) {
-            viewModel.getAddress(placeId).observe(this, new Observer<com.example.realestatemanager.models.Address>() {
-                @Override
-                public void onChanged(com.example.realestatemanager.models.Address adressOfPlace) {
+        if (isNetworkAvailable(getContext())) {
+            if (placeId != -1 && placeId != 0) {
+                viewModel.getAddress(placeId).observe(this, new Observer<com.example.realestatemanager.models.Address>() {
+                    @Override
+                    public void onChanged(com.example.realestatemanager.models.Address adressOfPlace) {
 
-                    if (adressOfPlace.getLatLng() != null) {
-                        String latLng = adressOfPlace.getLatLng();
-                        LatLng latLngOfAddress = getLatLngOfPlace(latLng);
+                        if (adressOfPlace.getLatLng() != null) {
+                            String latLng = adressOfPlace.getLatLng();
+                            LatLng latLngOfAddress = getLatLngOfPlace(latLng);
 
-                        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLngOfAddress, 16);
-                        googleMap.animateCamera(cameraUpdate);
-                        googleMap.addMarker(new MarkerOptions()
-                                .position(latLngOfAddress));
-                    } else {
-                        Toast.makeText(getContext(), getString(R.string.toast_message_place_location_not_found), Toast.LENGTH_SHORT).show();
+                            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLngOfAddress, 16);
+                            googleMap.animateCamera(cameraUpdate);
+                            googleMap.addMarker(new MarkerOptions()
+                                    .position(latLngOfAddress));
+                        } else {
+                            Toast.makeText(getContext(), getString(R.string.toast_message_place_location_not_found), Toast.LENGTH_SHORT).show();
+                        }
                     }
-                }
-            });
+                });
+            } else {
+                Toast.makeText(getContext(), getString(R.string.toast_message_address_not_found), Toast.LENGTH_SHORT).show();
+            }
         } else {
-            Toast.makeText(getContext(), getString(R.string.toast_message_address_not_found), Toast.LENGTH_SHORT).show();
+            textViewNoInternet.setVisibility(View.VISIBLE);
+            mapView.setVisibility(View.GONE);
         }
     }
 

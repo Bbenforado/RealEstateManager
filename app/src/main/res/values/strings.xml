@@ -60,7 +60,7 @@
 
     //FOR MAP FRAGMENT
     <string name="toast_message_address_not_found">Address not found</string>
-    <string name="toast_message_no_internet">You don\'t have internet :( , please, try again later</string>
+    <string name="toast_message_no_internet">You don\'t have internet :( , please, try again later to display the map</string>
 
     //FOR MAIN ACTIVITY
     <string name="toast_message_no_internet_cant_access_to_map">You don\'t have internet, you can\'t access to this screen</string>
