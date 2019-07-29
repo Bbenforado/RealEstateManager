@@ -60,13 +60,11 @@
 
     //FOR MAP FRAGMENT
     <string name="toast_message_address_not_found">Address not found</string>
+    <string name="toast_message_no_internet">You don\'t have internet :( , please, try again later</string>
 
     //FOR MAIN ACTIVITY
     <string name="toast_message_no_internet_cant_access_to_map">You don\'t have internet, you can\'t access to this screen</string>
     <string name="toolbar_title">Real Estate Manager</string>
 
 
-
-
-    <string name="just_try">kjhgggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr</string>
 </resources>

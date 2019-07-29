@@ -128,6 +128,9 @@ public class AddFormActivity extends AppCompatActivity {
     private List<Photo> allPhotos;
     private List<Long> deletedPhotosId;
     private List<Photo> updatedPhoto;
+    private List<Interest> deletedInterests;
+    private List<Interest> newInterests;
+    private List<Interest> oldInterests;
 
 
 
@@ -145,6 +148,10 @@ public class AddFormActivity extends AppCompatActivity {
         allPhotos = new ArrayList<>();
         deletedPhotosId = new ArrayList<>();
         updatedPhoto = new ArrayList<>();
+        //for interests
+        deletedInterests = new ArrayList<>();
+        newInterests = new ArrayList<>();
+        oldInterests = new ArrayList<>();
 
         configureViewModel();
         checkBoxes = Arrays.asList(checkBoxSchool, checkBoxMarketPlace, checkBoxPark, checkBoxHospital, checkBoxCinema, checkBoxTheater);
@@ -219,12 +226,7 @@ public class AddFormActivity extends AppCompatActivity {
                                 //create place
                                 long id = createPlace();
                                 //create interest
-                                for (CheckBox checkBox : checkBoxes) {
-                                    if (checkBox.isChecked()) {
-                                        Interest interest = new Interest(checkBox.getText().toString(), id);
-                                        placeViewModel.createInterest(interest);
-                                    }
-                                }
+                                createInterestsForAPlace(id);
                                 //create photo
                                 for (Photo photo : photoList) {
                                     photo.setPlaceId(id);
@@ -247,7 +249,6 @@ public class AddFormActivity extends AppCompatActivity {
                     }
                 } else {
                     //if it s to update an existing place
-
                     //if fields are correctly filled
                     if (paramsAreOk()) {
                         //if there is at least one photo
@@ -282,6 +283,24 @@ public class AddFormActivity extends AppCompatActivity {
                                     }
                                 }
 
+                                //for interests
+                                /*for (int i = 0; i<checkBoxes.size(); i++) {
+                                    if (checkBoxes.get(i).isChecked()) {
+                                        //Interest interest = new Interest(checkBox.getText().toString(), id);
+                                        //placeViewModel.createInterest(interest);
+                                        //voir si le tableau des interets anciennement sauvegarder sont coché
+                                        if (oldInterests.get(i).getType() == checkBoxes.get(i).getText()) {
+
+                                        }
+                                        //sinon enregistrer ceux des anciens interets dans deleted interets et les supprimer et
+                                        //ensuite regarder si des nouveau sont cochés et les créer
+
+
+                                    }
+                                }*/
+                                placeViewModel.deleteInterests(placeId);
+                                createInterestsForAPlace(placeId);
+
                                 placeViewModel.getAddress(placeId).observe(this, new Observer<Address>() {
                                     @Override
                                     public void onChanged(Address address) {
@@ -306,6 +325,15 @@ public class AddFormActivity extends AppCompatActivity {
                 return true;
             default:
                 return super.onOptionsItemSelected(menuItem);
+        }
+    }
+
+    private void createInterestsForAPlace(long id) {
+        for (CheckBox checkBox : checkBoxes) {
+            if (checkBox.isChecked()) {
+                Interest interest = new Interest(checkBox.getText().toString(), id);
+                placeViewModel.createInterest(interest);
+            }
         }
     }
 
@@ -470,6 +498,7 @@ public class AddFormActivity extends AppCompatActivity {
 
     private void completeInterestFormWithData(List<Interest> interests) {
         for (int i = 0; i < interests.size(); i++) {
+            oldInterests.add(interests.get(i));
             for (int j = 0; j< checkBoxes.size(); j++) {
                 if (interests.get(i).getType().equals(checkBoxes.get(j).getText().toString())) {
                     checkBoxes.get(j).setChecked(true);

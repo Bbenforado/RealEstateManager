@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -28,7 +29,10 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -40,7 +44,7 @@ import butterknife.ButterKnife;
 import static com.example.realestatemanager.utils.Utils.getLatLngOfPlace;
 import static com.example.realestatemanager.utils.Utils.getLocationFromAddress;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener, GoogleMap.OnMarkerClickListener {
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnCameraIdleListener {
 
     private GoogleMap googleMap;
     private static final int REQUEST_ID_ACCESS_COURSE_FINE_LOCATION = 100;
@@ -49,6 +53,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private SharedPreferences preferences;
     private static final String APP_PREFERENCES = "appPreferences";
     private static final String PLACE_ID = "placeId";
+    private LatLngBounds bounds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,14 +138,28 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             float zoomLevel = 16.0f;
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoomLevel));
 
+            LatLng latLng1 = createNewLatLngForBounds(userLat, userLng, 1000);
+            LatLng latLng2 = createNewLatLngForBounds(userLat, userLng, -1000);
+
+            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+            builder.include(latLng1);
+            builder.include(latLng2);
+            bounds = builder.build();
+
             /*Marker marker;
             marker = googleMap.addMarker(new MarkerOptions()
                     .position(latLng)
                     .title("user location"));
             marker.setTag(-1);
             marker.showInfoWindow();*/
-            getAllAddresses(this);
+            getAllAddresses();
         }
+    }
+
+    private LatLng createNewLatLngForBounds(double latitude, double longitude, long meters) {
+        double newLat = getNewLat(latitude, meters);
+        double newLng = getNewLng(longitude, latitude, meters);
+        return new LatLng(newLat, newLng);
     }
 
     private void configureViewModel() {
@@ -148,7 +167,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(PlaceViewModel.class);
     }
 
-    private void getAllAddresses(Context context) {
+    private void getAllAddresses() {
         viewModel.getAddresses().observe(this, new Observer<List<Address>>() {
             @Override
             public void onChanged(List<Address> addresses) {
@@ -156,10 +175,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 for(int i = 0; i<addresses.size(); i++) {
                     if (addresses.get(i).getLatLng() != null) {
                         String latLng = addresses.get(i).getLatLng();
-                        //latLngs.add(latLng);
                         long placeId = addresses.get(i).getIdPlace();
                         LatLng latLngOfPlace = getLatLngOfPlace(latLng);
-                        showPlaceOnMap(placeId, latLngOfPlace);
+                        if (bounds.contains(latLngOfPlace)) {
+                            showPlaceOnMap(placeId, latLngOfPlace);
+                        }
                     } else {
                         Toast.makeText(getApplicationContext(), getString(R.string.toast_message_place_location_not_found), Toast.LENGTH_SHORT).show();
                     }
@@ -194,7 +214,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         try {
             locationManager.requestLocationUpdates(bestProvider, MIN_TIME_BW_UPDATES,
                     MIN_DISTANCE_CHANGE_FOR_UPDATES, listener);
-            //myLocation = locationManager.getLastKnownLocation(bestProvider);
             myLocation = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
         }
         catch (SecurityException e) {
@@ -227,15 +246,35 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public boolean onMarkerClick(Marker marker) {
         long tag = (long) marker.getTag();
-
-        /*if (tag == -1) {
-            //users marker
-        } else {*/
             preferences.edit().putLong(PLACE_ID, tag).apply();
             Intent detailIntent = new Intent(this, DetailActivity.class);
             startActivity(detailIntent);
-        //}
-
         return false;
+    }
+
+    @Override
+    public void onCameraIdle() {
+        //method something like getPlacesNearUser()
+        //and show them with markers
+        //get coord of space near user
+        //query all the places in this space
+        //show them
+        getAllAddresses();
+    }
+
+    private double getNewLat(double latitude, long meters) {
+        double earth = 6378.137;  //radius of the earth in kilometer
+        double pi = Math.PI;
+        double m = (1 / ((2 * pi / 360) * earth)) / 1000;  //1 meter in degree
+
+        return latitude + (meters * m);
+    }
+
+    private double getNewLng(double longitude, double latitude, long meters) {
+        double earth = 6378.137;  //radius of the earth in kilometer
+        double pi = Math.PI;
+        double m = (1 / ((2 * pi / 360) * earth)) / 1000;  //1 meter in degree
+
+        return longitude + (meters * m) / Math.cos(latitude * (pi / 180));
     }
 }

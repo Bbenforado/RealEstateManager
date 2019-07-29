@@ -27,6 +27,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.example.realestatemanager.utils.Utils.isInternetAvailable;
+import static com.example.realestatemanager.utils.Utils.isNetworkAvailable;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
@@ -132,8 +133,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 startActivity(settingIntent);
                 break;
             case R.id.map:
-                //use internet check method here and if it s there, launch activity, else, toast message
-                if (isInternetAvailable(this)) {
+                if (isNetworkAvailable(this)) {
                     Intent mapIntent = new Intent(this, MapActivity.class);
                     startActivity(mapIntent);
                 } else {

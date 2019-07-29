@@ -15,6 +15,7 @@ import androidx.viewpager.widget.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.realestatemanager.R;
@@ -43,6 +44,7 @@ import butterknife.ButterKnife;
 
 import static com.example.realestatemanager.utils.Utils.getLatLngOfPlace;
 import static com.example.realestatemanager.utils.Utils.getLocationFromAddress;
+import static com.example.realestatemanager.utils.Utils.isNetworkAvailable;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -54,6 +56,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     //-------------------------------
     @BindView(R.id.map_view)
     MapView mapView;
+    @BindView(R.id.text_view_no_internet_map_fragment)
+    TextView textViewNoInternet;
     //------------------------------------
     //-----------------------------------------
     private static final String APP_PREFERENCES = "appPreferences";
@@ -63,19 +67,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     private SharedPreferences preferences;
     private PlaceViewModel viewModel;
     private long id;
-    private GoogleMap gmap;
+    private GoogleMap gMap;
 
     public MapFragment() {
         // Required empty public constructor
     }
-
-    /*public static MapFragment newInstance(int position) {
-        MapFragment fragment = new MapFragment();
-        *//*Bundle args = new Bundle();
-        args.putInt(KEY_POSITION_MAP, position);
-        fragment.setArguments(args);*//*
-        return fragment;
-    }*/
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -87,40 +83,45 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         configureViewModel();
         id = preferences.getLong(PLACE_ID, -1);
 
-        if (id != 0 && id != -1) {
-            mapView.onCreate(savedInstanceState);
-            mapView.getMapAsync(this);
+       if (isNetworkAvailable(getContext())) {
+            if (id != 0 && id != -1) {
+                mapView.onCreate(savedInstanceState);
+                mapView.getMapAsync(this);
+            }
+          } else {
+           textViewNoInternet.setVisibility(View.VISIBLE);
+
         }
         return view;
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        gmap = googleMap;
+        gMap = googleMap;
         MapsInitializer.initialize(this.getActivity());
-        if (id != -1 && id != 0) {
-            viewModel.getAddress(id).observe(this, new Observer<com.example.realestatemanager.models.Address>() {
-                @Override
-                public void onChanged(com.example.realestatemanager.models.Address adressOfPlace) {
+            if (id != -1 && id != 0) {
+                viewModel.getAddress(id).observe(this, new Observer<com.example.realestatemanager.models.Address>() {
+                    @Override
+                    public void onChanged(com.example.realestatemanager.models.Address adressOfPlace) {
 
-                    if (adressOfPlace.getLatLng() != null) {
-                        String latLng = adressOfPlace.getLatLng();
-                        LatLng latLngOfAddress = getLatLngOfPlace(latLng);
+                        if (adressOfPlace.getLatLng() != null) {
+                            String latLng = adressOfPlace.getLatLng();
+                            LatLng latLngOfAddress = getLatLngOfPlace(latLng);
 
 
                             CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLngOfAddress, 16);
-                            gmap.animateCamera(cameraUpdate);
-                            gmap.addMarker(new MarkerOptions()
+                            gMap.animateCamera(cameraUpdate);
+                            gMap.addMarker(new MarkerOptions()
                                     .position(latLngOfAddress));
 
                         } else {
-                        Toast.makeText(getContext(), getString(R.string.toast_message_place_location_not_found), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), getString(R.string.toast_message_place_location_not_found), Toast.LENGTH_SHORT).show();
+                        }
                     }
-                }
-            });
-        } else {
-            Toast.makeText(getContext(), getString(R.string.toast_message_address_not_found), Toast.LENGTH_SHORT).show();
-        }
+                });
+            } else {
+                Toast.makeText(getContext(), getString(R.string.toast_message_address_not_found), Toast.LENGTH_SHORT).show();
+            }
     }
 
 
@@ -128,8 +129,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
 
     @Override
     public void onResume() {
-        if (id != -1 && id != 0) {
-            mapView.onResume();
+        if (isNetworkAvailable(getContext())) {
+            if (id != -1 && id != 0) {
+                mapView.onResume();
+            }
         }
         super.onResume();
     }
@@ -137,16 +140,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (id != -1 && id != 0) {
-            mapView.onDestroy();
+        if (isNetworkAvailable(getContext())) {
+            if (id != -1 && id != 0) {
+                mapView.onDestroy();
+            }
         }
     }
 
     @Override
     public void onLowMemory() {
         super.onLowMemory();
-        if (id != -1 && id != 0) {
-            mapView.onLowMemory();
+        if (isNetworkAvailable(getContext())) {
+            if (id != -1 && id != 0) {
+                mapView.onLowMemory();
+            }
         }
     }
 

@@ -143,9 +143,9 @@ public class PlaceViewModel extends ViewModel {
     }
 
     public void deleteInterests(long placeId) {
-        //executor.execute(() -> {
+        executor.execute(() -> {
             interestDataSource.deleteInterests(placeId);
-        //});
+        });
     }
 
     //-------------------------------------------------

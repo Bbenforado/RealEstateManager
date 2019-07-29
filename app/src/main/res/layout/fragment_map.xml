@@ -6,11 +6,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.google.android.gms.maps.MapView
-        android:id="@+id/map_view"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:liteMode="true">
-    </com.google.android.gms.maps.MapView>
+        android:layout_height="match_parent">
+
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/map_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:liteMode="true">
+        </com.google.android.gms.maps.MapView>
+
+        <TextView
+            android:id="@+id/text_view_no_internet_map_fragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:text="@string/toast_message_no_internet"
+            android:gravity="center"
+            android:layout_alignTop="@+id/map_view"
+            android:visibility="gone"
+            android:textSize="13sp">
+        </TextView>
+
+    </RelativeLayout>
 
 </LinearLayout>
