@@ -1,6 +1,9 @@
 package com.example.realestatemanager.repositories;
 
 import androidx.lifecycle.LiveData;
+import androidx.sqlite.db.SupportSQLiteDatabase;
+import androidx.sqlite.db.SupportSQLiteQuery;
+
 import com.example.realestatemanager.database.dao.InterestDao;
 import com.example.realestatemanager.models.Interest;
 
@@ -21,6 +24,10 @@ public class InterestDataRepository {
 
     public LiveData<List<Interest>> getInterests(long placeId) {
         return this.interestDao.getInterests(placeId);
+    }
+
+    public LiveData<List<Long>> getPlaceIdForGivenParameters(SupportSQLiteQuery query) {
+        return interestDao.getPlacesIdForGivenParameters(query);
     }
 
     //CREATE

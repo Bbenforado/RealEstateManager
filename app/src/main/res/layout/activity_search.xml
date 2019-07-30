@@ -377,7 +377,7 @@
                         android:id="@+id/text_edit_city_search_activity"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="number"
+                        android:maxLines="1"
                         android:textSize="12sp"/>
 
                 </com.google.android.material.textfield.TextInputLayout>

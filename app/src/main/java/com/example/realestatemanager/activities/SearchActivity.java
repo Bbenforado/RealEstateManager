@@ -5,11 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.location.LocationListener;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
@@ -21,14 +20,15 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.sqlite.db.SimpleSQLiteQuery;
 
 import com.example.realestatemanager.R;
+import com.example.realestatemanager.fragments.ListFragment;
 import com.example.realestatemanager.injections.Injection;
 import com.example.realestatemanager.injections.ViewModelFactory;
 import com.example.realestatemanager.models.Interest;
-import com.example.realestatemanager.models.Place;
 import com.example.realestatemanager.utils.Utils;
 import com.example.realestatemanager.viewModels.PlaceViewModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -81,9 +81,11 @@ public class SearchActivity extends AppCompatActivity {
     public static final String CREATION_DATE_MAX = "creationDateMax";
     public static final String DATE_OF_SALE_MIN = "dateSaleMin";
     public static final String DATE_OF_SALE_MAX = "dateSaleMax";
+    public static final String PLACE_IDS = "placeIds";
     private List<CheckBox> checkBoxes;
     private List<String> interests;
     private PlaceViewModel viewModel;
+    private List<Long> placeIds;
 
 
 
@@ -95,6 +97,7 @@ public class SearchActivity extends AppCompatActivity {
         preferences = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE);
 
         interests = new ArrayList<>();
+        placeIds = new ArrayList<>();
         checkBoxes = Arrays.asList(checkBoxSchool, checkBoxMarketPlace, checkBoxPark, checkBoxHospital, checkBoxCinema, checkBoxTheater);
 
         configureToolbar();
@@ -210,19 +213,51 @@ public class SearchActivity extends AppCompatActivity {
         datePickerDialog.show();
     }
 
-    private void getSelectedInterests() {
+    private boolean areInterestsChecked() {
+        for (int i = 0; i<checkBoxes.size(); i++) {
+            if (checkBoxes.get(i).isChecked()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private String getSelectedInterests() {
+        String strInterests = null;
         for (int i = 0; i < checkBoxes.size(); i++) {
             if (checkBoxes.get(i).isChecked()) {
                 interests.add(checkBoxes.get(i).getText().toString());
             }
         }
+        if (interests.size()>1) {
+            for (int i = 0; i < interests.size(); i++) {
+                if (i == 1) {
+                    strInterests =  interests.get(i)+ "'";
+                } else {
+                    strInterests = strInterests + " AND '" + interests.get(i) + "'";
+                }
+            }
+            return strInterests;
+        }
+        strInterests = interests.get(0);
+        return strInterests;
     }
 
-    private void queryResults() {
 
+
+    private void queryResults() {
+        //getSelectedInterests();
         String type = buttonTypeOfPlace.getText().toString();
 
         String strQuery = "SELECT * FROM places WHERE type = '" + type + "'" ;
+
+
+        if (areInterestsChecked()) {
+            String strInterests = getSelectedInterests();
+
+            strQuery = "SELECT DISTINCT idPlace FROM interests WHERE type = '" + strInterests +
+                    "' AND idPlace IN ( SELECT id FROM places WHERE type = '" + type + "'";
+        }
 
         int status;
         if (buttonStatus.getText().equals(getString(R.string.status_available))) {
@@ -230,7 +265,7 @@ public class SearchActivity extends AppCompatActivity {
 
         } else {
             status = 1;
-            strQuery = strQuery + " AND dateOfSale != NULL";
+            strQuery = strQuery + " AND dateOfSale IS NOT NULL";
         }
 
 
@@ -291,18 +326,11 @@ public class SearchActivity extends AppCompatActivity {
             dateOfSaleMax = preferences.getString(DATE_OF_SALE_MAX, null);
         }
 
-        if (!TextUtils.isEmpty(editTextNbrOfPhotos.getText().toString())) {
-            int nbrOfPhotos = Integer.parseInt(editTextNbrOfPhotos.getText().toString());
-        }
-
-        if (!TextUtils.isEmpty(editTextCity.getText().toString())) {
-            String city = editTextCity.getText().toString();
-        }
 
 
-        getSelectedInterests();
 
-        String finalQuery = strQuery + ";";
+
+        String finalQuery = strQuery + ");";
 
         /*SimpleSQLiteQuery query = new SimpleSQLiteQuery(finalQuery);
 
@@ -313,5 +341,69 @@ public class SearchActivity extends AppCompatActivity {
             }
         });*/
 
+        SimpleSQLiteQuery query = new SimpleSQLiteQuery(finalQuery);
+        System.out.println("final query = " + finalQuery);
+
+        /*viewModel.getPlaceIdForGivenParameters(query).observe(this, new Observer<List<Long>>() {
+            @Override
+            public void onChanged(List<Long> placesId) {
+                System.out.println("places = " + placesId.size());
+                for (int i = 0; i<placesId.size(); i++) {
+                    placeIdFromInterests.addAll(placesId);
+                }
+            }
+        });*/
+
+        if (!TextUtils.isEmpty(editTextNbrOfPhotos.getText().toString())) {
+            int nbrOfPhotos = Integer.parseInt(editTextNbrOfPhotos.getText().toString());
+            String queryFromPhoto = "SELECT DISTINCT placeId FROM photos GROUP BY placeId HAVING COUNT (placeId)>= " + nbrOfPhotos + ";";
+
+            SimpleSQLiteQuery query1 = new SimpleSQLiteQuery(queryFromPhoto);
+
+            viewModel.getPlaceIdForGivenParam(query1).observe(this, new Observer<List<Long>>() {
+            @Override
+            public void onChanged(List<Long> placesId) {
+                System.out.println("places = " + placesId.size());
+
+            }
+        });
+
+        }
+
+        /*SELECT
+        projet.id, projet.nom,
+                COUNT(ticket.numero) AS "Nombre ticket"
+        FROM projet
+        JOIN ticket ON ticket.projet_id = projet.id
+        WHERE projet.cloture = FALSE
+        GROUP BY projet.id, projet.nom
+        HAVING COUNT(ticket.numero) > 10;       -- Ne garder que les lignes avec count(...) > 10*/
+
+        if (!TextUtils.isEmpty(editTextCity.getText().toString())) {
+            String city = editTextCity.getText().toString();
+            String queryFromAddresses = "SELECT DISTINCT idPlace FROM addresses WHERE city = '" + city + "';";
+
+            SimpleSQLiteQuery queryAddress = new SimpleSQLiteQuery(queryFromAddresses);
+
+            viewModel.getPlaceIdForGivenParamFromAddresses(queryAddress).observe(this, new Observer<List<Long>>() {
+                @Override
+                public void onChanged(List<Long> placesId) {
+                    System.out.println("places = " + placesId.size());
+                    placeIds.addAll(placesId);
+                    saveArrayOfIds(placesId);
+                }
+            });
+            launchResultsActivity();
+        }
+    }
+
+    private void saveArrayOfIds(List<Long> ids) {
+        Gson gson = new Gson();
+        preferences.edit().putString(PLACE_IDS, gson.toJson(ids)).apply();
+    }
+
+    private void launchResultsActivity() {
+        Intent resultsActivity = new Intent(this, ResultsFromSearchActivity.class);
+        startActivity(resultsActivity);
     }
 }

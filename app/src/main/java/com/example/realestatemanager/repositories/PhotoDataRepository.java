@@ -1,6 +1,7 @@
 package com.example.realestatemanager.repositories;
 
 import androidx.lifecycle.LiveData;
+import androidx.sqlite.db.SupportSQLiteQuery;
 
 import com.example.realestatemanager.database.dao.InterestDao;
 import com.example.realestatemanager.database.dao.PhotoDao;
@@ -28,6 +29,10 @@ public class PhotoDataRepository {
 
     public LiveData<List<Photo>> getPhotosForAPlace(long placeId) {
         return this.photoDao.getPhotosForAPlace(placeId);
+    }
+
+    public LiveData<List<Long>> getPlaceIdForGivenParam(SupportSQLiteQuery query) {
+        return photoDao.getPlacesIdForGivenParameters(query);
     }
 
     //CREATE

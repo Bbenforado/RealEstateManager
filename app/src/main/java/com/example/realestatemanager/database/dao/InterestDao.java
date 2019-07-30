@@ -5,10 +5,13 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.RawQuery;
 import androidx.room.Update;
+import androidx.sqlite.db.SupportSQLiteQuery;
 
 import com.example.realestatemanager.models.Address;
 import com.example.realestatemanager.models.Interest;
+import com.example.realestatemanager.models.Place;
 
 import java.util.List;
 
@@ -20,6 +23,9 @@ public interface InterestDao {
 
     @Query("SELECT * FROM interests WHERE idPlace = :idPlace")
     LiveData<Interest> getInterest(long idPlace);
+
+    @RawQuery(observedEntities = Interest.class)
+    LiveData<List<Long>> getPlacesIdForGivenParameters(SupportSQLiteQuery query);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long createInterest(Interest interest);

@@ -5,7 +5,11 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.RawQuery;
 import androidx.room.Update;
+import androidx.sqlite.db.SupportSQLiteQuery;
+
+import com.example.realestatemanager.models.Interest;
 import com.example.realestatemanager.models.Photo;
 
 import java.util.List;
@@ -21,6 +25,9 @@ public interface PhotoDao {
 
     @Query("SELECT * FROM photos WHERE placeId = :idPlace")
     LiveData<Photo> getPhoto(long idPlace);
+
+    @RawQuery(observedEntities = Photo.class)
+    LiveData<List<Long>> getPlacesIdForGivenParameters(SupportSQLiteQuery query);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long createPhoto(Photo photo);

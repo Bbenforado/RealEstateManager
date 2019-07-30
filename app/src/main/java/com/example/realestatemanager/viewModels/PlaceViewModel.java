@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
+import androidx.sqlite.db.SimpleSQLiteQuery;
 import androidx.sqlite.db.SupportSQLiteQuery;
 
 import com.example.realestatemanager.models.Address;
@@ -85,6 +86,10 @@ public class PlaceViewModel extends ViewModel {
     //-----------------------------------------------------
     //FOR ADDRESSES
     //--------------------------------------------------------------
+    public LiveData<List<Long>> getPlaceIdForGivenParamFromAddresses(SimpleSQLiteQuery query) {
+        return addressDataSource.getPlaceIfForGivenParamFromAdresses (query);
+    }
+
     public LiveData<Address> getAddress(long placeId) {
         return addressDataSource.getAddress(placeId);
     }
@@ -118,6 +123,11 @@ public class PlaceViewModel extends ViewModel {
     //-------------------------------------------------
     //FOR INTERESTS
     //-----------------------------------------------------
+    public LiveData<List<Long>> getPlaceIdForGivenParameters(SupportSQLiteQuery query) {
+        return interestDataSource.getPlaceIdForGivenParameters(query);
+    }
+
+
     public long createInterest(Interest interest) {
         Callable<Long> insertCallable = () -> interestDataSource.createInterest(interest);
         long rowId = 0;
@@ -169,6 +179,10 @@ public class PlaceViewModel extends ViewModel {
 
     public LiveData<List<Photo>> getPhotosForAPlace(long placeId) {
         return photoDataSource.getPhotosForAPlace(placeId);
+    }
+
+    public LiveData<List<Long>> getPlaceIdForGivenParam(SupportSQLiteQuery query) {
+        return photoDataSource.getPlaceIdForGivenParam(query);
     }
 
     public void updatePhoto(Photo photo) {
