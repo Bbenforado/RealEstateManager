@@ -70,8 +70,6 @@ public class ListFragment extends Fragment {
     private PlaceViewModel viewModel;
     private SharedPreferences preferences;
     private String[] longClickFunctionality = {"Edit place"};
-    private List<Long> ids;
-    private List<Place> placeListForResults;
     //----------------------------------------------
     //
     //----------------------------------------------
@@ -80,7 +78,7 @@ public class ListFragment extends Fragment {
     private static final String STATUS_FORM_ACTIVITY = "statusFormActivity";
     private static final String APP_MODE = "appMode";
     private static final String KEY_RESULTS_ACTIVITY = "keyResultActivity";
-    private static final String PLACE_IDS = "placeIds";
+    private static final String QUERRIED_PLACES = "querriedPlaces";
     private static final String INDEX_ROW = "index";
 
 
@@ -101,11 +99,9 @@ public class ListFragment extends Fragment {
         //if it s results activity
         if (preferences.getInt(KEY_RESULTS_ACTIVITY, -1) == 1) {
             floatingButtonAddPlace.setVisibility(View.GONE);
-            ids = new ArrayList<>();
-            placeListForResults = new ArrayList<>();
             List<Address> addresses = new ArrayList<>();
             List<Photo> photoList = new ArrayList<>();
-            placeListForResults = retrievedPlaces();
+            List<Place> placeListForResults = retrievedPlaces();
 
             updatePlacesList(placeListForResults);
             for (Place place : placeListForResults) {
@@ -194,41 +190,17 @@ public class ListFragment extends Fragment {
     //-----------------------------------------------
     //GET DATA
     //------------------------------------------------
-    /*private void getPlacesDataForResultsActivity(int i) {
-
-    }*/
-
-    /*private void getPhotosDataForResultsActivity(int i) {
-
-    }*/
-
-    /*private void getAddressesDataForResultsActivity(int i) {
-
-    }*/
-
-   /* private List<Long> retrievedIds() {
-        List<Long> idList;
-        Gson gson = new Gson();
-
-        String json = preferences.getString(PLACE_IDS, null);
-
-        Type type = new TypeToken<List<Long>>() {
-        }.getType();
-
-        idList = gson.fromJson(json, type);
-        return idList;
-    }*/
-
+    //FOR RESULTS ACTIVITY
     private List<Place> retrievedPlaces() {
         List<Place> placeList;
         Gson gson = new Gson();
-        String json = preferences.getString(PLACE_IDS, null);
+        String json = preferences.getString(QUERRIED_PLACES, null);
         Type type = new TypeToken<List<Place>>() {
         }.getType();
         placeList = gson.fromJson(json, type);
         return placeList;
     }
-
+    
     private void getPlaces() {
         viewModel.getPlaces().observe(this, this::updatePlacesList);
     }

@@ -90,12 +90,15 @@ public class SearchActivity extends AppCompatActivity {
     public static final String CREATION_DATE_MAX = "creationDateMax";
     public static final String DATE_OF_SALE_MIN = "dateSaleMin";
     public static final String DATE_OF_SALE_MAX = "dateSaleMax";
-    public static final String PLACE_IDS = "placeIds";
+    public static final String QUERRIED_PLACES = "querriedPlaces";
     private List<CheckBox> checkBoxes;
     private List<String> interests;
     private PlaceViewModel viewModel;
     private SimpleDateFormat formatter;
     private String strQuery;
+    private String strInterests;
+    private int nbrOfPhotos;
+    private String city;
 
 
 
@@ -233,7 +236,7 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private String getSelectedInterests() {
-        String strInterests = null;
+        strInterests = null;
         for (int i = 0; i < checkBoxes.size(); i++) {
             if (checkBoxes.get(i).isChecked()) {
                 interests.add(checkBoxes.get(i).getText().toString());
@@ -257,26 +260,26 @@ public class SearchActivity extends AppCompatActivity {
         strQuery = "SELECT * FROM places";
 
         //JOIN INTERESTS TABLE
-        String strInterests = null;
+        strInterests = null;
         if (areInterestsChecked()) {
             strInterests = getSelectedInterests();
             strQuery = strQuery + " INNER JOIN interests ON places.id = interests.idPlace";
         }
 
         //JOIN PHOTOS TABLE
-        int nbrOfPhotos = 0;
+        nbrOfPhotos = 0;
         if (!TextUtils.isEmpty(editTextNbrOfPhotos.getText().toString())) {
             nbrOfPhotos = Integer.parseInt(editTextNbrOfPhotos.getText().toString());
             strQuery = strQuery + " INNER JOIN photos ON places.id = photos.placeId";
         }
 
         //JOIN ADDRESSES TABLE
-        String city = null;
+        city = null;
         if (!TextUtils.isEmpty(editTextCity.getText().toString())) {
             city = editTextCity.getText().toString();
             strQuery = strQuery + " INNER JOIN addresses ON places.id = addresses.idPlace";
         }
-        
+
 
         String type = buttonTypeOfPlace.getText().toString();
         strQuery = strQuery + " WHERE places.type = '" + type + "'";
@@ -320,6 +323,8 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public void onChanged(List<Place> places) {
                 System.out.println("places = " + places.size());
+                savePlaces(places);
+                launchResultsActivity();
             }
         });
     }
@@ -346,5 +351,15 @@ public class SearchActivity extends AppCompatActivity {
             long dateLong = date.getTime();
             strQuery = strQuery + " AND places." + columnName + operator + " '" + dateLong + "'";
         }
+    }
+
+    private void savePlaces(List<Place> places) {
+        Gson gson = new Gson();
+        preferences.edit().putString(QUERRIED_PLACES, gson.toJson(places)).apply();
+    }
+
+    private void launchResultsActivity() {
+        Intent resultsActivity = new Intent(this, ResultsFromSearchActivity.class);
+        startActivity(resultsActivity);
     }
 }
