@@ -124,7 +124,7 @@ public class Utils {
     public static String getLocationFromAddress(Context context, String strAddress) {
         Geocoder coder = new Geocoder(context);
         List<Address> address;
-        LatLng latLng = null;
+        LatLng latLng;
         String latLngOfAddress = null;
 
         try {

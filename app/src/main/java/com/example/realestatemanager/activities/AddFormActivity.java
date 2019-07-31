@@ -60,6 +60,7 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -463,7 +464,7 @@ public class AddFormActivity extends AppCompatActivity {
             editTextNbrOfBedrooms.setText(getString(R.string.not_informed_yet));
         }
         if (place.getDateOfSale() != null) {
-            saleDateButton.setText(place.getDateOfSale());
+            saleDateButton.setText(place.getDateOfSale().toString());
         }
     }
 
@@ -731,7 +732,7 @@ public class AddFormActivity extends AppCompatActivity {
     //-------------------------------------------------------------------------
     //CREATE/UPDATE IN DATABASE
     //-------------------------------------------------------------------------
-    private long createPlace() {
+    private long createPlace(){
         long surface = 0;
         int nbrOfRooms = 0;
         int nbrOfBathrooms = 0;
@@ -755,16 +756,28 @@ public class AddFormActivity extends AppCompatActivity {
             description = editTextDescription.getText().toString();
         }
         String author = editTextAuthor.getText().toString();
-        String date = Utils.getTodayDate();
+        //String date = Utils.getTodayDate();
+        Date date = new Date();
+        System.out.println("date = " + date);
         Place place;
         if (TextUtils.isEmpty(saleDateButton.getText())) {
+            System.out.println("come here");
             //is available
             place = new Place(nbrOfRooms, nbrOfBathrooms, nbrOfBedrooms, type, price, date, null, author, description, surface);
         } else {
             //if sold
-            String saleDate = preferences.getString(DATE_OF_SALE, null);
+            String saleDateStr = preferences.getString(DATE_OF_SALE, null);
+            Date saleDate = null;
+            try {
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
+                saleDate = formatter.parse(saleDateStr);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
             place = new Place(nbrOfRooms, nbrOfBathrooms, nbrOfBedrooms, type, price, date, saleDate, author, description, surface);
+
         }
+        System.out.println("place date =  " + place.getCreationDate());
         return placeViewModel.createPlace(place);
     }
 
@@ -801,7 +814,13 @@ public class AddFormActivity extends AppCompatActivity {
         }
 
         if (preferences.getString(DATE_OF_SALE, null) != null) {
-            place.setDateOfSale(preferences.getString(DATE_OF_SALE, null));
+            Date date = null;
+            try {
+                date = new SimpleDateFormat("yyyy/MM/dd").parse(preferences.getString(DATE_OF_SALE, null));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            place.setDateOfSale(date);
         }
 
         String author = editTextAuthor.getText().toString();

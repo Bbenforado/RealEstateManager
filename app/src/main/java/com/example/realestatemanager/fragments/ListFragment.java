@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -20,6 +21,7 @@ import android.provider.Telephony;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -38,7 +40,10 @@ import com.example.realestatemanager.utils.ItemClickSupport;
 import com.example.realestatemanager.viewModels.PlaceViewModel;
 import com.facebook.stetho.inspector.protocol.module.Database;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,6 +70,8 @@ public class ListFragment extends Fragment {
     private PlaceViewModel viewModel;
     private SharedPreferences preferences;
     private String[] longClickFunctionality = {"Edit place"};
+    private List<Long> ids;
+    private List<Place> placeListForResults;
     //----------------------------------------------
     //
     //----------------------------------------------
@@ -72,6 +79,9 @@ public class ListFragment extends Fragment {
     private static final String PLACE_ID = "placeId";
     private static final String STATUS_FORM_ACTIVITY = "statusFormActivity";
     private static final String APP_MODE = "appMode";
+    private static final String KEY_RESULTS_ACTIVITY = "keyResultActivity";
+    private static final String PLACE_IDS = "placeIds";
+    private static final String INDEX_ROW = "index";
 
 
     public ListFragment() {
@@ -88,13 +98,43 @@ public class ListFragment extends Fragment {
         configureOnClickRecyclerView();
         configureViewModel();
 
-        //get data to display in recycler view
-        getPlaces();
-        getAddresses();
-        getPhotos();
+        //if it s results activity
+        if (preferences.getInt(KEY_RESULTS_ACTIVITY, -1) == 1) {
+            floatingButtonAddPlace.setVisibility(View.GONE);
+            ids = new ArrayList<>();
+            placeListForResults = new ArrayList<>();
+            List<Address> addresses = new ArrayList<>();
+            List<Photo> photoList = new ArrayList<>();
+            placeListForResults = retrievedPlaces();
+
+            updatePlacesList(placeListForResults);
+            for (Place place : placeListForResults) {
+                viewModel.getAddress(place.getId()).observe(this, new Observer<Address>() {
+                    @Override
+                    public void onChanged(Address address) {
+                        addresses.add(address);
+                        updateAddressesList(addresses);
+                    }
+                });
+                viewModel.getPhotosForAPlace(place.getId()).observe(this, new Observer<List<Photo>>() {
+                    @Override
+                    public void onChanged(List<Photo> photos) {
+                        photoList.addAll(photos);
+                        updatePhotosList(photoList);
+                    }
+                });
+            }
+        } else {
+            //get data to display in recycler view
+            getPlaces();
+            getAddresses();
+            getPhotos();
+        }
 
         return result;
     }
+
+
 
     //-------------------------------------------
     //CONFIGURATION
@@ -117,9 +157,11 @@ public class ListFragment extends Fragment {
                     public void onItemClicked(RecyclerView recyclerView, int position, View v) {
                         Place place = adapter.getPlace(position);
                         preferences.edit().putLong(PLACE_ID, place.getId()).apply();
-
                         String appMode = preferences.getString(APP_MODE, null);
+
                         if (appMode.equals(getString(R.string.app_mode_tablet))) {
+                            preferences.edit().putInt(INDEX_ROW, position).apply();
+                            adapter.notifyDataSetChanged();
                             ((MainActivity)getActivity()).refreshFragmentInfo();
 
                         } else {
@@ -152,6 +194,41 @@ public class ListFragment extends Fragment {
     //-----------------------------------------------
     //GET DATA
     //------------------------------------------------
+    /*private void getPlacesDataForResultsActivity(int i) {
+
+    }*/
+
+    /*private void getPhotosDataForResultsActivity(int i) {
+
+    }*/
+
+    /*private void getAddressesDataForResultsActivity(int i) {
+
+    }*/
+
+   /* private List<Long> retrievedIds() {
+        List<Long> idList;
+        Gson gson = new Gson();
+
+        String json = preferences.getString(PLACE_IDS, null);
+
+        Type type = new TypeToken<List<Long>>() {
+        }.getType();
+
+        idList = gson.fromJson(json, type);
+        return idList;
+    }*/
+
+    private List<Place> retrievedPlaces() {
+        List<Place> placeList;
+        Gson gson = new Gson();
+        String json = preferences.getString(PLACE_IDS, null);
+        Type type = new TypeToken<List<Place>>() {
+        }.getType();
+        placeList = gson.fromJson(json, type);
+        return placeList;
+    }
+
     private void getPlaces() {
         viewModel.getPlaces().observe(this, this::updatePlacesList);
     }

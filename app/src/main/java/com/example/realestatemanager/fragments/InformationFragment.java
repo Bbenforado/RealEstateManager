@@ -30,6 +30,7 @@ import com.example.realestatemanager.utils.Utils;
 import com.example.realestatemanager.viewModels.PlaceViewModel;
 import com.google.android.material.button.MaterialButton;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import butterknife.BindView;
@@ -78,6 +79,7 @@ public class InformationFragment extends Fragment {
     private DetailRecyclerViewAdapter adapter;
     private SharedPreferences preferences;
     private long price;
+    private SimpleDateFormat formatter;
 
     public InformationFragment() {
         // Required empty public constructor
@@ -100,6 +102,7 @@ public class InformationFragment extends Fragment {
         preferences = getActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         ButterKnife.bind(this, result);
         configureViewModel();
+        formatter = new SimpleDateFormat("dd/MM/yyyy");
         long placeId = preferences.getLong(PLACE_ID, -1);
 
         if (placeId != 0 && placeId != -1) {
@@ -134,10 +137,12 @@ public class InformationFragment extends Fragment {
     public void convertPrice() {
         if (convertPriceButton.getText().toString().equals(getString(R.string.button_text_convert_to_euros))) {
             int priceInEuros = convertDollarToEuro((int)price);
-            priceTextView.setText(String.valueOf(priceInEuros));
+            String priceEuro = priceInEuros + " €";
+            priceTextView.setText(priceEuro);
             convertPriceButton.setText(getString(R.string.button_text_convert_to_dollars));
         } else if (convertPriceButton.getText().toString().equals(getString(R.string.button_text_convert_to_dollars))) {
-            priceTextView.setText(String.valueOf(price));
+            String priceDollars = price + " $";
+            priceTextView.setText(priceDollars);
             convertPriceButton.setText(getString(R.string.button_text_convert_to_euros));
         }
     }
@@ -145,20 +150,21 @@ public class InformationFragment extends Fragment {
     //--------------------------------------------------
     //UPDATE UI
     //---------------------------------------------------
-    public void updateUi(Place place) {
+    private void updateUi(Place place) {
         if (place.getDateOfSale() == null) {
             layoutDateOfSale.setVisibility(View.GONE);
             statusTextView.setText(getString(R.string.status_available));
             statusTextView.setTextColor(getResources().getColor(R.color.green));
         } else {
             layoutDateOfSale.setVisibility(View.VISIBLE);
-            dateOfSaleTextView.setText(place.getDateOfSale());
+            dateOfSaleTextView.setText(formatter.format(place.getDateOfSale()));
             statusTextView.setText(getString(R.string.status_sold));
             statusTextView.setTextColor(getResources().getColor(R.color.red));
         }
         managerOfPlaceTextView.setText(place.getAuthor());
-        creationDateTextView.setText(place.getCreationDate());
-        priceTextView.setText(String.valueOf(place.getPrice()));
+        creationDateTextView.setText(formatter.format(place.getCreationDate()));
+        String price = place.getPrice() + " $";
+        priceTextView.setText(price);
 
         if (place.getDescription() != null) {
             descriptionTextView.setText(place.getDescription());
@@ -166,7 +172,8 @@ public class InformationFragment extends Fragment {
             descriptionTextView.setText(getString(R.string.not_informed_yet));
         }
         if (place.getSurface() != 0) {
-            surfaceTextView.setText(String.valueOf(place.getSurface()));
+            String surface = place.getSurface() + " m²";
+            surfaceTextView.setText(surface);
         } else {
             surfaceTextView.setText(getString(R.string.not_informed_yet));
         }

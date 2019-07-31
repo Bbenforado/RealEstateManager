@@ -1,5 +1,8 @@
 <RelativeLayout android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingTop="16dp"
+    android:paddingLeft="16dp"
+    android:id="@+id/relative_layout_item_list"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ImageView
@@ -18,7 +21,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginRight="10dp"
-        android:layout_marginLeft="10dp"
         android:layout_toLeftOf="@+id/fragment_list_item_image">
 
         <RelativeLayout
@@ -63,8 +65,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="60dp"
-            android:paddingBottom="10dp">
+            android:layout_marginTop="60dp">
 
             <TextView
                 android:id="@+id/price_text_view"

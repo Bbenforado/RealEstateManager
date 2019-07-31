@@ -124,7 +124,7 @@
                     android:id="@+id/text_edit_surface"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Surface"
+                    android:hint="Surface (m²)"
                     android:inputType="number"
                     android:maxLines="1"
                     android:textSize="12sp"

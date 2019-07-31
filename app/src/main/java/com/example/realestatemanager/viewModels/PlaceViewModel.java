@@ -62,6 +62,8 @@ public class PlaceViewModel extends ViewModel {
     }
 
     public long createPlace(Place place) {
+        System.out.println("create place viewmodel");
+        System.out.println("date in view model = " + place.getCreationDate());
         Callable<Long> insertCallable = () -> placeDataSource.createPlace(place);
         long rowId = 0;
 

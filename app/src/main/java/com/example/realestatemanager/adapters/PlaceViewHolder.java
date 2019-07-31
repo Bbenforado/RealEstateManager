@@ -1,9 +1,11 @@
 package com.example.realestatemanager.adapters;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -31,6 +33,8 @@ public class PlaceViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.price_text_view) TextView priceTextView;
     @BindView(R.id.fragment_list_item_image)
     ImageView imageView;
+    @BindView(R.id.relative_layout_item_list)
+    RelativeLayout relativeLayout;
 
 
 
@@ -43,7 +47,8 @@ public class PlaceViewHolder extends RecyclerView.ViewHolder {
     public void updateUi(Place place, Address address, List<Photo> photos,
                          Context context, RequestManager glide) {
         this.typeOfPlaceTextView.setText(place.getType());
-        this.priceTextView.setText(String.valueOf(place.getPrice()));
+        String price = place.getPrice() + " $";
+        this.priceTextView.setText(price);
         if (address.getIdPlace() == place.getId()) {
             this.cityTextView.setText(address.getCity());
         }
@@ -75,15 +80,4 @@ public class PlaceViewHolder extends RecyclerView.ViewHolder {
             statusTextView.setTextColor(context.getResources().getColor(R.color.green));
         }
     }
-
-    /*private Photo getMainPhoto(List<Photo> photos) {
-        for (int i = 0; i<photos.size(); i++) {
-            //get the main photo
-            if (photos.get(i).isMainPhoto()) {
-                return photos.get(i);
-            }else {
-                return photos.get(0);
-            }
-        }
-    }*/
 }

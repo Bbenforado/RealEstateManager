@@ -12,9 +12,11 @@ import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.sqlite.db.SimpleSQLiteQuery;
@@ -24,15 +26,22 @@ import com.example.realestatemanager.fragments.ListFragment;
 import com.example.realestatemanager.injections.Injection;
 import com.example.realestatemanager.injections.ViewModelFactory;
 import com.example.realestatemanager.models.Interest;
+import com.example.realestatemanager.models.Place;
 import com.example.realestatemanager.utils.Utils;
 import com.example.realestatemanager.viewModels.PlaceViewModel;
+import com.google.android.gms.common.GoogleSignatureVerifier;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
 
+import java.io.StringBufferInputStream;
+import java.security.PrivilegedActionException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -85,7 +94,8 @@ public class SearchActivity extends AppCompatActivity {
     private List<CheckBox> checkBoxes;
     private List<String> interests;
     private PlaceViewModel viewModel;
-    private List<Long> placeIds;
+    private SimpleDateFormat formatter;
+    private String strQuery;
 
 
 
@@ -96,8 +106,8 @@ public class SearchActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         preferences = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE);
 
+        formatter = new SimpleDateFormat("dd/MM/yyyy");
         interests = new ArrayList<>();
-        placeIds = new ArrayList<>();
         checkBoxes = Arrays.asList(checkBoxSchool, checkBoxMarketPlace, checkBoxPark, checkBoxHospital, checkBoxCinema, checkBoxTheater);
 
         configureToolbar();
@@ -131,11 +141,11 @@ public class SearchActivity extends AppCompatActivity {
 
     @OnClick(R.id.material_button_search_search_activity)
     public void searchPlacesDependingOnFieldsContent() {
-        if (areAllFieldsCorrectlyFilled()) {
+        //if (areAllFieldsCorrectlyFilled()) {
             queryResults();
-        } else {
+        /*} else {
             Toast.makeText(this, "Fields are not correctly filled", Toast.LENGTH_SHORT).show();
-        }
+        }*/
     }
 
     @OnClick(R.id.material_button_status_search_activity)
@@ -232,9 +242,9 @@ public class SearchActivity extends AppCompatActivity {
         if (interests.size()>1) {
             for (int i = 0; i < interests.size(); i++) {
                 if (i == 1) {
-                    strInterests =  interests.get(i)+ "'";
+                    strInterests =  interests.get(i);
                 } else {
-                    strInterests = strInterests + " AND '" + interests.get(i) + "'";
+                    strInterests = strInterests + "' AND '" + interests.get(i) + "'";
                 }
             }
             return strInterests;
@@ -243,167 +253,98 @@ public class SearchActivity extends AppCompatActivity {
         return strInterests;
     }
 
-
-
     private void queryResults() {
-        //getSelectedInterests();
+        strQuery = "SELECT * FROM places";
+
+        //JOIN INTERESTS TABLE
+        String strInterests = null;
+        if (areInterestsChecked()) {
+            strInterests = getSelectedInterests();
+            strQuery = strQuery + " INNER JOIN interests ON places.id = interests.idPlace";
+        }
+
+        //JOIN PHOTOS TABLE
+        int nbrOfPhotos = 0;
+        if (!TextUtils.isEmpty(editTextNbrOfPhotos.getText().toString())) {
+            nbrOfPhotos = Integer.parseInt(editTextNbrOfPhotos.getText().toString());
+            strQuery = strQuery + " INNER JOIN photos ON places.id = photos.placeId";
+        }
+
+        //JOIN ADDRESSES TABLE
+        String city = null;
+        if (!TextUtils.isEmpty(editTextCity.getText().toString())) {
+            city = editTextCity.getText().toString();
+            strQuery = strQuery + " INNER JOIN addresses ON places.id = addresses.idPlace";
+        }
+        
+
         String type = buttonTypeOfPlace.getText().toString();
+        strQuery = strQuery + " WHERE places.type = '" + type + "'";
 
-        String strQuery = "SELECT * FROM places WHERE type = '" + type + "'" ;
+        if (!buttonStatus.getText().equals(getString(R.string.status_available)) && !buttonStatus.getText().equals("Status")) {
+            strQuery = strQuery + " AND places.dateOfSale IS NOT NULL";
+        }
 
+        queryParam(editTextMinPrice, "places.price", ">= ");
+        queryParam(editTextMaxPrice, "places.price", "<= ");
+        queryParam(editTextMinSurface, "places.surface", ">= ");
+        queryParam(editTextMaxSurface, "places.surface", "<= ");
+
+        queryParam(editTextMinNbrRooms, "places.nbrOfRooms", ">= ");
+        queryParam(editTextMaxNbrRooms, "places.nbrOfRooms", "<= ");
+        queryParam(editTextMinNbrbedrooms, "places.nbrOfBedrooms", ">= ");
+        queryParam(editTextMaxNbrbedrooms, "places.nbrOfBedrooms", "<= ");
+        queryParam(editTextMinNbrBathrooms, "places.nbrOfBathrooms", ">= ");
+        queryParam(editTextMaxNbrBathrooms, "places.nbrOfBathrooms", "<= ");
+
+
+        queryDates(CREATION_DATE_MIN, "creationDate", " >= ");
+        queryDates(CREATION_DATE_MAX, "creationDate", " <= ");
+        queryDates(DATE_OF_SALE_MIN, "dateOfSale", " >= ");
+        queryDates(DATE_OF_SALE_MAX, "dateOfSale", " <= ");
 
         if (areInterestsChecked()) {
-            String strInterests = getSelectedInterests();
-
-            strQuery = "SELECT DISTINCT idPlace FROM interests WHERE type = '" + strInterests +
-                    "' AND idPlace IN ( SELECT id FROM places WHERE type = '" + type + "'";
+            strQuery = strQuery + "  AND interests.type = '" + strInterests + "'";
+        }
+        if (city != null) {
+            strQuery = strQuery + " AND addresses.city = '" + city + "'";
+        }
+        if (!TextUtils.isEmpty(editTextNbrOfPhotos.getText().toString())) {
+            strQuery = strQuery + " GROUP BY photos.placeId HAVING COUNT (photos.placeId) >= " + nbrOfPhotos;
         }
 
-        int status;
-        if (buttonStatus.getText().equals(getString(R.string.status_available))) {
-            status = 0;
+        strQuery = strQuery + ";";
+        SimpleSQLiteQuery queryAddress = new SimpleSQLiteQuery(strQuery);
 
-        } else {
-            status = 1;
-            strQuery = strQuery + " AND dateOfSale IS NOT NULL";
-        }
-
-
-
-        long minPrice = Long.parseLong(editTextMinPrice.getText().toString());
-
-        strQuery = strQuery + " AND price >= '" + minPrice + "'";
-
-        long maxPrice = 0;
-        if (!TextUtils.isEmpty(editTextMaxPrice.getText().toString())) {
-            maxPrice = Long.parseLong(editTextMaxPrice.getText().toString());
-            strQuery = strQuery + " AND price <= '" + maxPrice + "'";
-        }
-        int minSurface = Integer.parseInt(editTextMinSurface.getText().toString());
-        strQuery = strQuery + " AND surface >= '" + minSurface + "'";
-        long maxSurface = 0;
-        if (!TextUtils.isEmpty(editTextMaxSurface.getText().toString())) {
-            maxSurface = Integer.parseInt(editTextMaxSurface.getText().toString());
-            strQuery = strQuery + " AND surface <= '" + maxSurface + "'";
-        }
-
-        int minNbrOfRooms = Integer.parseInt(editTextMinNbrRooms.getText().toString());
-        strQuery = strQuery + " AND nbrOfRooms >= '" + minNbrOfRooms + "'";
-        int maxNbrOfRooms = 0;
-        if (!TextUtils.isEmpty(editTextMaxNbrRooms.getText().toString())) {
-            maxNbrOfRooms = Integer.parseInt(editTextMaxNbrRooms.getText().toString());
-            strQuery = strQuery + " AND nbrOfRooms <= '" + maxNbrOfRooms + "'";
-        }
-
-        int minNbrOfBedrooms = Integer.parseInt(editTextMinNbrbedrooms.getText().toString());
-        strQuery = strQuery + " AND nbrOfBedrooms >= '" + minNbrOfBedrooms + "'";
-        int maxNbrOfBedrooms = 0;
-        if (!TextUtils.isEmpty(editTextMaxNbrbedrooms.getText().toString())) {
-            maxNbrOfRooms = Integer.parseInt(editTextMaxNbrbedrooms.getText().toString());
-            strQuery = strQuery + " AND nbrOfBedrooms <= '" + maxNbrOfBedrooms + "'";
-        }
-
-        int minNbrOfBathrooms = Integer.parseInt(editTextMinNbrBathrooms.getText().toString());
-        strQuery = strQuery + " AND nbrOfBathrooms >= '" + minNbrOfBathrooms + "'";
-        int maxNbrOfBathrooms = 0;
-        if (!TextUtils.isEmpty(editTextMaxNbrBathrooms.getText().toString())) {
-            maxNbrOfRooms = Integer.parseInt(editTextMaxNbrBathrooms.getText().toString());
-            strQuery = strQuery + " AND nbrOfBathrooms <= '" + maxNbrOfBathrooms + "'";
-        }
-
-        String creationDateMin = preferences.getString(CREATION_DATE_MIN, null);
-        String creationDateMax = null;
-        if (preferences.getString(CREATION_DATE_MAX, null) != null) {
-            creationDateMax = preferences.getString(CREATION_DATE_MAX, null);
-        }
-
-        String dateOfSaleMin = null;
-        String dateOfSaleMax = null;
-        if (preferences.getString(DATE_OF_SALE_MIN, null) != null) {
-            dateOfSaleMin = preferences.getString(DATE_OF_SALE_MIN, null);
-        }
-        if (preferences.getString(DATE_OF_SALE_MAX, null) != null) {
-            dateOfSaleMax = preferences.getString(DATE_OF_SALE_MAX, null);
-        }
-
-
-
-
-
-        String finalQuery = strQuery + ");";
-
-        /*SimpleSQLiteQuery query = new SimpleSQLiteQuery(finalQuery);
-
-        viewModel.getPlaceForGivenParameters(query).observe(this, new Observer<List<Place>>() {
+        viewModel.getPlaceForGivenParameters(queryAddress).observe(this, new Observer<List<Place>>() {
             @Override
             public void onChanged(List<Place> places) {
                 System.out.println("places = " + places.size());
             }
-        });*/
-
-        SimpleSQLiteQuery query = new SimpleSQLiteQuery(finalQuery);
-        System.out.println("final query = " + finalQuery);
-
-        /*viewModel.getPlaceIdForGivenParameters(query).observe(this, new Observer<List<Long>>() {
-            @Override
-            public void onChanged(List<Long> placesId) {
-                System.out.println("places = " + placesId.size());
-                for (int i = 0; i<placesId.size(); i++) {
-                    placeIdFromInterests.addAll(placesId);
-                }
-            }
-        });*/
-
-        if (!TextUtils.isEmpty(editTextNbrOfPhotos.getText().toString())) {
-            int nbrOfPhotos = Integer.parseInt(editTextNbrOfPhotos.getText().toString());
-            String queryFromPhoto = "SELECT DISTINCT placeId FROM photos GROUP BY placeId HAVING COUNT (placeId)>= " + nbrOfPhotos + ";";
-
-            SimpleSQLiteQuery query1 = new SimpleSQLiteQuery(queryFromPhoto);
-
-            viewModel.getPlaceIdForGivenParam(query1).observe(this, new Observer<List<Long>>() {
-            @Override
-            public void onChanged(List<Long> placesId) {
-                System.out.println("places = " + placesId.size());
-
-            }
         });
+    }
 
-        }
-
-        /*SELECT
-        projet.id, projet.nom,
-                COUNT(ticket.numero) AS "Nombre ticket"
-        FROM projet
-        JOIN ticket ON ticket.projet_id = projet.id
-        WHERE projet.cloture = FALSE
-        GROUP BY projet.id, projet.nom
-        HAVING COUNT(ticket.numero) > 10;       -- Ne garder que les lignes avec count(...) > 10*/
-
-        if (!TextUtils.isEmpty(editTextCity.getText().toString())) {
-            String city = editTextCity.getText().toString();
-            String queryFromAddresses = "SELECT DISTINCT idPlace FROM addresses WHERE city = '" + city + "';";
-
-            SimpleSQLiteQuery queryAddress = new SimpleSQLiteQuery(queryFromAddresses);
-
-            viewModel.getPlaceIdForGivenParamFromAddresses(queryAddress).observe(this, new Observer<List<Long>>() {
-                @Override
-                public void onChanged(List<Long> placesId) {
-                    System.out.println("places = " + placesId.size());
-                    placeIds.addAll(placesId);
-                    saveArrayOfIds(placesId);
-                }
-            });
-            launchResultsActivity();
+    //--------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------
+    private void queryParam(TextView textView, String columnName, String operator) {
+        if (!TextUtils.isEmpty(textView.getText().toString())) {
+            int nbr;
+            nbr = Integer.parseInt(textView.getText().toString());
+            strQuery = strQuery + " AND " + columnName + " " + operator + "'" + nbr + "'";
         }
     }
 
-    private void saveArrayOfIds(List<Long> ids) {
-        Gson gson = new Gson();
-        preferences.edit().putString(PLACE_IDS, gson.toJson(ids)).apply();
-    }
-
-    private void launchResultsActivity() {
-        Intent resultsActivity = new Intent(this, ResultsFromSearchActivity.class);
-        startActivity(resultsActivity);
+    private void queryDates(final String KEY, String columnName, String operator) {
+        if (preferences.getString(KEY, null) != null) {
+            String dateStr = preferences.getString(KEY, null);
+            Date date = null;
+            try {
+                date = formatter.parse(dateStr);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            long dateLong = date.getTime();
+            strQuery = strQuery + " AND places." + columnName + operator + " '" + dateLong + "'";
+        }
     }
 }

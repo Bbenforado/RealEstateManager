@@ -48,6 +48,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -136,6 +139,7 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
     private long placeId;
     private GoogleMap googleMap;
     private long price;
+    private SimpleDateFormat formatter;
 
 
     public DetailFragment() {
@@ -158,6 +162,7 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
                 configureRecyclerView();
                 getPhotos(placeId);
             } else if (preferences.getString(APP_MODE, null).equals(getString(R.string.app_mode_tablet))) {
+                formatter = new SimpleDateFormat("dd/MM/yyyy");
                 configureRecyclerViewForTablet();
                 adapterForInterests = new DetailRecyclerViewAdapter();
                 Utils.configureRecyclerViewForInterests(getContext(), adapterForInterests, recyclerViewInterests);
@@ -188,15 +193,17 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
     public void convertPrice() {
         if (buttonConvertPriceTabletMode.getText().toString().equals(getString(R.string.button_text_convert_to_euros))) {
             int priceInEuros = convertDollarToEuro((int)price);
-            textViewPriceTabletMode.setText(String.valueOf(priceInEuros));
+            String priceEuros = priceInEuros + " €";
+            textViewPriceTabletMode.setText(priceEuros);
             buttonConvertPriceTabletMode.setText(getString(R.string.button_text_convert_to_dollars));
         } else if (buttonConvertPriceTabletMode.getText().toString().equals(getString(R.string.button_text_convert_to_dollars))) {
-            textViewPriceTabletMode.setText(String.valueOf(price));
+            String priceInDollars = price + " $";
+            textViewPriceTabletMode.setText(priceInDollars);
             buttonConvertPriceTabletMode.setText(getString(R.string.button_text_convert_to_euros));
         }
     }
 
-    public void updateUi(Place place) {
+    private void updateUi(Place place) {
         textViewTypeOfPlaceTabletMode.setText(place.getType());
         if (place.getDateOfSale() == null) {
             layoutDateOfSaleTabletMode.setVisibility(View.GONE);
@@ -204,13 +211,16 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
             textViewStatusTabletMode.setTextColor(getResources().getColor(R.color.green));
         } else {
             layoutDateOfSaleTabletMode.setVisibility(View.VISIBLE);
-            textViewDateOfSaleTabletMode.setText(place.getDateOfSale());
+            Date dateOfSale = place.getDateOfSale();
+            String date = formatter.format(dateOfSale);
+            textViewDateOfSaleTabletMode.setText(date);
             textViewStatusTabletMode.setText(getString(R.string.status_sold));
             textViewStatusTabletMode.setTextColor(getResources().getColor(R.color.red));
         }
         textViewManagerTabletMode.setText(place.getAuthor());
-        textViewCreationDateTabletMode.setText(place.getCreationDate());
-        textViewPriceTabletMode.setText(String.valueOf(place.getPrice()));
+        textViewCreationDateTabletMode.setText(formatter.format(place.getCreationDate()));
+        String priceInDollars = place.getPrice() + " $";
+        textViewPriceTabletMode.setText(priceInDollars);
 
         if (place.getDescription() != null) {
             textViewDescriptionTabletMode.setText(place.getDescription());
@@ -218,7 +228,8 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
             textViewDescriptionTabletMode.setText(getString(R.string.not_informed_yet));
         }
         if (place.getSurface() != 0) {
-            textViewSurfaceTabletMode.setText(String.valueOf(place.getSurface()));
+            String surface = place.getSurface() + " m²";
+            textViewSurfaceTabletMode.setText(surface);
         } else {
             textViewSurfaceTabletMode.setText(getString(R.string.not_informed_yet));
         }

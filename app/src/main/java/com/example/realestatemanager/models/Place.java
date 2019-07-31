@@ -3,6 +3,9 @@ package com.example.realestatemanager.models;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+
+import java.util.Date;
+
 @Entity(tableName = "places")
 public class Place {
 
@@ -14,8 +17,10 @@ public class Place {
     private long surface;
     private String type;
     private long price;
-    private String creationDate;
-    private String dateOfSale;
+    //private String creationDate;
+    //private String dateOfSale;
+    private Date creationDate;
+    private Date dateOfSale;
     private String author;
     private String description;
 
@@ -23,7 +28,7 @@ public class Place {
 
     }
 
-    public Place(int nbrOfRooms, int nbrOfBathrooms, int nbrOfBedrooms, String type, long price, String creationDate, String dateOfSale, String author, String description, long surface) {
+    public Place(int nbrOfRooms, int nbrOfBathrooms, int nbrOfBedrooms, String type, long price, Date creationDate, Date dateOfSale, String author, String description, long surface) {
         this.nbrOfRooms = nbrOfRooms;
         this.nbrOfBathrooms = nbrOfBathrooms;
         this.nbrOfBedrooms = nbrOfBedrooms;
@@ -65,11 +70,11 @@ public class Place {
     }
 
 
-    public String getCreationDate() {
+    public Date getCreationDate() {
         return creationDate;
     }
 
-    public String getDateOfSale() {
+    public Date getDateOfSale() {
         return dateOfSale;
     }
 
@@ -113,11 +118,11 @@ public class Place {
         this.price = price;
     }
 
-    public void setCreationDate(String creationDate) {
+    public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
     }
 
-    public void setDateOfSale(String dateOfSale) {
+    public void setDateOfSale(Date dateOfSale) {
         this.dateOfSale = dateOfSale;
     }
 

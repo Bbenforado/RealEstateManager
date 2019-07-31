@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //public static final String USER_NAME = "userName";
     private static final String PLACE_ID = "placeId";
     public static final String APP_MODE = "appMode";
+    public static final String KEY_RESULTS_ACTIVITY = "keyResultActivity";
 
 
     @Override
@@ -170,6 +171,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void configureAndShowListFragment(){
+        preferences.edit().putInt(KEY_RESULTS_ACTIVITY, -1).apply();
         listFragment = (ListFragment) getSupportFragmentManager().findFragmentById(R.id.frame_layout_main_list);
         if (listFragment == null) {
             listFragment = new ListFragment();
