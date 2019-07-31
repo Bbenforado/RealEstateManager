@@ -1,6 +1,8 @@
 package com.example.realestatemanager.models;
 
 
+import android.content.ContentValues;
+
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -136,5 +138,20 @@ public class Place {
 
     public void setSurface(long surface) {
         this.surface = surface;
+    }
+
+
+    //FOR CONTENT PROVIDER
+    public static Place fromContentValues(ContentValues values) {
+        final Place place = new Place();
+        if (values.containsKey("type")) place.setType(values.getAsString("type"));
+        if (values.containsKey("price")) place.setPrice(values.getAsInteger("price"));
+        if (values.containsKey("surface")) place.setSurface(values.getAsLong("surface"));
+        if (values.containsKey("nbrOfRooms")) place.setNbrOfRooms(values.getAsInteger("nbrOfRooms"));
+        if (values.containsKey("nbrOfBedrooms")) place.setNbrOfBedrooms(values.getAsInteger("nbrOfBedrooms"));
+        if (values.containsKey("nbrOfBathrooms")) place.setNbrOfBathrooms(values.getAsInteger("nbrOfBathrooms"));
+        if (values.containsKey("author")) place.setAuthor(values.getAsString("author"));
+        if (values.containsKey("description")) place.setDescription(values.getAsString("description"));
+        return place;
     }
 }

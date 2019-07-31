@@ -1,5 +1,7 @@
 package com.example.realestatemanager.database.dao;
 
+import android.database.Cursor;
+
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
@@ -26,6 +28,9 @@ public interface PlaceDao {
 
     @RawQuery(observedEntities = Place.class)
     LiveData<List<Place>> getPlacesForGivenParameters(SupportSQLiteQuery query);
+
+    @Query("SELECT * FROM places WHERE id = :placeId")
+    Cursor getPlacesWithCursor(long placeId);
 
     /*@Insert(onConflict = OnConflictStrategy.REPLACE)
     long createPlace(Place place);*/

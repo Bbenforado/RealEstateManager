@@ -200,7 +200,7 @@ public class ListFragment extends Fragment {
         placeList = gson.fromJson(json, type);
         return placeList;
     }
-    
+
     private void getPlaces() {
         viewModel.getPlaces().observe(this, this::updatePlacesList);
     }
