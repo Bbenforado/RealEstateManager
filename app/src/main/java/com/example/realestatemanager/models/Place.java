@@ -19,8 +19,6 @@ public class Place {
     private long surface;
     private String type;
     private long price;
-    //private String creationDate;
-    //private String dateOfSale;
     private Date creationDate;
     private Date dateOfSale;
     private String author;

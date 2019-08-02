@@ -80,6 +80,8 @@ public class ListFragment extends Fragment {
     private static final String KEY_RESULTS_ACTIVITY = "keyResultActivity";
     private static final String QUERRIED_PLACES = "querriedPlaces";
     private static final String INDEX_ROW = "index";
+    public static final String QUERRIED_ADDRESSES = "querriedAdresses";
+    public static final String QUERRIED_PHOTOS = "querriedPhotos";
 
 
     public ListFragment() {
@@ -99,13 +101,13 @@ public class ListFragment extends Fragment {
         //if it s results activity
         if (preferences.getInt(KEY_RESULTS_ACTIVITY, -1) == 1) {
             floatingButtonAddPlace.setVisibility(View.GONE);
-            List<Address> addresses = new ArrayList<>();
+            List<Address> addresseList = new ArrayList<>();
             List<Photo> photoList = new ArrayList<>();
             List<Place> placeListForResults = retrievedPlaces();
-
             updatePlacesList(placeListForResults);
             for (Place place : placeListForResults) {
-                viewModel.getAddress(place.getId()).observe(this, new Observer<Address>() {
+                System.out.println("id = " + place.getId());
+                /*viewModel.getAddress(place.getId()).observe(this, new Observer<Address>() {
                     @Override
                     public void onChanged(Address address) {
                         addresses.add(address);
@@ -118,8 +120,35 @@ public class ListFragment extends Fragment {
                         photoList.addAll(photos);
                         updatePhotosList(photoList);
                     }
+                });*/
+                viewModel.getAddresses().observe(this, new Observer<List<Address>>() {
+                    @Override
+                    public void onChanged(List<Address> addresses) {
+                        for (int i = 0;i<addresses.size(); i++) {
+                            if (addresses.get(i).getIdPlace() == place.getId()) {
+                                addresseList.add(addresses.get(i));
+                                updateAddressesList(addresseList);
+                                System.out.println("addresse list = " + addresseList.size());
+                            }
+                        }
+                    }
+                });
+                viewModel.getPhotos().observe(this, new Observer<List<Photo>>() {
+                    @Override
+                    public void onChanged(List<Photo> photos) {
+                        for (int i = 0; i<photos.size(); i++) {
+                            if (photos.get(i).getPlaceId() == place.getId()) {
+                                photoList.add(photos.get(i));
+                                updatePhotosList(photoList);
+                                System.out.println("photo list = " + photoList.size());
+                            }
+                        }
+                    }
                 });
             }
+
+
+            //adapter.notifyDataSetChanged();
         } else {
             //get data to display in recycler view
             getPlaces();

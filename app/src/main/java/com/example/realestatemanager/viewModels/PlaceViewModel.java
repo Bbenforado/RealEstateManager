@@ -13,10 +13,12 @@ import com.example.realestatemanager.models.Address;
 import com.example.realestatemanager.models.Interest;
 import com.example.realestatemanager.models.Photo;
 import com.example.realestatemanager.models.Place;
+import com.example.realestatemanager.models.PlaceAddressesPhotosAndInterests;
 import com.example.realestatemanager.repositories.AddressDataRepository;
 import com.example.realestatemanager.repositories.InterestDataRepository;
 import com.example.realestatemanager.repositories.PhotoDataRepository;
 import com.example.realestatemanager.repositories.PlaceDataRepository;
+import com.example.realestatemanager.repositories.RawDataRepository;
 
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -32,23 +34,30 @@ public class PlaceViewModel extends ViewModel {
     private final AddressDataRepository addressDataSource;
     private final InterestDataRepository interestDataSource;
     private final PhotoDataRepository photoDataSource;
+    private final RawDataRepository rawDataSource;
     private final Executor executor;
 
     /*@Nullable
     private LiveData<Place> currentPlace;*/
 
     public PlaceViewModel(PlaceDataRepository placeDataSource, AddressDataRepository addressDataSource,
-                          InterestDataRepository interestDataSource, PhotoDataRepository photoDataRepository, Executor executor) {
+                          InterestDataRepository interestDataSource, PhotoDataRepository photoDataRepository, RawDataRepository rawDataRepository, Executor executor) {
         this.placeDataSource = placeDataSource;
         this.addressDataSource = addressDataSource;
         this.interestDataSource = interestDataSource;
         this.photoDataSource = photoDataRepository;
+        this.rawDataSource = rawDataRepository;
         this.executor = executor;
     }
 
     //-----------------------------------------------
     //FOR PLACES
     //-------------------------------------------------------
+    public LiveData<List<PlaceAddressesPhotosAndInterests>> getPlacesAndData(SimpleSQLiteQuery query) {
+        return rawDataSource.getPlacesAndData(query);
+    }
+
+
     public LiveData<Place> getPlace(long placeId) {
         return placeDataSource.getPlace(placeId);
     }

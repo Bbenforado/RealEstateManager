@@ -18,11 +18,14 @@ import android.widget.Toast;
 
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.realestatemanager.R;
 import com.example.realestatemanager.adapters.DetailRecyclerViewAdapter;
+import com.example.realestatemanager.injections.Injection;
+import com.example.realestatemanager.injections.ViewModelFactory;
 import com.example.realestatemanager.models.Interest;
 import com.example.realestatemanager.viewModels.PlaceViewModel;
 import com.google.android.gms.maps.model.LatLng;
@@ -42,7 +45,7 @@ public class Utils {
      * @return
      */
     public static int convertDollarToEuro(int dollars){
-        return (int) Math.round(dollars * 0.812);
+        return (int) Math.round(dollars * 0.905352);
     }
 
     /**
@@ -67,6 +70,7 @@ public class Utils {
         return wifi.isWifiEnabled();
     }
 
+    //---------------------------------------------------------------------------------------------------------------------
     /**
      * verify if there is a internet connection
      * @return
@@ -78,9 +82,8 @@ public class Utils {
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
-    //---------------------------------------------------------------------------------------------------------------------
     public static int convertEuroToDollar(int euros) {
-        return (int) Math.round(euros * 0.89);
+        return (int) Math.round(euros * 1.10454);
     }
 
     public static String addZeroToDate(String string) {
@@ -145,7 +148,7 @@ public class Utils {
         return latLngOfAddress;
     }
 
-    private static String getParenthesesContent(String str){
+    public static String getParenthesesContent(String str){
         return str.substring(str.indexOf('(')+1,str.indexOf(')'));
     }
 
@@ -163,20 +166,6 @@ public class Utils {
         recyclerViewInterest.setAdapter(adapter);
         recyclerViewInterest.setLayoutManager(new LinearLayoutManager(context));
     }
-
-    /*public static AlertDialog displayDialogForTypeOfPlace(Context context, String[] typesOfPlace, MaterialButton button) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle(context.getString(R.string.title_dialog_choose_type_of_place));
-        builder.setItems(typesOfPlace, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String type = typesOfPlace[which];
-                button.setText(type);
-            }
-        });
-        return builder.create();
-        //dialog.show();
-    }*/
 
 
 

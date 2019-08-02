@@ -45,6 +45,7 @@
     //FOR SETTINGS ACTIVITY
     <string name="toolbar_title_settings">Settings</string>
     <string name="dialog_title_enter_new_name">Enter a new name :</string>
+    <string name="toast_message_save_your_name">Click on button to save your name</string>
 
     //FOR PLACE VIEWHOLDER
     <string name="status_sold">Sold</string>
@@ -71,6 +72,8 @@
     <string name="button_text_status">Status</string>
     <string name="button_text_type_of_place">Type of place</string>
     <string name="interests_title">Interests near this place :</string>
+    <string name="toast_message_field_value_missing">You have to inform at least type of place</string>
+    <string name="toast_message_no_result_found">No results found for theses criteria :(</string>
 
 
 </resources>

@@ -13,6 +13,7 @@ import com.example.realestatemanager.database.dao.AddressDao;
 import com.example.realestatemanager.database.dao.InterestDao;
 import com.example.realestatemanager.database.dao.PhotoDao;
 import com.example.realestatemanager.database.dao.PlaceDao;
+import com.example.realestatemanager.database.dao.RawDao;
 import com.example.realestatemanager.models.Address;
 import com.example.realestatemanager.models.Interest;
 import com.example.realestatemanager.models.Photo;
@@ -31,6 +32,7 @@ public abstract class RealEstateManagerDatabase extends RoomDatabase {
     public abstract AddressDao addressDao();
     public abstract InterestDao interestDao();
     public abstract PhotoDao photoDao();
+    public abstract RawDao rawDao();
 
     //INSTANCE
     public static RealEstateManagerDatabase getInstance(Context context) {

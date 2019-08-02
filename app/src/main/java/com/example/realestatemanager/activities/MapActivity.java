@@ -47,13 +47,14 @@ import static com.example.realestatemanager.utils.Utils.getLocationFromAddress;
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnCameraIdleListener {
 
     private GoogleMap googleMap;
-    private static final int REQUEST_ID_ACCESS_COURSE_FINE_LOCATION = 100;
     private PlaceViewModel viewModel;
-    //private List<String> latLngs;
     private SharedPreferences preferences;
+    private LatLngBounds bounds;
+    //----------------------------------------------
+    private static final int REQUEST_ID_ACCESS_COURSE_FINE_LOCATION = 100;
     private static final String APP_PREFERENCES = "appPreferences";
     private static final String PLACE_ID = "placeId";
-    private LatLngBounds bounds;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +63,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         ButterKnife.bind(this);
         preferences = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE);
         configureViewModel();
-        //latLngs = new ArrayList<>();
         SupportMapFragment map = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map_fragment_map_activity);
         map.getMapAsync(this);
     }
@@ -91,20 +91,20 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     }
 
+    //---------------------------------------
+    //PERMISSIONS
+    //-------------------------------------------
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case REQUEST_ID_ACCESS_COURSE_FINE_LOCATION: {
-                if (grantResults.length > 1
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED
-                        &&grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, getString(R.string.permission_granted), Toast.LENGTH_SHORT).show();
-                    showMyLocation();
-                } else {
-                    Toast.makeText(this, getString(R.string.permission_denied), Toast.LENGTH_SHORT).show();
-                }
-                break;
+        if (requestCode == REQUEST_ID_ACCESS_COURSE_FINE_LOCATION) {
+            if (grantResults.length > 1
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                    && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, getString(R.string.permission_granted), Toast.LENGTH_SHORT).show();
+                showMyLocation();
+            } else {
+                Toast.makeText(this, getString(R.string.permission_denied), Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -126,6 +126,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         showMyLocation();
     }
 
+    //-----------------------------------------
+    //CONFIGURATION
+    //--------------------------------------------
+    private void configureViewModel() {
+        ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(this);
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(PlaceViewModel.class);
+    }
+
+    //------------------------------------------
+    //METHODS
+    //-------------------------------------------
     private void showMyLocation() {
         if (getUserLocation(this) == null) {
             Toast.makeText(this, getString(R.string.toast_message_user_location_not_found), Toast.LENGTH_SHORT).show();
@@ -138,8 +149,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             float zoomLevel = 16.0f;
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoomLevel));
 
-            LatLng latLng1 = createNewLatLngForBounds(userLat, userLng, 1000);
-            LatLng latLng2 = createNewLatLngForBounds(userLat, userLng, -1000);
+            LatLng latLng1 = createNewLatLngForBounds(userLat, userLng, 2000);
+            LatLng latLng2 = createNewLatLngForBounds(userLat, userLng, -2000);
 
             LatLngBounds.Builder builder = new LatLngBounds.Builder();
             builder.include(latLng1);
@@ -162,11 +173,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         return new LatLng(newLat, newLng);
     }
 
-    private void configureViewModel() {
-        ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(this);
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(PlaceViewModel.class);
-    }
-
+    //GET DATA
     private void getAllAddresses() {
         viewModel.getAddresses().observe(this, new Observer<List<Address>>() {
             @Override
@@ -222,7 +229,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         return myLocation;
     }
 
-
     @Override
     public void onLocationChanged(Location location) {
 
@@ -254,11 +260,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public void onCameraIdle() {
-        //method something like getPlacesNearUser()
-        //and show them with markers
-        //get coord of space near user
-        //query all the places in this space
-        //show them
         getAllAddresses();
     }
 

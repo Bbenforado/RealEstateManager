@@ -1,5 +1,6 @@
 package com.example.realestatemanager.injections;
 
+import android.content.ContentUris;
 import android.content.Context;
 
 import com.example.realestatemanager.database.RealEstateManagerDatabase;
@@ -7,6 +8,7 @@ import com.example.realestatemanager.repositories.AddressDataRepository;
 import com.example.realestatemanager.repositories.InterestDataRepository;
 import com.example.realestatemanager.repositories.PhotoDataRepository;
 import com.example.realestatemanager.repositories.PlaceDataRepository;
+import com.example.realestatemanager.repositories.RawDataRepository;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -33,6 +35,11 @@ public class Injection {
         return new PhotoDataRepository(database.photoDao());
     }
 
+    public static RawDataRepository provideRawDataSource(Context context) {
+        RealEstateManagerDatabase database = RealEstateManagerDatabase.getInstance(context);
+        return new RawDataRepository(database.rawDao());
+    }
+
     public static Executor provideExecutor() {
         return Executors.newSingleThreadExecutor();
     }
@@ -42,7 +49,8 @@ public class Injection {
         AddressDataRepository dataSourceAddress = provideAddressDataSource(context);
         InterestDataRepository dataSourceInterest = provideInterestDataSource(context);
         PhotoDataRepository dataSourcePhoto = providePhotoDataSource(context);
+        RawDataRepository dataSourceRawData = provideRawDataSource(context);
         Executor executor = provideExecutor();
-        return new ViewModelFactory(dataSourcePlace, dataSourceAddress, dataSourceInterest, dataSourcePhoto, executor);
+        return new ViewModelFactory(dataSourcePlace, dataSourceAddress, dataSourceInterest, dataSourcePhoto, dataSourceRawData, executor);
     }
 }

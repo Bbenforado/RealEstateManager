@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -41,17 +42,11 @@ public class SettingsActivity extends AppCompatActivity {
 
         configureToolbar();
         if (preferences.getString(USER_NAME, null) != null) {
-         /*   ConnectionFragment fragment = new ConnectionFragment();
-            showFragment(fragment);
-            if (!fragment.isVisible()) {
-                displayInfo();
-            }
-        } else {*/
             displayInfo();
+        } else {
+            Toast.makeText(this, getString(R.string.toast_message_save_your_name), Toast.LENGTH_SHORT).show();
         }
     }
-
-
 
     //----------------------------------------
     //ACTIONS
@@ -69,13 +64,6 @@ public class SettingsActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(getString(R.string.toolbar_title_settings));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
-
-    /*private void showFragment(Fragment fragment) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.content, fragment)
-                .commit();
-    }*/
 
     //------------------------------------------
     private void displayInfo() {

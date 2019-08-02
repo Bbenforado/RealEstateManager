@@ -16,6 +16,9 @@ public class Photo {
     private boolean isMainPhoto;
     private String description;
 
+    public Photo() {
+
+    }
 
     public Photo(String uri) {
         this.uri = uri;

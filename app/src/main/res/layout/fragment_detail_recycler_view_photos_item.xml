@@ -1,13 +1,13 @@
 <RelativeLayout android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ImageView
         android:id="@+id/image_view_detail_photo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:scaleType="centerCrop"
         android:src="@drawable/no_image"
+        android:scaleType="centerCrop"
         />
 
     <TextView

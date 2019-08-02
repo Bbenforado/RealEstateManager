@@ -38,6 +38,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import static com.example.realestatemanager.utils.Utils.convertDollarToEuro;
+import static com.example.realestatemanager.utils.Utils.getLocationFromAddress;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -111,7 +112,8 @@ public class InformationFragment extends Fragment {
                 public void onChanged(Place place) {
                     updateUi(place);
                     adapter = new DetailRecyclerViewAdapter();
-                    Utils.configureRecyclerViewForInterests(getContext(), adapter, recyclerViewInterest);
+                    //Utils.configureRecyclerViewForInterests(getContext(), adapter, recyclerViewInterest);
+                    configureRecyclerViewForInterestsHorizontal();
                     price = place.getPrice();
                 }
             });
@@ -124,11 +126,11 @@ public class InformationFragment extends Fragment {
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(PlaceViewModel.class);
     }
 
-    /*private void configureRecyclerViewForInterests() {
+    private void configureRecyclerViewForInterestsHorizontal() {
         this.adapter = new DetailRecyclerViewAdapter();
         this.recyclerViewInterest.setAdapter(adapter);
-        recyclerViewInterest.setLayoutManager(new LinearLayoutManager(getContext()));
-    }*/
+        recyclerViewInterest.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayout.HORIZONTAL, false));
+    }
 
     //--------------------------------------------------
     //ACTIONS

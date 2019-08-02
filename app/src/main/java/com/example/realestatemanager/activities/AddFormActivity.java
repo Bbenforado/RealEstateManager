@@ -105,32 +105,32 @@ public class AddFormActivity extends AppCompatActivity {
     @BindView(R.id.recycler_view_photo_add_form) RecyclerView recyclerView;
     //---------------------------------------------------------------------------------------
     private String[] typesOfPlace = {"Loft", "Mansion", "Penthouse", "Duplex"};
+    private String[] longClickFunctionality = {"Delete photo", "Add description to photo"};
     private String type;
     private SharedPreferences preferences;
-    public static final String APP_PREFERENCES = "appPreferences";
-    //public static final String SWITCH_BUTTON_MODE = "switchButtonMode";
-    public static final String STATUS_FORM_ACTIVITY = "statusFormActivity";
-    public static final String DATE_OF_SALE = "dateOfSale";
-    public static final String USER_NAME = "userName";
-    private static final String PLACE_ID = "placeId";
     private PlaceViewModel placeViewModel;
     private int status;
     private long placeId;
     private List<CheckBox> checkBoxes;
+    private List<Photo> photoList;
+    private String currentPhotoPath;
+    private PhotoRecyclerViewAdapter adapter;
+    private List<Photo> allPhotos;
+    private List<Long> deletedPhotosId;
+    private List<Photo> updatedPhoto;
+    private SimpleDateFormat formatter;
+    //private List<Interest> oldInterests;
+    //------------------------------------------------------------------------
+    public static final String APP_PREFERENCES = "appPreferences";
+    public static final String STATUS_FORM_ACTIVITY = "statusFormActivity";
+    public static final String DATE_OF_SALE = "dateOfSale";
+    public static final String USER_NAME = "userName";
+    private static final String PLACE_ID = "placeId";
     private static final String PERMS = Manifest.permission.READ_EXTERNAL_STORAGE;
     private static final int RC_IMAGE_PERMS = 100;
     private static final int RC_CHOOSE_PHOTO = 200;
     private static final int REQUEST_TAKE_PHOTO = 1;
     public static final String CODE_DESCRIPTION = "codeDescription";
-    private List<Photo> photoList;
-    private String currentPhotoPath;
-    private PhotoRecyclerViewAdapter adapter;
-    private String[] longClickFunctionality = {"Delete photo", "Add description to photo", "Choose as main photo"};
-    private List<Photo> allPhotos;
-    private List<Long> deletedPhotosId;
-    private List<Photo> updatedPhoto;
-    private List<Interest> oldInterests;
-
 
 
 
@@ -142,15 +142,13 @@ public class AddFormActivity extends AppCompatActivity {
         preferences = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE);
 
         status = preferences.getInt(STATUS_FORM_ACTIVITY, -1);
+        preferences.edit().putInt(CODE_DESCRIPTION, -1).apply();
         configureToolbar();
         photoList = new ArrayList<>();
         allPhotos = new ArrayList<>();
         deletedPhotosId = new ArrayList<>();
         updatedPhoto = new ArrayList<>();
-        //for interests
-        List<Interest> deletedInterests = new ArrayList<>();
-        List<Interest> newInterests = new ArrayList<>();
-        oldInterests = new ArrayList<>();
+        formatter = new SimpleDateFormat("dd/MM/yyyy");
 
         configureViewModel();
         checkBoxes = Arrays.asList(checkBoxSchool, checkBoxMarketPlace, checkBoxPark, checkBoxHospital, checkBoxCinema, checkBoxTheater);
@@ -184,6 +182,7 @@ public class AddFormActivity extends AppCompatActivity {
 
             placeViewModel.getPhotosForAPlace(placeId).observe(this, photos -> {
                 // update UI if it s not called from add description
+                System.out.println("description = " + preferences.getInt(CODE_DESCRIPTION, -1));
                 if (preferences.getInt(CODE_DESCRIPTION, -1) != 300) {
                     allPhotos.addAll(photos);
                     adapter.notifyDataSetChanged();
@@ -222,29 +221,24 @@ public class AddFormActivity extends AppCompatActivity {
                             //if photos have all descriptions
                             if (allPhotosHaveDescription(photoList)) {
 
-                                //create place
                                 long id = createPlace();
-                                //create interest
                                 createInterestsForAPlace(id);
-                                //create photo
                                 for (Photo photo : photoList) {
                                     photo.setPlaceId(id);
                                     placeViewModel.createPhoto(photo);
                                 }
-                                //create address
                                 createAddress(id);
+
                                 sendNotification(this.getString(R.string.place_created));
                                 launchMainActivity();
                             }else {
                                 Toast.makeText(this, getString(R.string.description_photo_missing), Toast.LENGTH_SHORT).show();
                             }
                         } else {
-                            Toast.makeText(this, getString(R.string.photo_missing),
-                                    Toast.LENGTH_LONG).show();
+                            Toast.makeText(this, getString(R.string.photo_missing), Toast.LENGTH_LONG).show();
                         }
                     } else {
-                        Toast.makeText(this, getString(R.string.field_missing),
-                                Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, getString(R.string.field_missing), Toast.LENGTH_LONG).show();
                     }
                 } else {
                     //if it s to update an existing place
@@ -267,14 +261,12 @@ public class AddFormActivity extends AppCompatActivity {
                                         placeViewModel.createPhoto(photo);
                                     }
                                 }
-
                                 //delete photos if some have been deleted
                                 if (deletedPhotosId.size() > 0) {
                                     for (Long id : deletedPhotosId) {
                                         placeViewModel.deletePhoto(id);
                                     }
                                 }
-
                                 //update photos if some have been updated
                                 if (updatedPhoto.size() > 0) {
                                     for (Photo photo : updatedPhoto) {
@@ -297,12 +289,10 @@ public class AddFormActivity extends AppCompatActivity {
                                 Toast.makeText(this, getString(R.string.description_photo_missing), Toast.LENGTH_SHORT).show();
                             }
                         } else {
-                            Toast.makeText(this, getString(R.string.photo_missing),
-                                    Toast.LENGTH_LONG).show();
+                            Toast.makeText(this, getString(R.string.photo_missing), Toast.LENGTH_LONG).show();
                         }
                     }else {
-                        Toast.makeText(this, getString(R.string.field_missing),
-                                Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, getString(R.string.field_missing), Toast.LENGTH_LONG).show();
                     }
                 }
                 return true;
@@ -329,22 +319,8 @@ public class AddFormActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        this.handleResponse(requestCode, resultCode, data);
-
-        //WHEN TAKE PICTURE WITH CAMERA
-        if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
-            File imgFile = new  File(currentPhotoPath);
-            if(imgFile.exists())            {
-                Photo photo = new Photo(currentPhotoPath);
-                photoList.add(photo);
-                if (status != 1) {
-                    adapter.notifyDataSetChanged();
-                } else {
-                    allPhotos.add(photo);
-                    adapter.notifyDataSetChanged();
-                }
-            }
-        }
+        handleResponseForGallery(requestCode, resultCode, data);
+        handleResponseForCamera(requestCode, resultCode, data);
     }
 
     //-----------------------------------
@@ -384,8 +360,6 @@ public class AddFormActivity extends AppCompatActivity {
     //----------------------------------
     @OnClick(R.id.material_type_of_place_button)
     public void chooseATypeOfPlace() {
-        /*AlertDialog dialog = Utils.displayDialogForTypeOfPlace(getApplicationContext(), typesOfPlace, typeOfPlaceButton);
-        dialog.show();*/
         displayDialog();
     }
 
@@ -424,7 +398,7 @@ public class AddFormActivity extends AppCompatActivity {
     }
 
     //----------------------------------------------
-    //UPDATE UI
+    //UPDATE UI WITH DATA
     //-----------------------------------------------
     private void displayRealEstateManagerName() {
         if (preferences.getString(USER_NAME, null) != null) {
@@ -483,7 +457,7 @@ public class AddFormActivity extends AppCompatActivity {
 
     private void completeInterestFormWithData(List<Interest> interests) {
         for (int i = 0; i < interests.size(); i++) {
-            oldInterests.add(interests.get(i));
+           // oldInterests.add(interests.get(i));
             for (int j = 0; j< checkBoxes.size(); j++) {
                 if (interests.get(i).getType().equals(checkBoxes.get(j).getText().toString())) {
                     checkBoxes.get(j).setChecked(true);
@@ -495,7 +469,7 @@ public class AddFormActivity extends AppCompatActivity {
     //--------------------------------------------
     //METHODS
     //---------------------------------------------
-    private boolean allPhotosHaveDescription(List<Photo> photos) {
+    public boolean allPhotosHaveDescription(List<Photo> photos) {
         for (Photo photo : photos) {
             if (photo.getDescription() == null) {
                 return false;
@@ -506,7 +480,6 @@ public class AddFormActivity extends AppCompatActivity {
 
     private void displayLongClickDialog(Photo photo) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
         builder.setItems(longClickFunctionality, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -525,12 +498,6 @@ public class AddFormActivity extends AppCompatActivity {
                     case 1:
                         //display dialog with edit text to add description
                         displayAddDescriptionDialog(photo);
-                        break;
-                    case 2:
-                        Toast.makeText(getApplicationContext(), getString(R.string.toast_message_main_photo), Toast.LENGTH_SHORT).show();
-
-                        photo.setMainPhoto(true);
-                        placeViewModel.updatePhoto(photo);
                         break;
                         default:
                             break;
@@ -611,28 +578,6 @@ public class AddFormActivity extends AppCompatActivity {
         startActivityForResult(i, RC_CHOOSE_PHOTO);
     }
 
-    private void handleResponse(int requestCode, int resultCode, Intent data) {
-        if (requestCode == RC_CHOOSE_PHOTO) {
-            if (resultCode == RESULT_OK) { //SUCCESS
-
-                Uri uri = data.getData();
-                String path = getRealPathFromURI(uri);
-                Photo photo = new Photo(path);
-                photoList.add(photo);
-                //ADD ACTIVITY
-                if (status != 1) {
-                    adapter.notifyDataSetChanged();
-                } else {
-                    //EDIT
-                    allPhotos.add(photo);
-                    adapter.notifyDataSetChanged();
-                }
-            } else {
-                Toast.makeText(this, getString(R.string.toast_message_no_image_chosen), Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
     private String getRealPathFromURI(Uri contentUri) {
         String[] proj = { MediaStore.Images.Media.DATA };
         CursorLoader loader = new CursorLoader(this, contentUri, proj, null, null, null);
@@ -642,11 +587,6 @@ public class AddFormActivity extends AppCompatActivity {
         String result = cursor.getString(column_index);
         cursor.close();
         return result;
-    }
-
-    private void launchMainActivity() {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
     }
 
     private void sendNotification(String message) {
@@ -682,6 +622,85 @@ public class AddFormActivity extends AppCompatActivity {
         }
     }
 
+    private boolean paramsAreOk() {
+        return !TextUtils.isEmpty(editTextPrice.getText().toString()) &&
+                !typeOfPlaceButton.getText().toString().equals(getString(R.string.button_generic_text_type_of_place)) &&
+                !TextUtils.isEmpty(editTextAuthor.getText().toString()) && !TextUtils.isEmpty(editTextStreetNbr.getText().toString()) &&
+                !TextUtils.isEmpty(editTextStreetName.getText().toString()) && !TextUtils.isEmpty(editTextPostalCode.getText().toString()) &&
+                !TextUtils.isEmpty(editTextCity.getText().toString()) && !TextUtils.isEmpty(editTextCountry.getText().toString());
+
+    }
+
+    public Date formatDate(String date) {
+        Date formattedDate = null;
+        try {
+            formattedDate = formatter.parse(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return formattedDate;
+    }
+
+    private void getAndSetLatLngOfPlace(Address address) {
+        String finalAddress = address.getStreetNumber() + " " + address.getStreetName() + "," +
+                address.getCity() + "," + address.getPostalCode() + " " +
+                address.getCountry();
+
+        String latLng = Utils.getLocationFromAddress(this, finalAddress);
+        address.setLatLng(latLng);
+    }
+    //-------------------------------------------------
+    //HANDLE RESPONSES FOR ON ACTIVITY RESULT
+    //--------------------------------------------------
+    private void handleResponseForGallery(int requestCode, int resultCode, Intent data) {
+        if (requestCode == RC_CHOOSE_PHOTO) {
+            if (resultCode == RESULT_OK) { //SUCCESS
+                Uri uri = data.getData();
+                String path = getRealPathFromURI(uri);
+                Photo photo = new Photo(path);
+                photoList.add(photo);
+                //ADD ACTIVITY
+                if (status != 1) {
+                    adapter.notifyDataSetChanged();
+                } else {
+                    //EDIT
+                    allPhotos.add(photo);
+                    adapter.notifyDataSetChanged();
+                }
+            } else {
+                Toast.makeText(this, getString(R.string.toast_message_no_image_chosen), Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void handleResponseForCamera(int requestCode, int resultCode, Intent data) {
+        //WHEN TAKE PICTURE WITH CAMERA
+        if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
+            File imgFile = new  File(currentPhotoPath);
+            if(imgFile.exists())            {
+                Photo photo = new Photo(currentPhotoPath);
+                photoList.add(photo);
+                if (status != 1) {
+                    adapter.notifyDataSetChanged();
+                } else {
+                    allPhotos.add(photo);
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        }
+    }
+
+    //----------------------------------------
+    //LAUNCH ACTIVITY
+    //-------------------------------------------
+    private void launchMainActivity() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
+
+    //-----------------------------------------
+    //DISPLAY DIALOGS METHODS
+    //------------------------------------------------
     private void displayDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(getString(R.string.title_dialog_choose_type_of_place));
@@ -720,15 +739,6 @@ public class AddFormActivity extends AppCompatActivity {
         datePickerDialog.show();
     }
 
-    private boolean paramsAreOk() {
-        return !TextUtils.isEmpty(editTextPrice.getText().toString()) &&
-                !typeOfPlaceButton.getText().toString().equals(getString(R.string.button_generic_text_type_of_place)) &&
-                !TextUtils.isEmpty(editTextAuthor.getText().toString()) && !TextUtils.isEmpty(editTextStreetNbr.getText().toString()) &&
-                !TextUtils.isEmpty(editTextStreetName.getText().toString()) && !TextUtils.isEmpty(editTextPostalCode.getText().toString()) &&
-                !TextUtils.isEmpty(editTextCity.getText().toString()) && !TextUtils.isEmpty(editTextCountry.getText().toString());
-
-    }
-
     //-------------------------------------------------------------------------
     //CREATE/UPDATE IN DATABASE
     //-------------------------------------------------------------------------
@@ -756,29 +766,70 @@ public class AddFormActivity extends AppCompatActivity {
             description = editTextDescription.getText().toString();
         }
         String author = editTextAuthor.getText().toString();
-        //String date = Utils.getTodayDate();
         Date date = new Date();
-        System.out.println("date = " + date);
         Place place;
         if (TextUtils.isEmpty(saleDateButton.getText())) {
-            System.out.println("come here");
             //is available
             place = new Place(nbrOfRooms, nbrOfBathrooms, nbrOfBedrooms, type, price, date, null, author, description, surface);
         } else {
             //if sold
             String saleDateStr = preferences.getString(DATE_OF_SALE, null);
-            Date saleDate = null;
+            System.out.println("date = " + saleDateStr);
+            /*Date saleDate = null;
             try {
-                SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
                 saleDate = formatter.parse(saleDateStr);
             } catch (ParseException e) {
                 e.printStackTrace();
-            }
+            }*/
+            Date saleDate = formatDate(saleDateStr);
+            System.out.println("format = " + saleDate.toString());
             place = new Place(nbrOfRooms, nbrOfBathrooms, nbrOfBedrooms, type, price, date, saleDate, author, description, surface);
 
         }
-        System.out.println("place date =  " + place.getCreationDate());
         return placeViewModel.createPlace(place);
+    }
+
+    private void createAddress(long placeId) {
+        //FOR ADDRESS
+        String complement = null;
+        int streetNumber = Integer.parseInt(editTextStreetNbr.getText().toString());
+        String streetName = editTextStreetName.getText().toString();
+        if (!TextUtils.isEmpty(editTextComplement.getText().toString())) {
+            complement = editTextComplement.getText().toString();
+        }
+        String postalCode = editTextPostalCode.getText().toString();
+        String city = editTextCity.getText().toString();
+        String country = editTextCountry.getText().toString();
+
+        Address address = new Address(placeId, streetNumber, streetName, complement, postalCode, city, country);
+        getAndSetLatLngOfPlace(address);
+        placeViewModel.createAddress(address);
+
+    }
+
+    //------------------------------------------------
+    //UPDATE
+    //--------------------------------------------------
+    private void updateAddress(Address address) {
+        String complement;
+        int streetNumber = Integer.parseInt(editTextStreetNbr.getText().toString());
+        address.setStreetNumber(streetNumber);
+        String streetName = editTextStreetName.getText().toString();
+        address.setStreetName(streetName);
+        if (!TextUtils.isEmpty(editTextComplement.getText().toString())) {
+            complement = editTextComplement.getText().toString();
+            address.setComplement(complement);
+        }
+        String postalCode = editTextPostalCode.getText().toString();
+        address.setPostalCode(postalCode);
+        String city = editTextCity.getText().toString();
+        address.setCity(city);
+        String country = editTextCountry.getText().toString();
+        address.setCountry(country);
+
+        getAndSetLatLngOfPlace(address);
+
+        placeViewModel.updateAddress(address);
     }
 
     private void updatePlace(Place place) {
@@ -816,7 +867,7 @@ public class AddFormActivity extends AppCompatActivity {
         if (preferences.getString(DATE_OF_SALE, null) != null) {
             Date date = null;
             try {
-                date = new SimpleDateFormat("yyyy/MM/dd").parse(preferences.getString(DATE_OF_SALE, null));
+                date = formatter.parse(preferences.getString(DATE_OF_SALE, null));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -827,59 +878,4 @@ public class AddFormActivity extends AppCompatActivity {
         place.setAuthor(author);
         placeViewModel.updatePlace(place);
     }
-
-    private void createAddress(long placeId) {
-        //FOR ADDRESS
-        String complement = null;
-        int streetNumber = Integer.parseInt(editTextStreetNbr.getText().toString());
-        String streetName = editTextStreetName.getText().toString();
-        if (!TextUtils.isEmpty(editTextComplement.getText().toString())) {
-            complement = editTextComplement.getText().toString();
-        }
-        String postalCode = editTextPostalCode.getText().toString();
-        String city = editTextCity.getText().toString();
-        String country = editTextCountry.getText().toString();
-
-        Address address = new Address(placeId, streetNumber, streetName, complement, postalCode, city, country);
-        getAndSetLatLngOfPlace(address);
-        placeViewModel.createAddress(address);
-
-    }
-
-    private void getAndSetLatLngOfPlace(Address address) {
-        String finalAddress = address.getStreetNumber() + " " + address.getStreetName() + "," +
-                address.getCity() + "," + address.getPostalCode() + " " +
-                address.getCountry();
-
-        String latLng = Utils.getLocationFromAddress(this, finalAddress);
-        address.setLatLng(latLng);
-    }
-
-    private void updateAddress(Address address) {
-        String complement;
-        int streetNumber = Integer.parseInt(editTextStreetNbr.getText().toString());
-        address.setStreetNumber(streetNumber);
-        String streetName = editTextStreetName.getText().toString();
-        address.setStreetName(streetName);
-        if (!TextUtils.isEmpty(editTextComplement.getText().toString())) {
-            complement = editTextComplement.getText().toString();
-            address.setComplement(complement);
-        }
-        String postalCode = editTextPostalCode.getText().toString();
-        address.setPostalCode(postalCode);
-        String city = editTextCity.getText().toString();
-        address.setCity(city);
-        String country = editTextCountry.getText().toString();
-        address.setCountry(country);
-
-        getAndSetLatLngOfPlace(address);
-
-        placeViewModel.updateAddress(address);
-    }
-
-    //----------------------------------------------------
-    //METHODS
-    //----------------------------------------------------
-
-
 }

@@ -11,14 +11,12 @@ import com.example.realestatemanager.fragments.DetailFragment;
 
 public class DetailActivity extends AppCompatActivity {
 
-    private DetailFragment detailFragment;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        detailFragment = new DetailFragment();
+        DetailFragment detailFragment = new DetailFragment();
         showFragment(detailFragment);
     }
 

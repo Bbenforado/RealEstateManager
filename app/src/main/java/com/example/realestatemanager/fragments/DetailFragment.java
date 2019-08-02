@@ -70,6 +70,7 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
     //----------------------------------------------
     //BIND VIEWS
     //------------------------------------------------
+    @Nullable
     @BindView(R.id.edit_floating_action_button_detail_fragment)
     FloatingActionButton editFloatingActionButton;
     @Nullable
@@ -77,8 +78,10 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
     @Nullable
     @BindView(R.id.main_tabs) TabLayout tabLayout;
     @BindView(R.id.recycler_view_detail_photos) RecyclerView recyclerViewPhotos;
+
     @BindView(R.id.image_view_detail)
     ImageView imageViewPhoto;
+    @Nullable
     @BindView(R.id.text_view_detail_fragment_no_item_selected) TextView textViewNoItemSelected;
     //FOR TABLET MODE
     @Nullable

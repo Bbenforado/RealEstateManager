@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
@@ -58,6 +59,10 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceViewHold
     @Override
     public void onBindViewHolder(@NonNull PlaceViewHolder holder, int position) {
 
+        System.out.println("places = " + placeList.size());
+        System.out.println("address = " + addressList.size());
+        System.out.println("photos = " + photoList.size());
+
         if (placeList.size()> 0 && addressList.size()>0) {
             if (preferences.getString(APP_MODE, null).equals("tablet")) {
                 int index = preferences.getInt(INDEX_ROW, -1);
@@ -75,7 +80,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceViewHold
                     photoList, context, this.glide);
         }
         if (placeList.size() == 0) {
-
+            Toast.makeText(context, context.getString(R.string.toast_message_no_result_found), Toast.LENGTH_SHORT).show();
         }
     }
 
