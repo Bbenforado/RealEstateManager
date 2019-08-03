@@ -2,6 +2,7 @@ package com.example.realestatemanager.models;
 
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "photos", foreignKeys = @ForeignKey(entity = Place.class,
@@ -16,6 +17,7 @@ public class Photo {
     private boolean isMainPhoto;
     private String description;
 
+    @Ignore
     public Photo() {
 
     }

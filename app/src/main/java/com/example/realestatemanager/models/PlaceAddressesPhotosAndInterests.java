@@ -9,8 +9,9 @@ import java.util.List;
 
 public class PlaceAddressesPhotosAndInterests {
 
-    @Embedded
-    public Place place;
+
+    /*@Embedded
+    public Place place;*/
 
     /*@Relation(parentColumn = "id", entityColumn = "idPlace", entity = Address.class)
     public List<Address> address;
@@ -18,18 +19,14 @@ public class PlaceAddressesPhotosAndInterests {
     public List<Photo> photos;
     @Relation(parentColumn = "id", entityColumn = "idPlace", entity = Interest.class)
     public List<Interest> interests;*/
-    @Embedded
+/*    @Embedded
     public Address address;
     @Embedded
     public List<Photo> photos;
     @Embedded
     public List<Interest> interests;
 
-    public PlaceAddressesPhotosAndInterests(Place place, Address address, List<Photo> photos, List<Interest> interests) {
-        this.place = place;
-        this.address = address;
-        this.photos = photos;
-        this.interests = interests;
+    public PlaceAddressesPhotosAndInterests() {
     }
 
     public Place getPlace() {
@@ -46,5 +43,5 @@ public class PlaceAddressesPhotosAndInterests {
 
     public List<Interest> getInterests() {
         return interests;
-    }
+    }*/
 }

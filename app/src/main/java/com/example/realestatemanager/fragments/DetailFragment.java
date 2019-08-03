@@ -81,8 +81,6 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
 
     @BindView(R.id.image_view_detail)
     ImageView imageViewPhoto;
-    @Nullable
-    @BindView(R.id.text_view_detail_fragment_no_item_selected) TextView textViewNoItemSelected;
     //FOR TABLET MODE
     @Nullable
     @BindView(R.id.type_of_place_text_view_detail_frag_tablet_mode) TextView textViewTypeOfPlaceTabletMode;
@@ -157,7 +155,6 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
         ButterKnife.bind(this, view);
         placeId = preferences.getLong(PLACE_ID, -1);
         preferences.edit().putInt(STATUS_FORM_ACTIVITY, -1).apply();
-
         if (placeId != 0 && placeId != -1) {
             configureViewModel();
             if (preferences.getString(APP_MODE, null).equals(getString(R.string.app_mode_phone))) {
@@ -180,9 +177,6 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
                 mapView.onCreate(savedInstanceState);
                 mapView.getMapAsync(this::onMapReady);
             }
-            textViewNoItemSelected.setVisibility(View.GONE);
-        } else {
-            textViewNoItemSelected.setVisibility(View.VISIBLE);
         }
 
         return view;

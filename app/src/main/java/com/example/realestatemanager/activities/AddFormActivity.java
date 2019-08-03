@@ -71,6 +71,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import icepick.Icepick;
+import icepick.State;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -140,7 +142,8 @@ public class AddFormActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_form);
         ButterKnife.bind(this);
         preferences = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE);
-
+        //Icepick.restoreInstanceState(this, savedInstanceState);
+        saleDateButton.setHint(Utils.getTodayDate());
         status = preferences.getInt(STATUS_FORM_ACTIVITY, -1);
         preferences.edit().putInt(CODE_DESCRIPTION, -1).apply();
         configureToolbar();

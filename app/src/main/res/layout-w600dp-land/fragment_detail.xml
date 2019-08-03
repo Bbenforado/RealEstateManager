@@ -9,7 +9,7 @@
     android:background="@android:color/background_light"
     android:fitsSystemWindows="true">
 
-    <TextView
+    <!--<TextView
         android:id="@+id/text_view_detail_fragment_no_item_selected"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -19,7 +19,7 @@
         android:elevation="5dp"
         android:layout_gravity="center"
         android:gravity="center"
-        android:visibility="gone"/>
+        android:visibility="gone"/>-->
 
     <TextView
         android:paddingTop="16dp"
@@ -62,9 +62,7 @@
     </RelativeLayout>
 
     <ScrollView android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:android="http://schemas.android.com/apk/res/android" >
+        android:layout_height="match_parent" >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -94,8 +92,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
-                        android:textSize="10sp"
-                        android:text="creation date here"/>
+                        android:textSize="10sp"/>
 
             </LinearLayout>
 
@@ -103,7 +100,6 @@
                 android:id="@+id/status_text_view_detail_tablet_mode_fragment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="status here"
                 android:textSize="9sp"
                 android:layout_alignParentRight="true"/>
 
@@ -126,8 +122,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:textSize="10sp"
-                android:text="date of sale here"/>
+                android:textSize="10sp"/>
 
         </LinearLayout>
 
@@ -200,8 +195,7 @@
                             <TextView
                                 android:id="@+id/text_view_price_detail_tablet_mode_fragment"
                                 android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="price here"/>
+                                android:layout_height="wrap_content"/>
 
                             <com.google.android.material.button.MaterialButton
                                 android:id="@+id/material_convert_price_button_tablet_mode"
@@ -248,8 +242,7 @@
                         <TextView
                             android:id="@+id/text_view_surface_detail_table_mode_fragment"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="300 m2"/>
+                            android:layout_height="wrap_content"/>
 
                     </LinearLayout>
 
@@ -283,8 +276,7 @@
                         <TextView
                             android:id="@+id/text_view_nbr_rooms_detail_tablet_mode_fragment"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="5"/>
+                            android:layout_height="wrap_content"/>
 
                     </LinearLayout>
 
@@ -318,8 +310,7 @@
                         <TextView
                             android:id="@+id/text_view_nbr_bedrooms_detail_tablet_mode_fragment"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="1"/>
+                            android:layout_height="wrap_content"/>
 
                     </LinearLayout>
 
@@ -353,8 +344,7 @@
                         <TextView
                             android:id="@+id/text_view_nbr_bathrooms_detail_tablet_mode_fragment"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="2"/>
+                            android:layout_height="wrap_content"/>
 
                     </LinearLayout>
 
@@ -378,26 +368,22 @@
                 <TextView
                     android:id="@+id/street_address_text_view_detail_fragment_tablet_mode"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="street address here"/>
+                    android:layout_height="wrap_content"/>
 
                 <TextView
                     android:id="@+id/complement_text_view_detail_fragment_tablet_mode"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="complement"/>
+                    android:layout_height="wrap_content"/>
 
                 <TextView
                     android:id="@+id/postal_code_and_city_text_view_detail_fragment_tablet_mode"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="postal code + city"/>
+                    android:layout_height="wrap_content"/>
                 <TextView
                     android:id="@+id/country_text_view_detail_fragment_tablet_mode"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:text="country here"/>
+                    android:textStyle="bold"/>
 
                 <View
                     android:layout_width="match_parent"
@@ -423,8 +409,7 @@
                         android:id="@+id/real_estate_manager_text_view_detail_fragment_tablet_mode"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:text="manager here"/>
+                        android:layout_marginLeft="10dp"/>
 
                 </LinearLayout>
             </LinearLayout>

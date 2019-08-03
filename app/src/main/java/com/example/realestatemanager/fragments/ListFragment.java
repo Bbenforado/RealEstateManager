@@ -101,7 +101,7 @@ public class ListFragment extends Fragment {
         //if it s results activity
         if (preferences.getInt(KEY_RESULTS_ACTIVITY, -1) == 1) {
             floatingButtonAddPlace.setVisibility(View.GONE);
-            List<Address> addresseList = new ArrayList<>();
+            List<Address> addressesList = new ArrayList<>();
             List<Photo> photoList = new ArrayList<>();
             List<Place> placeListForResults = retrievedPlaces();
             updatePlacesList(placeListForResults);
@@ -126,9 +126,9 @@ public class ListFragment extends Fragment {
                     public void onChanged(List<Address> addresses) {
                         for (int i = 0;i<addresses.size(); i++) {
                             if (addresses.get(i).getIdPlace() == place.getId()) {
-                                addresseList.add(addresses.get(i));
-                                updateAddressesList(addresseList);
-                                System.out.println("addresse list = " + addresseList.size());
+                                addressesList.add(addresses.get(i));
+                                updateAddressesList(addressesList);
+                                System.out.println("addresse list = " + addressesList.size());
                             }
                         }
                     }
@@ -219,17 +219,6 @@ public class ListFragment extends Fragment {
     //-----------------------------------------------
     //GET DATA
     //------------------------------------------------
-    //FOR RESULTS ACTIVITY
-    private List<Place> retrievedPlaces() {
-        List<Place> placeList;
-        Gson gson = new Gson();
-        String json = preferences.getString(QUERRIED_PLACES, null);
-        Type type = new TypeToken<List<Place>>() {
-        }.getType();
-        placeList = gson.fromJson(json, type);
-        return placeList;
-    }
-
     private void getPlaces() {
         viewModel.getPlaces().observe(this, this::updatePlacesList);
     }
@@ -252,6 +241,17 @@ public class ListFragment extends Fragment {
 
     private void updateAddressesList(List<Address> addresses) {
         this.adapter.updateAddressData(addresses);
+    }
+
+    //FOR RESULTS ACTIVITY
+    private List<Place> retrievedPlaces() {
+        List<Place> placeList;
+        Gson gson = new Gson();
+        String json = preferences.getString(QUERRIED_PLACES, null);
+        Type type = new TypeToken<List<Place>>() {
+        }.getType();
+        placeList = gson.fromJson(json, type);
+        return placeList;
     }
 
     //-----------------------------------

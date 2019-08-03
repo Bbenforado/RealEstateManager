@@ -2,6 +2,7 @@ package com.example.realestatemanager.models;
 
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "interests", foreignKeys = @ForeignKey(entity = Place.class,
@@ -14,6 +15,7 @@ public class Interest {
     private String type;
     private long idPlace;
 
+    @Ignore
     public Interest() {
 
     }

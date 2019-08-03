@@ -314,7 +314,7 @@ public class SearchActivity extends AppCompatActivity {
                 }
             }
         });*/
-        viewModel.getPlacesAndData(query).observe(this, new Observer<List<PlaceAddressesPhotosAndInterests>>() {
+       /* viewModel.getPlacesAndData(query).observe(this, new Observer<List<PlaceAddressesPhotosAndInterests>>() {
             @Override
             public void onChanged(List<PlaceAddressesPhotosAndInterests> placeAddressesPhotosAndInterests) {
                 for(int i = 0; i< placeAddressesPhotosAndInterests.size(); i++) {
@@ -326,7 +326,7 @@ public class SearchActivity extends AppCompatActivity {
                     }
                 }
             }
-        });
+        });*/
     }
 
     private void clearOldResearch() {

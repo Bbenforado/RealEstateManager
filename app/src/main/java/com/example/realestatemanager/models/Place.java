@@ -4,6 +4,7 @@ package com.example.realestatemanager.models;
 import android.content.ContentValues;
 
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import java.util.Date;
@@ -24,6 +25,7 @@ public class Place {
     private String author;
     private String description;
 
+    @Ignore
     public Place() {
 
     }

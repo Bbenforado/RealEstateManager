@@ -182,9 +182,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void configureAndShowDetailFragment(){
-
         detailFragment = (DetailFragment) getSupportFragmentManager().findFragmentById(R.id.frame_layout_main_detail);
-
+        //display details of the first place
+        preferences.edit().putLong(PLACE_ID, 1).apply();
         if (detailFragment == null && findViewById(R.id.frame_layout_main_detail) != null) {
             detailFragment = new DetailFragment();
             getSupportFragmentManager().beginTransaction()
