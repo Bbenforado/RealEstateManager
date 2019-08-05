@@ -436,8 +436,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/toast_message_no_internet"
-                        android:gravity="center"
                         android:layout_marginTop="80dp"
+                        android:layout_centerInParent="true"
                         android:visibility="gone"/>
 
                 </RelativeLayout>
@@ -445,8 +445,6 @@
             </LinearLayout>
 
             </LinearLayout>
-
-        <!--add interests here-->
 
         <View
             android:layout_width="match_parent"

@@ -182,8 +182,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 for(int i = 0; i<addresses.size(); i++) {
                     if (addresses.get(i).getLatLng() != null) {
                         String latLng = addresses.get(i).getLatLng();
-                        long placeId = addresses.get(i).getIdPlace();
+                        //long placeId = addresses.get(i).getIdPlace();
                         LatLng latLngOfPlace = getLatLngOfPlace(latLng);
+
+                        /*if (bounds.contains(latLngOfPlace)) {
+                            showPlaceOnMap(placeId, latLngOfPlace);
+                        }*/
+                        long placeId = viewModel.getPlaceId(addresses.get(i).getId());
                         if (bounds.contains(latLngOfPlace)) {
                             showPlaceOnMap(placeId, latLngOfPlace);
                         }

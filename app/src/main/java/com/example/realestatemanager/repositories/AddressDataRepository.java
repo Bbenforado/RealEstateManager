@@ -17,8 +17,11 @@ public class AddressDataRepository {
     }
 
     //GET PLACE
-    public LiveData<Address> getAddress(long placeId) {
+    /*public LiveData<Address> getAddress(long placeId) {
         return this.addressDao.getAddress(placeId);
+    }*/
+    public LiveData<Address> getAddressOfAPlace(long idAddressInPlace) {
+        return this.addressDao.getAddressOfAPlace(idAddressInPlace);
     }
 
     public LiveData<List<Long>> getPlaceIfForGivenParamFromAdresses(SimpleSQLiteQuery query) {

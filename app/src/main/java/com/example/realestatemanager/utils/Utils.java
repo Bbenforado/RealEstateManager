@@ -13,7 +13,10 @@ import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
+import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.lifecycle.LifecycleOwner;
@@ -27,9 +30,12 @@ import com.example.realestatemanager.adapters.DetailRecyclerViewAdapter;
 import com.example.realestatemanager.injections.Injection;
 import com.example.realestatemanager.injections.ViewModelFactory;
 import com.example.realestatemanager.models.Interest;
+import com.example.realestatemanager.models.Place;
 import com.example.realestatemanager.viewModels.PlaceViewModel;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.button.MaterialButton;
+
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -97,16 +103,20 @@ public class Utils {
     public static void checkIfDateIsPassedOrCurrent(Context context, String selectedDay, String selectedMonth, int selectedYear, int currentDay,
                                                     int currentMonth, int currentYear, Button button, SharedPreferences preferences,
                                                     final String KEY) {
+        String textToSave = null;
         if (selectedYear < currentYear) {
             button.setText(selectedDay + "/" + selectedMonth + "/" + selectedYear);
+            textToSave = selectedDay + "/" + selectedMonth + "/" + selectedYear;
             preferences.edit().putString(KEY, selectedDay +"/"+ selectedMonth +  "/" + selectedYear).apply();
         } else if(selectedYear == currentYear) {
             if (Integer.parseInt(selectedMonth) < currentMonth) {
                 button.setText(selectedDay + "/" + selectedMonth + "/" + selectedYear);
+                textToSave = selectedDay + "/" + selectedMonth + "/" + selectedYear;
                 preferences.edit().putString(KEY, selectedDay +"/"+ selectedMonth +  "/" + selectedYear).apply();
             } else if (Integer.parseInt(selectedMonth) == currentMonth) {
                 if (Integer.parseInt(selectedDay) <= currentDay) {
                     button.setText(selectedDay + "/" + selectedMonth + "/" + selectedYear);
+                    textToSave = selectedDay + "/" + selectedMonth + "/" + selectedYear;
                     preferences.edit().putString(KEY, selectedDay +"/"+ selectedMonth +  "/" + selectedYear).apply();
                 } else {
                     Toast.makeText(context, context.getString(R.string.toast_message_date_not_correct), Toast.LENGTH_SHORT).show();
@@ -116,6 +126,34 @@ public class Utils {
             }
         } else {
             Toast.makeText(context, context.getString(R.string.toast_message_date_not_correct), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public static String checkIfDateIsPassedOrCurrentAndReturnString(Context context, String selectedDay, String selectedMonth, int selectedYear, int currentDay,
+                                                    int currentMonth, int currentYear, Button button) {
+        //String textToSave = null;
+        if (selectedYear < currentYear) {
+            button.setText(selectedDay + "/" + selectedMonth + "/" + selectedYear);
+            return selectedDay + "/" + selectedMonth + "/" + selectedYear;
+        } else if(selectedYear == currentYear) {
+            if (Integer.parseInt(selectedMonth) < currentMonth) {
+                button.setText(selectedDay + "/" + selectedMonth + "/" + selectedYear);
+                return selectedDay + "/" + selectedMonth + "/" + selectedYear;
+            } else if (Integer.parseInt(selectedMonth) == currentMonth) {
+                if (Integer.parseInt(selectedDay) <= currentDay) {
+                    button.setText(selectedDay + "/" + selectedMonth + "/" + selectedYear);
+                    return selectedDay + "/" + selectedMonth + "/" + selectedYear;
+                } else {
+                    Toast.makeText(context, context.getString(R.string.toast_message_date_not_correct), Toast.LENGTH_SHORT).show();
+                    return null;
+                }
+            } else {
+                Toast.makeText(context, context.getString(R.string.toast_message_date_not_correct), Toast.LENGTH_SHORT).show();
+                return null;
+            }
+        } else {
+            Toast.makeText(context, context.getString(R.string.toast_message_date_not_correct), Toast.LENGTH_SHORT).show();
+            return null;
         }
     }
 
@@ -162,12 +200,80 @@ public class Utils {
     //for recycler view interests (detail frag tablet mode & information frag)
 
     public static void configureRecyclerViewForInterests(Context context, DetailRecyclerViewAdapter adapter, RecyclerView recyclerViewInterest) {
-        //adapter = new DetailRecyclerViewAdapter();
         recyclerViewInterest.setAdapter(adapter);
         recyclerViewInterest.setLayoutManager(new LinearLayoutManager(context));
     }
 
+    public static void displayStatusOfPlace(Context context, Place place, TextView statusTextView,
+                                            TextView dateOfSaleTextView, LinearLayout layoutDateOfSale) {
+        if (place.getDateOfSale() == null) {
+            layoutDateOfSale.setVisibility(View.GONE);
+            statusTextView.setText(context.getString(R.string.status_available));
+            statusTextView.setTextColor(context.getResources().getColor(R.color.green));
+        } else {
+            layoutDateOfSale.setVisibility(View.VISIBLE);
+            dateOfSaleTextView.setText(new SimpleDateFormat("dd/MM/yyyy").format(place.getDateOfSale()));
+            statusTextView.setText(context.getString(R.string.status_sold));
+            statusTextView.setTextColor(context.getResources().getColor(R.color.red));
+        }
+    }
+
+    public static void setInformationOnTextView(Context context, int number, TextView textView) {
+        if (number != 0) {
+            textView.setText(String.valueOf(number));
+        } else {
+            textView.setText(context.getString(R.string.not_informed_yet));
+        }
+    }
 
 
+    public static void updateUiPlace(Context context, Place place, TextView managerTextView, TextView creationDateTextView,
+                                     TextView priceTextView, TextView descriptionTextView,
+                                     TextView surfaceTextView, TextView nbrRoomsTextView,
+                                     TextView nbrBedroomsTextView, TextView nbrBathroomsTextView,
+                                     TextView statusTextView, TextView dateOfSaleTextView, LinearLayout layoutDateOfSale) {
+        managerTextView.setText(place.getAuthor());
+        displayStatusOfPlace(context, place, statusTextView, dateOfSaleTextView, layoutDateOfSale);
+        creationDateTextView.setText(new SimpleDateFormat("dd/MM/yyyy").format(place.getCreationDate()));
+        String price = place.getPrice() + " $";
+        priceTextView.setText(price);
+
+        if (place.getDescription() != null) {
+            descriptionTextView.setText(place.getDescription());
+        } else {
+            descriptionTextView.setText(context.getString(R.string.not_informed_yet));
+        }
+        if (place.getSurface() != 0) {
+            String surface = place.getSurface() + " m²";
+            surfaceTextView.setText(surface);
+        } else {
+            surfaceTextView.setText(context.getString(R.string.not_informed_yet));
+        }
+        setInformationOnTextView(context, place.getNbrOfRooms(), nbrRoomsTextView);
+        setInformationOnTextView(context, place.getNbrOfBedrooms(), nbrBedroomsTextView);
+        setInformationOnTextView(context, place.getNbrOfBathrooms(), nbrBathroomsTextView);
+    }
+
+    public static void updateUiAddress(Context context, Place place, PlaceViewModel viewModel, LifecycleOwner owner,
+                                       TextView textViewStreet, TextView textViewComplement,
+                                       TextView textViewPostalCodeAndCity, TextView textViewCountry) {
+        viewModel.getAddressOfAPlace(place.getIdAddress()).observe(owner, new Observer<com.example.realestatemanager.models.Address>() {
+            @Override
+            public void onChanged(com.example.realestatemanager.models.Address address) {
+                textViewStreet.setText(address.getStreetNumber() + " " + address.getStreetName());
+                if (address.getComplement() != null) {
+                    if (!address.getComplement().equals(context.getString(R.string.not_informed))) {
+                        textViewComplement.setText(address.getComplement());
+                    } else {
+                        textViewComplement.setVisibility(View.GONE);
+                    }
+                } else {
+                    textViewComplement.setVisibility(View.GONE);
+                }
+                textViewPostalCodeAndCity.setText(address.getPostalCode() + " " + address.getCity());
+                textViewCountry.setText(address.getCountry());
+            }
+        });
+    }
 
 }

@@ -1,5 +1,9 @@
 package com.example.realestatemanager.models;
 
+import android.content.ContentValues;
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Ignore;
@@ -14,7 +18,6 @@ public class Photo {
     private long id;
     private String uri;
     private long placeId;
-    private boolean isMainPhoto;
     private String description;
 
     @Ignore
@@ -24,14 +27,6 @@ public class Photo {
 
     public Photo(String uri) {
         this.uri = uri;
-    }
-
-    public boolean isMainPhoto() {
-        return isMainPhoto;
-    }
-
-    public void setMainPhoto(boolean mainPhoto) {
-        isMainPhoto = mainPhoto;
     }
 
     public long getId() {
@@ -65,4 +60,14 @@ public class Photo {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    //FOR CONTENT PROVIDER
+    public static Photo fromContentValues(ContentValues values) {
+        final Photo photo = new Photo();
+        if (values.containsKey("uri")) photo.setUri(values.getAsString("uri"));
+        if (values.containsKey("placeId")) photo.setPlaceId(values.getAsLong("placeId"));
+        if (values.containsKey("description")) photo.setDescription(values.getAsString("description"));
+        return photo;
+    }
+
 }

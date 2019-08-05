@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -38,7 +39,10 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import static com.example.realestatemanager.utils.Utils.convertDollarToEuro;
+import static com.example.realestatemanager.utils.Utils.displayStatusOfPlace;
 import static com.example.realestatemanager.utils.Utils.getLocationFromAddress;
+import static com.example.realestatemanager.utils.Utils.setInformationOnTextView;
+import static com.example.realestatemanager.utils.Utils.updateUiPlace;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -105,14 +109,19 @@ public class InformationFragment extends Fragment {
         configureViewModel();
         formatter = new SimpleDateFormat("dd/MM/yyyy");
         long placeId = preferences.getLong(PLACE_ID, -1);
+        LifecycleOwner owner = getViewLifecycleOwner();
 
         if (placeId != 0 && placeId != -1) {
             viewModel.getPlace(placeId).observe(this, new Observer<Place>() {
                 @Override
                 public void onChanged(Place place) {
-                    updateUi(place);
+                    updateUiPlace(getContext(), place, managerOfPlaceTextView, creationDateTextView, priceTextView,
+                            descriptionTextView, surfaceTextView, nbrOfRoomsTextView, nbrOfBedroomsTextView,
+                            nbrOfBathroomsTextView, statusTextView, dateOfSaleTextView, layoutDateOfSale);
+                    getInterests(place.getId());
+                    Utils.updateUiAddress(getContext(), place, viewModel, owner,
+                            streetAddressTextView, complementTextView, postalCodeAndCityTextView, countryTextView);
                     adapter = new DetailRecyclerViewAdapter();
-                    //Utils.configureRecyclerViewForInterests(getContext(), adapter, recyclerViewInterest);
                     configureRecyclerViewForInterestsHorizontal();
                     price = place.getPrice();
                 }
@@ -152,69 +161,6 @@ public class InformationFragment extends Fragment {
     //--------------------------------------------------
     //UPDATE UI
     //---------------------------------------------------
-    private void updateUi(Place place) {
-        if (place.getDateOfSale() == null) {
-            layoutDateOfSale.setVisibility(View.GONE);
-            statusTextView.setText(getString(R.string.status_available));
-            statusTextView.setTextColor(getResources().getColor(R.color.green));
-        } else {
-            layoutDateOfSale.setVisibility(View.VISIBLE);
-            dateOfSaleTextView.setText(formatter.format(place.getDateOfSale()));
-            statusTextView.setText(getString(R.string.status_sold));
-            statusTextView.setTextColor(getResources().getColor(R.color.red));
-        }
-        managerOfPlaceTextView.setText(place.getAuthor());
-        creationDateTextView.setText(formatter.format(place.getCreationDate()));
-        String price = place.getPrice() + " $";
-        priceTextView.setText(price);
-
-        if (place.getDescription() != null) {
-            descriptionTextView.setText(place.getDescription());
-        } else {
-            descriptionTextView.setText(getString(R.string.not_informed_yet));
-        }
-        if (place.getSurface() != 0) {
-            String surface = place.getSurface() + " m²";
-            surfaceTextView.setText(surface);
-        } else {
-            surfaceTextView.setText(getString(R.string.not_informed_yet));
-        }
-        if (place.getNbrOfRooms() != 0) {
-            nbrOfRoomsTextView.setText(String.valueOf(place.getNbrOfRooms()));
-        } else {
-            nbrOfRoomsTextView.setText(getString(R.string.not_informed_yet));
-        }
-        if (place.getNbrOfBathrooms() != 0) {
-            nbrOfBathroomsTextView.setText(String.valueOf(place.getNbrOfBathrooms()));
-        } else {
-            nbrOfBathroomsTextView.setText(getString(R.string.not_informed_yet));
-        }
-        if (place.getNbrOfBedrooms() != 0) {
-            nbrOfBedroomsTextView.setText(String.valueOf(place.getNbrOfBedrooms()));
-        } else {
-            nbrOfBedroomsTextView.setText(getString(R.string.not_informed_yet));
-        }
-        getInterests(place.getId());
-        //Utils.getInterests(place.getId(), viewModel, this, getContext(), adapter);
-        viewModel.getAddress(place.getId()).observe(this, new Observer<Address>() {
-            @Override
-            public void onChanged(Address address) {
-                streetAddressTextView.setText(address.getStreetNumber() + " " + address.getStreetName());
-                if (address.getComplement() != null) {
-                    if (!address.getComplement().equals(getString(R.string.not_informed))) {
-                        complementTextView.setText(address.getComplement());
-                    } else {
-                        complementTextView.setVisibility(View.GONE);
-                    }
-                } else {
-                    complementTextView.setVisibility(View.GONE);
-                }
-                postalCodeAndCityTextView.setText(address.getPostalCode() + " " + address.getCity());
-                countryTextView.setText(address.getCountry());
-            }
-        });
-    }
-
     private void getInterests(long placeId) {
         viewModel.getInterests(placeId).observe(this, this::updateInterestsList);
     }

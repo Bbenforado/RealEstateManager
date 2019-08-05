@@ -30,6 +30,10 @@ public class PlaceDataRepository {
         return placeDao.getPlacesForGivenParameters(query);
     }
 
+    public long getPlaceId(long addressId) {
+        return placeDao.getPlaceId(addressId);
+    }
+
     //CREATE
     public long createPlace(Place place) {
         return placeDao.createPlace(place);

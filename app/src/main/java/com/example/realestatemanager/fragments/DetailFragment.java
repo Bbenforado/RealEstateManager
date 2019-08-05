@@ -7,11 +7,11 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.Update;
 import androidx.viewpager.widget.ViewPager;
 
 import android.view.LayoutInflater;
@@ -48,9 +48,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -61,6 +58,7 @@ import butterknife.Optional;
 import static com.example.realestatemanager.utils.Utils.convertDollarToEuro;
 import static com.example.realestatemanager.utils.Utils.getLatLngOfPlace;
 import static com.example.realestatemanager.utils.Utils.isNetworkAvailable;
+import static com.example.realestatemanager.utils.Utils.updateUiPlace;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -128,6 +126,7 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
     private static final String PLACE_ID = "placeId";
     private static final String STATUS_FORM_ACTIVITY = "statusFormActivity";
     private static final String APP_MODE = "appMode";
+    private static final String ADDRESS_ID = "addressId";
     //----------------------------------------------------
     //-----------------------------------------------------
     private PlaceViewModel viewModel;
@@ -136,12 +135,9 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
     private int[] iconTabLayout = {R.drawable.house_white, R.drawable.ic_address_white};
     private DetailPhotoRecyclerViewAdapter adapter;
     private DetailRecyclerViewAdapter adapterForInterests;
-    private DetailFragmentAdapter viewPagerAdapter;
     private long placeId;
-    private GoogleMap googleMap;
+    private long addressId;
     private long price;
-    private SimpleDateFormat formatter;
-
 
     public DetailFragment() {
         // Required empty public constructor
@@ -154,6 +150,7 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
         preferences = getActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         ButterKnife.bind(this, view);
         placeId = preferences.getLong(PLACE_ID, -1);
+        addressId = preferences.getLong(ADDRESS_ID, -1);
         preferences.edit().putInt(STATUS_FORM_ACTIVITY, -1).apply();
         if (placeId != 0 && placeId != -1) {
             configureViewModel();
@@ -162,24 +159,37 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
                 configureRecyclerView();
                 getPhotos(placeId);
             } else if (preferences.getString(APP_MODE, null).equals(getString(R.string.app_mode_tablet))) {
-                formatter = new SimpleDateFormat("dd/MM/yyyy");
                 configureRecyclerViewForTablet();
-                adapterForInterests = new DetailRecyclerViewAdapter();
-                Utils.configureRecyclerViewForInterests(getContext(), adapterForInterests, recyclerViewInterests);
+                LifecycleOwner owner = getViewLifecycleOwner();
 
                 viewModel.getPlace(placeId).observe(this, new Observer<Place>() {
                     @Override
                     public void onChanged(Place place) {
-                        updateUi(place);
+                        textViewTypeOfPlaceTabletMode.setText(place.getType());
+                        updateUiPlace(getContext(), place, textViewManagerTabletMode, textViewCreationDateTabletMode, textViewPriceTabletMode,
+                                textViewDescriptionTabletMode, textViewSurfaceTabletMode, textViewNbrOfRoomsTabletMode,
+                                textViewNbrOfBedroomsTabletMode, textViewNbrOfBathroomsTabletMode, textViewStatusTabletMode,
+                                textViewDateOfSaleTabletMode, layoutDateOfSaleTabletMode);
+                        getInterests(place.getId());
+                        Utils.updateUiAddress(getContext(), place, viewModel, owner,
+                                textViewStreetTabletMode, textViewComplementTabletMode, textViewPostalCodeAndCityTabletMode,
+                                textViewCountryTabletMode);
+                        configureRecyclerViewForInterestsHorizontal();
                         price = place.getPrice();
                     }
                 });
-                mapView.onCreate(savedInstanceState);
-                mapView.getMapAsync(this::onMapReady);
+                if (mapView != null) {
+                    mapView.onCreate(savedInstanceState);
+                    mapView.getMapAsync(this);
+                }
             }
         }
-
         return view;
+    }
+    private void configureRecyclerViewForInterestsHorizontal() {
+        this.adapterForInterests = new DetailRecyclerViewAdapter();
+        this.recyclerViewInterests.setAdapter(adapterForInterests);
+        recyclerViewInterests.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayout.HORIZONTAL, false));
     }
 
     //------------------------------------------------
@@ -200,75 +210,13 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
-    private void updateUi(Place place) {
-        textViewTypeOfPlaceTabletMode.setText(place.getType());
-        if (place.getDateOfSale() == null) {
-            layoutDateOfSaleTabletMode.setVisibility(View.GONE);
-            textViewStatusTabletMode.setText(getString(R.string.status_available));
-            textViewStatusTabletMode.setTextColor(getResources().getColor(R.color.green));
-        } else {
-            layoutDateOfSaleTabletMode.setVisibility(View.VISIBLE);
-            Date dateOfSale = place.getDateOfSale();
-            String date = formatter.format(dateOfSale);
-            textViewDateOfSaleTabletMode.setText(date);
-            textViewStatusTabletMode.setText(getString(R.string.status_sold));
-            textViewStatusTabletMode.setTextColor(getResources().getColor(R.color.red));
-        }
-        textViewManagerTabletMode.setText(place.getAuthor());
-        textViewCreationDateTabletMode.setText(formatter.format(place.getCreationDate()));
-        String priceInDollars = place.getPrice() + " $";
-        textViewPriceTabletMode.setText(priceInDollars);
-
-        if (place.getDescription() != null) {
-            textViewDescriptionTabletMode.setText(place.getDescription());
-        } else {
-            textViewDescriptionTabletMode.setText(getString(R.string.not_informed_yet));
-        }
-        if (place.getSurface() != 0) {
-            String surface = place.getSurface() + " m²";
-            textViewSurfaceTabletMode.setText(surface);
-        } else {
-            textViewSurfaceTabletMode.setText(getString(R.string.not_informed_yet));
-        }
-        if (place.getNbrOfRooms() != 0) {
-            textViewNbrOfRoomsTabletMode.setText(String.valueOf(place.getNbrOfRooms()));
-        } else {
-            textViewNbrOfRoomsTabletMode.setText(getString(R.string.not_informed_yet));
-        }
-        if (place.getNbrOfBathrooms() != 0) {
-            textViewNbrOfBathroomsTabletMode.setText(String.valueOf(place.getNbrOfBathrooms()));
-        } else {
-            textViewNbrOfBathroomsTabletMode.setText(getString(R.string.not_informed_yet));
-        }
-        if (place.getNbrOfBedrooms() != 0) {
-            textViewNbrOfBedroomsTabletMode.setText(String.valueOf(place.getNbrOfBedrooms()));
-        } else {
-            textViewNbrOfBedroomsTabletMode.setText(getString(R.string.not_informed_yet));
-        }
-        getInterests(place.getId());
-        viewModel.getAddress(place.getId()).observe(this, new Observer<Address>() {
-            @Override
-            public void onChanged(Address address) {
-                textViewStreetTabletMode.setText(address.getStreetNumber() + " " + address.getStreetName());
-                if (address.getComplement() != null) {
-                    if (!address.getComplement().equals(getString(R.string.not_informed))) {
-                        textViewComplementTabletMode.setText(address.getComplement());
-                    } else {
-                        textViewComplementTabletMode.setVisibility(View.GONE);
-                    }
-                } else {
-                    textViewComplementTabletMode.setVisibility(View.GONE);
-                }
-                textViewPostalCodeAndCityTabletMode.setText(address.getPostalCode() + " " + address.getCity());
-                textViewCountryTabletMode.setText(address.getCountry());
-            }
-        });
-    }
     @Override
     public void onResume() {
         if (preferences.getString(APP_MODE, null).equals("tablet") && isNetworkAvailable(getContext())) {
             if (placeId != -1 && placeId != 0) {
-                mapView.onResume();
+                if (mapView != null) {
+                    mapView.onResume();
+                }
             }
         }
         super.onResume();
@@ -279,7 +227,9 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
         super.onDestroy();
         if (preferences.getString(APP_MODE, null).equals("tablet") && isNetworkAvailable(getContext())) {
             if (placeId != -1 && placeId != 0) {
-                mapView.onDestroy();
+                if (mapView != null) {
+                    mapView.onDestroy();
+                }
             }
         }
     }
@@ -289,7 +239,9 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
         super.onLowMemory();
         if (preferences.getString(APP_MODE, null).equals("tablet") && isNetworkAvailable(getContext())) {
             if (placeId != -1 && placeId != 0) {
-                mapView.onLowMemory();
+                if (mapView != null) {
+                    mapView.onLowMemory();
+                }
             }
         }
     }
@@ -313,7 +265,7 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void configureViewpagerAndTabs() {
-        viewPagerAdapter = new DetailFragmentAdapter(getActivity().getSupportFragmentManager(), titles);
+        DetailFragmentAdapter viewPagerAdapter = new DetailFragmentAdapter(getActivity().getSupportFragmentManager(), titles);
         viewPager.setAdapter(viewPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
         for (int i = 0; i < tabLayout.getTabCount(); i++) {
@@ -337,7 +289,6 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
                 recyclerViewPhotos.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayout.HORIZONTAL, false));
             }
         });
-
     }
 
     private void getPhotos(long placeId) {
@@ -358,24 +309,25 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        this.googleMap = googleMap;
         MapsInitializer.initialize(getContext());
         if (isNetworkAvailable(getContext())) {
             if (placeId != -1 && placeId != 0) {
-                viewModel.getAddress(placeId).observe(this, new Observer<com.example.realestatemanager.models.Address>() {
+                viewModel.getAddressOfAPlace(addressId).observe(this, new Observer<Address>() {
                     @Override
-                    public void onChanged(com.example.realestatemanager.models.Address adressOfPlace) {
+                    public void onChanged(Address addressOfPlace) {
 
-                        if (adressOfPlace.getLatLng() != null) {
-                            String latLng = adressOfPlace.getLatLng();
+                        if (addressOfPlace.getLatLng() != null) {
+                            String latLng = addressOfPlace.getLatLng();
                             LatLng latLngOfAddress = getLatLngOfPlace(latLng);
-
                             CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLngOfAddress, 16);
                             googleMap.animateCamera(cameraUpdate);
                             googleMap.addMarker(new MarkerOptions()
                                     .position(latLngOfAddress));
                         } else {
                             Toast.makeText(getContext(), getString(R.string.toast_message_place_location_not_found), Toast.LENGTH_SHORT).show();
+                            textViewNoInternet.setVisibility(View.VISIBLE);
+                            mapView.setVisibility(View.GONE);
+                            textViewNoInternet.setText(getContext().getString(R.string.toast_message_address_not_found));
                         }
                     }
                 });
@@ -388,8 +340,6 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
-
-
     private void getInterests(long placeId) {
         viewModel.getInterests(placeId).observe(this, this::updateInterestsList);
     }
@@ -399,5 +349,4 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
             this.adapterForInterests.updateInterestData(interests);
         }
     }
-    //----------------------------------------------------
 }

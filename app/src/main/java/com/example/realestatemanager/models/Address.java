@@ -1,15 +1,19 @@
 package com.example.realestatemanager.models;
 
+import android.content.ContentValues;
+
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.google.android.gms.maps.model.LatLng;
 
-@Entity(tableName = "addresses", foreignKeys =
+@Entity(tableName = "addresses")
+        /*;foreignKeys =
         @ForeignKey(entity = Place.class,
                 parentColumns = "id",
-                childColumns = "idPlace"))
+                childColumns = "idPlace"))*/
 public class Address {
 
     @PrimaryKey(autoGenerate = true)
@@ -20,35 +24,18 @@ public class Address {
     private String postalCode;
     private String city;
     private String country;
-    private long idPlace;
-    private long idInterest;
+    /*private long idPlace;
+    private long idInterest;*/
     private String latLng;
 
-    //for interest
-    /*public Address(int streetNumber, String streetName, String complement, String postalCode,
-                   String country, String city, long idInterest) {
-        this.streetNumber = streetNumber;
-        this.streetName = streetName;
-        this.complement = complement;
-        this.postalCode = postalCode;
-        this.country = country;
-        this.city = city;
-        this.idInterest = idInterest;
-    }*/
 
-    //for place
-    public Address(long idPlace, int streetNumber, String streetName, String complement, String postalCode, String city,
-                   String country) {
-        this.streetNumber = streetNumber;
-        this.streetName = streetName;
-        this.complement = complement;
-        this.postalCode = postalCode;
-        this.country = country;
-        this.city = city;
-        this.idPlace = idPlace;
+    @Ignore
+    public Address() {
+
     }
 
-    /*public Address(long idPlace, String latLng, int streetNumber, String streetName, String complement, String postalCode, String city,
+    //for place
+    /*public Address(long idPlace, int streetNumber, String streetName, String complement, String postalCode, String city,
                    String country) {
         this.streetNumber = streetNumber;
         this.streetName = streetName;
@@ -57,19 +44,23 @@ public class Address {
         this.country = country;
         this.city = city;
         this.idPlace = idPlace;
-        this.latLng = latLng;
     }*/
+    public Address(int streetNumber, String streetName, String complement, String postalCode,
+                   String city, String country) {
+        this.streetNumber = streetNumber;
+        this.streetName = streetName;
+        this.complement = complement;
+        this.postalCode = postalCode;
+        this.country = country;
+        this.city = city;
+    }
 
     //---------------------------------
     //GETTERS
     //---------------------------------
-
-
     public String getLatLng() {
         return latLng;
     }
-
-
 
     public long getId() {
         return id;
@@ -95,13 +86,13 @@ public class Address {
         return country;
     }
 
-    public long getIdPlace() {
+   /* public long getIdPlace() {
         return idPlace;
     }
 
     public long getIdInterest() {
         return idInterest;
-    }
+    }*/
 
     public String getCity() {
         return city;
@@ -136,15 +127,28 @@ public class Address {
         this.country = country;
     }
 
-    public void setIdPlace(long idPlace) {
+    /*public void setIdPlace(long idPlace) {
         this.idPlace = idPlace;
     }
 
     public void setIdInterest(long idInterest) {
         this.idInterest = idInterest;
-    }
+    }*/
 
     public void setCity(String city) {
         this.city = city;
     }
+
+    //FOR CONTENT PROVIDER
+    /*public static Address fromContentValues(ContentValues values) {
+        final Address address = new Address();
+        if (values.containsKey("streetNumber")) address.setStreetNumber(values.getAsInteger("streetNumber"));
+        if (values.containsKey("streetName")) address.setStreetName(values.getAsString("streetName"));
+        if (values.containsKey("complement")) address.setComplement(values.getAsString("complement"));
+        if (values.containsKey("postalCode")) address.setPostalCode(values.getAsString("postalCode"));
+        if (values.containsKey("country")) address.setCountry(values.getAsString("country"));
+        if (values.containsKey("idPlace")) address.setIdPlace(values.getAsLong("idPlace"));
+        if (values.containsKey("city")) address.setCity(values.getAsString("city"));
+        return address;
+    }*/
 }

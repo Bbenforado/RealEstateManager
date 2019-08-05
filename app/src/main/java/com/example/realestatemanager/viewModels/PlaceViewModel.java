@@ -71,8 +71,6 @@ public class PlaceViewModel extends ViewModel {
     }
 
     public long createPlace(Place place) {
-        System.out.println("create place viewmodel");
-        System.out.println("date in view model = " + place.getCreationDate());
         Callable<Long> insertCallable = () -> placeDataSource.createPlace(place);
         long rowId = 0;
 
@@ -101,8 +99,15 @@ public class PlaceViewModel extends ViewModel {
         return addressDataSource.getPlaceIfForGivenParamFromAdresses (query);
     }
 
-    public LiveData<Address> getAddress(long placeId) {
+    /*public LiveData<Address> getAddress(long placeId) {
         return addressDataSource.getAddress(placeId);
+    }*/
+    public LiveData<Address> getAddressOfAPlace(long idAddressInPlace) {
+        return addressDataSource.getAddressOfAPlace(idAddressInPlace);
+    }
+
+    public long getPlaceId(long idAddress) {
+        return placeDataSource.getPlaceId(idAddress);
     }
 
     public LiveData<List<Address>> getAddresses() {
@@ -139,8 +144,8 @@ public class PlaceViewModel extends ViewModel {
     }
 
 
-    public long createInterest(Interest interest) {
-        Callable<Long> insertCallable = () -> interestDataSource.createInterest(interest);
+    public void createInterest(Interest interest) {
+        /*Callable<Long> insertCallable = () -> interestDataSource.createInterest(interest);
         long rowId = 0;
 
         ExecutorService executorService = Executors.newFixedThreadPool(10);
@@ -152,7 +157,10 @@ public class PlaceViewModel extends ViewModel {
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
-        return rowId;
+        return rowId;*/
+        executor.execute(() -> {
+            interestDataSource.createInterest(interest);
+        });
     }
 
     public void updateInterest(Interest interest) {

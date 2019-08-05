@@ -3,7 +3,6 @@ package com.example.realestatemanager.fragments;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
 
@@ -21,6 +20,8 @@ import android.widget.Toast;
 import com.example.realestatemanager.R;
 import com.example.realestatemanager.injections.Injection;
 import com.example.realestatemanager.injections.ViewModelFactory;
+import com.example.realestatemanager.models.Address;
+import com.example.realestatemanager.models.Place;
 import com.example.realestatemanager.viewModels.PlaceViewModel;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -62,11 +63,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     //-----------------------------------------
     private static final String APP_PREFERENCES = "appPreferences";
     private static final String PLACE_ID = "placeId";
+    public static final String ADDRESS_ID = "addressId";
     //-------------------------------------------
     //-----------------------------------------------
     private SharedPreferences preferences;
     private PlaceViewModel viewModel;
     private long id;
+    private long addressId;
     private GoogleMap gMap;
 
     public MapFragment() {
@@ -82,6 +85,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         ButterKnife.bind(this, view);
         configureViewModel();
         id = preferences.getLong(PLACE_ID, -1);
+        addressId = preferences.getLong(ADDRESS_ID, -1);
+        viewModel.getPlace(id).observe(this, new Observer<Place>() {
+            @Override
+            public void onChanged(Place place) {
+                addressId = place.getIdAddress();
+            }
+        });
 
        if (isNetworkAvailable(getContext())) {
             if (id != 0 && id != -1) {
@@ -100,7 +110,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         gMap = googleMap;
         MapsInitializer.initialize(this.getActivity());
             if (id != -1 && id != 0) {
-                viewModel.getAddress(id).observe(this, new Observer<com.example.realestatemanager.models.Address>() {
+                viewModel.getAddressOfAPlace(addressId).observe(this, new Observer<Address>() {
                     @Override
                     public void onChanged(com.example.realestatemanager.models.Address adressOfPlace) {
 

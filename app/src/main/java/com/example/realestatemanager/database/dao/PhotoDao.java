@@ -1,5 +1,7 @@
 package com.example.realestatemanager.database.dao;
 
+import android.database.Cursor;
+
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
@@ -25,6 +27,9 @@ public interface PhotoDao {
 
     @Query("SELECT * FROM photos WHERE placeId = :idPlace")
     LiveData<Photo> getPhoto(long idPlace);
+
+    @Query("SELECT * FROM photos WHERE placeId = :placeId")
+    Cursor getPhotosWithCursor(long placeId);
 
     @RawQuery(observedEntities = Photo.class)
     LiveData<List<Long>> getPlacesIdForGivenParameters(SupportSQLiteQuery query);

@@ -21,10 +21,10 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="16dp"
-        android:layout_marginStart="220dp"
-        android:layout_marginEnd="220dp"
-        android:layout_marginLeft="220dp"
-        android:layout_marginRight="220dp">
+        android:layout_marginStart="100dp"
+        android:layout_marginEnd="100dp"
+        android:layout_marginLeft="100dp"
+        android:layout_marginRight="100dp">
 
         <LinearLayout
             android:layout_width="match_parent"

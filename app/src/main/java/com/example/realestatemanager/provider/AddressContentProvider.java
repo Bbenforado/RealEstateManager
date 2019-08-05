@@ -10,42 +10,38 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.realestatemanager.database.RealEstateManagerDatabase;
-import com.example.realestatemanager.models.Place;
-import com.google.android.gms.dynamic.IFragmentWrapper;
+import com.example.realestatemanager.models.Address;
 
-public class ItemContentProvider extends ContentProvider {
-
+/*public class AddressContentProvider extends ContentProvider{
 
     public static final String AUTHORITY = "com.example.realestatemanager.provider";
-    public static final String TABLE_NAME = Place.class.getSimpleName();
-    public static final Uri URI_PLACE = Uri.parse("content://" + AUTHORITY + "/" + TABLE_NAME);
-
+    public static final String TABLE_NAME = Address.class.getSimpleName();
+    public static final Uri URI_ADDRESS = Uri.parse("content://" + AUTHORITY + "/" + TABLE_NAME);
 
     @Override
     public boolean onCreate() {
-        return true;
+        return false;
     }
 
     @Nullable
     @Override
-    public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection,
-                        @Nullable String[] selectionArgs, @Nullable String sortOrder) {
+    public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
 
-        if (getContext() != null) {
-            long id = ContentUris.parseId(uri);
+        *//*if (getContext() != null) {
+            long idPlace = ContentUris.parseId(uri);
             final Cursor cursor =
-                    RealEstateManagerDatabase.getInstance(getContext()).placeDao().getPlacesWithCursor(id);
+                    RealEstateManagerDatabase.getInstance(getContext()).addressDao().getPlacesWithCursor(idPlace);
             cursor.setNotificationUri(getContext().getContentResolver(), uri);
             return cursor;
         }
-        throw new IllegalArgumentException("Failed to query row for uri " + uri);
-        //return null;
+        throw new IllegalArgumentException("Failed to query row for uri " + uri);*//*
+        return null;
     }
 
     @Nullable
     @Override
     public String getType(@NonNull Uri uri) {
-        return "vnd.android.cursor.place/" + AUTHORITY + "." + TABLE_NAME;
+        return "vnd.android.cursor.address/" + AUTHORITY + "." + TABLE_NAME;
     }
 
     @Nullable
@@ -53,8 +49,8 @@ public class ItemContentProvider extends ContentProvider {
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
         if (getContext() != null) {
             final long id =
-                    RealEstateManagerDatabase.getInstance(getContext()).placeDao()
-                    .insertPlace(Place.fromContentValues(values));
+                    RealEstateManagerDatabase.getInstance(getContext()).addressDao()
+                            .insertAddress(Address.fromContentValues(values));
             if (id != 0) {
                 getContext().getContentResolver().notifyChange(uri, null);
                 return ContentUris.withAppendedId(uri, id);
@@ -67,8 +63,8 @@ public class ItemContentProvider extends ContentProvider {
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
         if (getContext() != null) {
             final int count =
-                    RealEstateManagerDatabase.getInstance(getContext()).placeDao()
-                    .deletePlace(ContentUris.parseId(uri));
+                    RealEstateManagerDatabase.getInstance(getContext()).addressDao()
+                            .deleteAddress(ContentUris.parseId(uri));
             getContext().getContentResolver().notifyChange(uri, null);
             return count;
         }
@@ -79,11 +75,11 @@ public class ItemContentProvider extends ContentProvider {
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
         if (getContext() != null) {
             final int count =
-                    RealEstateManagerDatabase.getInstance(getContext()).placeDao()
-                    .updatePlace(Place.fromContentValues(values));
+                    RealEstateManagerDatabase.getInstance(getContext()).addressDao()
+                            .updateAddress(Address.fromContentValues(values));
             getContext().getContentResolver().notifyChange(uri, null);
             return count;
         }
         throw new IllegalArgumentException("Failed to update row into " + uri);
     }
-}
+}*/

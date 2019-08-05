@@ -29,6 +29,9 @@ public interface PlaceDao {
     @RawQuery(observedEntities = Place.class)
     LiveData<List<Place>> getPlacesForGivenParameters(SupportSQLiteQuery query);
 
+    @Query("SELECT places.id from places INNER JOIN addresses ON places.idAddress = addresses.id WHERE places.idAddress = :idAddress")
+    long getPlaceId(long idAddress);
+
     @Query("SELECT * FROM places WHERE id = :placeId")
     Cursor getPlacesWithCursor(long placeId);
 

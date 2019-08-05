@@ -4,12 +4,16 @@ package com.example.realestatemanager.models;
 import android.content.ContentValues;
 
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import java.util.Date;
 
-@Entity(tableName = "places")
+@Entity(tableName = "places", foreignKeys =
+@ForeignKey(entity = Address.class,
+        parentColumns = "id",
+        childColumns = "idAddress"))
 public class Place {
 
     @PrimaryKey(autoGenerate = true)
@@ -24,13 +28,15 @@ public class Place {
     private Date dateOfSale;
     private String author;
     private String description;
+    private long idAddress;
 
     @Ignore
     public Place() {
 
     }
 
-    public Place(int nbrOfRooms, int nbrOfBathrooms, int nbrOfBedrooms, String type, long price, Date creationDate, Date dateOfSale, String author, String description, long surface) {
+    public Place(int nbrOfRooms, int nbrOfBathrooms, int nbrOfBedrooms, String type, long price,
+                 Date creationDate, Date dateOfSale, String author, String description, long surface, long idAddress) {
         this.nbrOfRooms = nbrOfRooms;
         this.nbrOfBathrooms = nbrOfBathrooms;
         this.nbrOfBedrooms = nbrOfBedrooms;
@@ -41,11 +47,19 @@ public class Place {
         this.author = author;
         this.description = description;
         this.surface = surface;
+        this.idAddress = idAddress;
     }
 
     //----------------------------------
     //GETTERS
     //-----------------------------------
+    public long getIdAddress() {
+        return idAddress;
+    }
+
+    public void setIdAddress(long idAddress) {
+        this.idAddress = idAddress;
+    }
 
     public long getId() {
         return id;

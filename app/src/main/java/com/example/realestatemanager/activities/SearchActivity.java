@@ -48,6 +48,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import icepick.Icepick;
+import icepick.State;
 
 public class SearchActivity extends AppCompatActivity {
 
@@ -94,6 +96,12 @@ public class SearchActivity extends AppCompatActivity {
     private String strInterests;
     private int nbrOfPhotos;
     private String city;
+    @State String textToSaveTypeOfPlaceButton;
+    @State String textToSaveCreationDateMin;
+    @State String textToSaveCreationDateMax;
+    @State String textToSaveSaleDateMin;
+    @State String textToSaveSaleDateMax;
+    @State String getTextToSaveStatus;
     //-------------------------------------------------------------
     public static final String APP_PREFERENCES = "appPreferences";
     public static final String CREATION_DATE_MIN = "creationDateMin";
@@ -112,6 +120,8 @@ public class SearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search);
         ButterKnife.bind(this);
         preferences = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE);
+        Icepick.restoreInstanceState(this, savedInstanceState);
+        restoreData();
         preferences.edit().putString(CREATION_DATE_MIN, null).apply();
         preferences.edit().putString(CREATION_DATE_MAX, null).apply();
         preferences.edit().putString(DATE_OF_SALE_MIN, null).apply();
@@ -123,6 +133,35 @@ public class SearchActivity extends AppCompatActivity {
 
         configureToolbar();
         configureViewModel();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Icepick.saveInstanceState(this, outState);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (preferences.getString(CREATION_DATE_MIN, null) != null) {
+            textToSaveCreationDateMin = preferences.getString(CREATION_DATE_MIN, null);
+        }
+        if(preferences.getString(CREATION_DATE_MAX, null) != null) {
+            textToSaveCreationDateMax = preferences.getString(CREATION_DATE_MAX, null);
+        }
+        if (preferences.getString(DATE_OF_SALE_MIN, null) != null) {
+            textToSaveSaleDateMin = preferences.getString(DATE_OF_SALE_MIN, null);
+        }
+        if (preferences.getString(DATE_OF_SALE_MAX, null) != null) {
+            textToSaveSaleDateMax = preferences.getString(DATE_OF_SALE_MAX, null);
+        }
+        if (buttonTypeOfPlace.getText() != "Type of place") {
+            textToSaveTypeOfPlaceButton = buttonTypeOfPlace.getText().toString();
+        }
+        if (buttonStatus.getText() != "Status") {
+            getTextToSaveStatus = buttonStatus.getText().toString();
+        }
     }
 
     //-----------------------------------------------
@@ -185,6 +224,21 @@ public class SearchActivity extends AppCompatActivity {
     //----------------------------------------------
     //METHODS
     //------------------------------------------------
+    private void restoreData() {
+        setRestoredText(buttonCreationDateMin, textToSaveCreationDateMin);
+        setRestoredText(buttonCreationDateMax, textToSaveCreationDateMax);
+        setRestoredText(buttonSaleDateMin, textToSaveSaleDateMin);
+        setRestoredText(buttonSaleDateMax, textToSaveSaleDateMax);
+        setRestoredText(buttonTypeOfPlace, textToSaveTypeOfPlaceButton);
+        setRestoredText(buttonStatus, getTextToSaveStatus);
+    }
+
+    private void setRestoredText(Button button, String text) {
+        if (text != null) {
+            button.setText(text);
+        }
+    }
+
     public boolean areFieldsCorrectlyFilled() {
         if (buttonTypeOfPlace.getText().equals("Type of place")) {
             return  false;
@@ -423,6 +477,7 @@ public class SearchActivity extends AppCompatActivity {
 
                 Utils.checkIfDateIsPassedOrCurrent(getApplicationContext(), day, formattedMonth, year, currentDay, currentMonth, currentYear,
                         button, preferences, KEY);
+
             }
         }, year, month, day);
         datePickerDialog.show();

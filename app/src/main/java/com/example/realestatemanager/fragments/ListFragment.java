@@ -82,7 +82,7 @@ public class ListFragment extends Fragment {
     private static final String INDEX_ROW = "index";
     public static final String QUERRIED_ADDRESSES = "querriedAdresses";
     public static final String QUERRIED_PHOTOS = "querriedPhotos";
-
+    public static final String ADDRESS_ID = "addressId";
 
     public ListFragment() {
         // Required empty public constructor
@@ -93,7 +93,9 @@ public class ListFragment extends Fragment {
         View result = inflater.inflate(R.layout.fragment_list, container, false);
         ButterKnife.bind(this, result);
         preferences = this.getActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
-
+        //reset preferences
+        /*preferences.edit().putLong(PLACE_ID, -1).apply();
+        preferences.edit().putLong(ADDRESS_ID, -1).apply();*/
         configureRecyclerView();
         configureOnClickRecyclerView();
         configureViewModel();
@@ -106,29 +108,14 @@ public class ListFragment extends Fragment {
             List<Place> placeListForResults = retrievedPlaces();
             updatePlacesList(placeListForResults);
             for (Place place : placeListForResults) {
-                System.out.println("id = " + place.getId());
-                /*viewModel.getAddress(place.getId()).observe(this, new Observer<Address>() {
-                    @Override
-                    public void onChanged(Address address) {
-                        addresses.add(address);
-                        updateAddressesList(addresses);
-                    }
-                });
-                viewModel.getPhotosForAPlace(place.getId()).observe(this, new Observer<List<Photo>>() {
-                    @Override
-                    public void onChanged(List<Photo> photos) {
-                        photoList.addAll(photos);
-                        updatePhotosList(photoList);
-                    }
-                });*/
                 viewModel.getAddresses().observe(this, new Observer<List<Address>>() {
                     @Override
                     public void onChanged(List<Address> addresses) {
                         for (int i = 0;i<addresses.size(); i++) {
-                            if (addresses.get(i).getIdPlace() == place.getId()) {
+                            //if (addresses.get(i).getIdPlace() == place.getId()) {
+                            if (addresses.get(i).getId() == place.getIdAddress()) {
                                 addressesList.add(addresses.get(i));
                                 updateAddressesList(addressesList);
-                                System.out.println("addresse list = " + addressesList.size());
                             }
                         }
                     }
@@ -146,20 +133,13 @@ public class ListFragment extends Fragment {
                     }
                 });
             }
-
-
-            //adapter.notifyDataSetChanged();
         } else {
-            //get data to display in recycler view
             getPlaces();
             getAddresses();
             getPhotos();
         }
-
         return result;
     }
-
-
 
     //-------------------------------------------
     //CONFIGURATION
@@ -182,6 +162,7 @@ public class ListFragment extends Fragment {
                     public void onItemClicked(RecyclerView recyclerView, int position, View v) {
                         Place place = adapter.getPlace(position);
                         preferences.edit().putLong(PLACE_ID, place.getId()).apply();
+                        preferences.edit().putLong(ADDRESS_ID, place.getIdAddress()).apply();
                         String appMode = preferences.getString(APP_MODE, null);
 
                         if (appMode.equals(getString(R.string.app_mode_tablet))) {
@@ -236,6 +217,9 @@ public class ListFragment extends Fragment {
     }
 
     private void updatePlacesList(List<Place> places) {
+        if (places.size()>0) {
+            System.out.println("type = " + places.get(0).getType());
+        }
         this.adapter.updatePlaceData(places);
     }
 
