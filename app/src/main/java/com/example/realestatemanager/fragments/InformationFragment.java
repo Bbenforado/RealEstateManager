@@ -39,7 +39,7 @@ import static com.example.realestatemanager.utils.Utils.convertDollarToEuro;
 import static com.example.realestatemanager.utils.Utils.updateUiPlace;
 
 /**
- * A simple {@link Fragment} subclass.
+ * Fragment that displays informations about the place
  */
 public class InformationFragment extends Fragment {
 
@@ -76,9 +76,7 @@ public class InformationFragment extends Fragment {
     //-----------------------------------------------------------
     private PlaceViewModel viewModel;
     private DetailRecyclerViewAdapter adapter;
-    private SharedPreferences preferences;
     private long price;
-    private SimpleDateFormat formatter;
 
     public InformationFragment() {
         // Required empty public constructor
@@ -92,16 +90,14 @@ public class InformationFragment extends Fragment {
         return fragment;
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View result = inflater.inflate(R.layout.fragment_information, container, false);
-        preferences = getActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+        SharedPreferences preferences = getActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         ButterKnife.bind(this, result);
         configureViewModel();
-        formatter = new SimpleDateFormat("dd/MM/yyyy");
         long placeId = preferences.getLong(PLACE_ID, -1);
         LifecycleOwner owner = getViewLifecycleOwner();
 
@@ -129,6 +125,9 @@ public class InformationFragment extends Fragment {
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(PlaceViewModel.class);
     }
 
+    /**
+     * configure the recycler view for the interests, displayed in horizontal
+     */
     private void configureRecyclerViewForInterestsHorizontal() {
         this.adapter = new DetailRecyclerViewAdapter();
         this.recyclerViewInterest.setAdapter(adapter);
@@ -138,6 +137,9 @@ public class InformationFragment extends Fragment {
     //--------------------------------------------------
     //ACTIONS
     //----------------------------------------------------
+    /**
+     * Convert the price of the place in euros or dollars
+     */
     @OnClick(R.id.material_convert_price_button)
     public void convertPrice() {
         if (convertPriceButton.getText().toString().equals(getString(R.string.button_text_convert_to_euros))) {
@@ -155,10 +157,18 @@ public class InformationFragment extends Fragment {
     //--------------------------------------------------
     //UPDATE UI
     //---------------------------------------------------
+    /**
+     * get the interests in database of the given place
+     * @param placeId the id of the place
+     */
     private void getInterests(long placeId) {
         viewModel.getInterests(placeId).observe(this, this::updateInterestsList);
     }
 
+    /**
+     * update the interests of the place for the recycler view
+     * @param interests list of the interests of the given place
+     */
     private void updateInterestsList(List<Interest> interests) {
         if (interests.size()>0) {
             this.adapter.updateInterestData(interests);

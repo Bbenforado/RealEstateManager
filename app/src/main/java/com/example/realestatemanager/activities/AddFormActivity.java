@@ -49,6 +49,7 @@ import com.example.realestatemanager.models.Interest;
 import com.example.realestatemanager.models.Photo;
 import com.example.realestatemanager.utils.ItemClickSupport;
 import com.example.realestatemanager.utils.Utils;
+import com.example.realestatemanager.utils.UtilsAddFormActivity;
 import com.example.realestatemanager.viewModels.PlaceViewModel;
 import com.example.realestatemanager.R;
 import com.example.realestatemanager.injections.Injection;
@@ -75,6 +76,8 @@ import icepick.Icepick;
 import icepick.State;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
+
+import static com.example.realestatemanager.utils.UtilsAddFormActivity.allPhotosHaveDescription;
 
 public class AddFormActivity extends AppCompatActivity {
 
@@ -162,7 +165,6 @@ public class AddFormActivity extends AppCompatActivity {
             placeId = preferences.getLong(PLACE_ID, -1);
             addressId = preferences.getLong(ADDRESS_ID, -1);
             configureRecyclerView(allPhotos);
-            //configureOnClickRecyclerView();
             placeViewModel.getPlace(placeId).observe(this, new Observer<Place>() {
                 @Override
                 public void onChanged(Place place) {
@@ -184,7 +186,6 @@ public class AddFormActivity extends AppCompatActivity {
 
             placeViewModel.getPhotosForAPlace(placeId).observe(this, photos -> {
                 // update UI if it s not called from add description
-                System.out.println("description = " + preferences.getInt(CODE_DESCRIPTION, -1));
                 if (preferences.getInt(CODE_DESCRIPTION, -1) != 300) {
                     allPhotos.addAll(photos);
                     adapter.notifyDataSetChanged();
@@ -194,7 +195,6 @@ public class AddFormActivity extends AppCompatActivity {
         } else {
             //if it s to add one new place
             configureRecyclerView(photoList);
-            //configureOnClickRecyclerView();
             displayRealEstateManagerName();
         }
         configureOnClickRecyclerView();
@@ -439,73 +439,8 @@ public class AddFormActivity extends AppCompatActivity {
     }
 
     //--------------------------------------------
-    //METHODS
+    //METHODS PHOTOS
     //---------------------------------------------
-    public boolean allPhotosHaveDescription(List<Photo> photos) {
-        for (Photo photo : photos) {
-            if (photo.getDescriptionPhoto() == null) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private void displayLongClickDialog(Photo photo) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setItems(longClickFunctionality, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case 0:
-                        long photoId = photo.getIdPhoto();
-                        deletedPhotosId.add(photoId);
-
-                        for (int i = 0; i < allPhotos.size(); i++) {
-                            if (allPhotos.get(i).getIdPhoto() == photoId) {
-                                allPhotos.remove(allPhotos.get(i));
-                            }
-                        }
-                        adapter.notifyDataSetChanged();
-                        break;
-                    case 1:
-                        //display dialog with edit text to add description
-                        displayAddDescriptionDialog(photo);
-                        break;
-                        default:
-                            break;
-                }
-            }
-        });
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-
-    private void displayAddDescriptionDialog(Photo photo) {
-        final androidx.appcompat.app.AlertDialog.Builder dialog = new androidx.appcompat.app.AlertDialog.Builder(this);
-        LayoutInflater inflater = getLayoutInflater();
-        View dialogLayout = inflater.inflate(R.layout.dialog_add_description, null);
-        final TextInputEditText description = dialogLayout.findViewById(R.id.text_edit_description_dialog);
-        if (photo.getDescriptionPhoto() != null) {
-            description.setText(photo.getDescriptionPhoto());
-        }
-
-        dialog.setMessage(getString(R.string.title_dialog_add_description))
-                .setView(dialogLayout)
-                .setPositiveButton(getString(R.string.save), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        preferences.edit().putInt(CODE_DESCRIPTION, 300).apply();
-                        String descriptionOfPlace = description.getText().toString();
-                        //update photo with new description
-                        photo.setDescriptionPhoto(descriptionOfPlace);
-                        updatedPhoto.add(photo);
-
-                        Toast.makeText(getApplicationContext(), getString(R.string.toast_message_description_added), Toast.LENGTH_SHORT).show();
-                    }})
-                .setNegativeButton(getString(R.string.cancel), null)
-                .show();
-    }
-
     private File createImageFile() throws IOException {
         //create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
@@ -561,6 +496,9 @@ public class AddFormActivity extends AppCompatActivity {
         return result;
     }
 
+    //-------------------------------------------
+    //NOTIFICATION
+    //--------------------------------------------
     private void sendNotification(String message) {
         Intent intent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
@@ -603,24 +541,6 @@ public class AddFormActivity extends AppCompatActivity {
 
     }
 
-    public Date formatDate(String date) {
-        Date formattedDate = null;
-        try {
-            formattedDate = formatter.parse(date);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return formattedDate;
-    }
-
-    private void getAndSetLatLngOfPlace(Address address) {
-        String finalAddress = address.getStreetNumber() + " " + address.getStreetName() + "," +
-                address.getCity() + "," + address.getPostalCode() + " " +
-                address.getCountry();
-
-        String latLng = Utils.getLocationFromAddress(this, finalAddress);
-        address.setLatLng(latLng);
-    }
     //-------------------------------------------------
     //HANDLE RESPONSES FOR ON ACTIVITY RESULT
     //--------------------------------------------------
@@ -673,6 +593,45 @@ public class AddFormActivity extends AppCompatActivity {
     //-----------------------------------------
     //DISPLAY DIALOGS METHODS
     //------------------------------------------------
+    /**
+     * displays dialog when user click long on the photo
+     * if user click long on the photo, he/she can delete or add description to the photo
+     * @param photo the clicked photo
+     */
+    private void displayLongClickDialog(Photo photo) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setItems(longClickFunctionality, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case 0:
+                        long photoId = photo.getIdPhoto();
+                        deletedPhotosId.add(photoId);
+
+                        for (int i = 0; i < allPhotos.size(); i++) {
+                            if (allPhotos.get(i).getIdPhoto() == photoId) {
+                                allPhotos.remove(allPhotos.get(i));
+                            }
+                        }
+                        adapter.notifyDataSetChanged();
+                        break;
+                    case 1:
+                        //display dialog with edit text to add description
+                        displayAddDescriptionDialog(photo);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    /**
+     * displays dialog when click on type of place button
+     * user can select the type of the place
+     */
     private void displayDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(getString(R.string.title_dialog_choose_type_of_place));
@@ -688,6 +647,11 @@ public class AddFormActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    /**
+     * display date picker
+     * save selected date
+     * @param v the view
+     */
     private void createDatePickerDialog(final View v) {
         final Calendar calendar = Calendar.getInstance();
         int day = calendar.get(Calendar.DAY_OF_MONTH);
@@ -705,8 +669,6 @@ public class AddFormActivity extends AppCompatActivity {
                 String  day = Utils.addZeroToDate(String.valueOf(dayOfMonth));
                 String formattedMonth = Utils.addZeroToDate(String.valueOf(newMonth));
 
-                /*Utils.checkIfDateIsPassedOrCurrent(getApplicationContext(), day, formattedMonth, year, currentDay, currentMonth, currentYear,
-                        saleDateButton, preferences, DATE_OF_SALE);*/
                 dateSaleText = Utils.checkIfDateIsPassedOrCurrentAndReturnString(getApplicationContext(), day, formattedMonth, year,
                         currentDay, currentMonth, currentYear, saleDateButton);
                 preferences.edit().putString(DATE_OF_SALE, dateSaleText).apply();
@@ -715,9 +677,42 @@ public class AddFormActivity extends AppCompatActivity {
         datePickerDialog.show();
     }
 
+    /**
+     * displays dialog to add a description for the given photo
+     * @param photo the photo where to add the description
+     */
+    private void displayAddDescriptionDialog(Photo photo) {
+        final androidx.appcompat.app.AlertDialog.Builder dialog = new androidx.appcompat.app.AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogLayout = inflater.inflate(R.layout.dialog_add_description, null);
+        final TextInputEditText description = dialogLayout.findViewById(R.id.text_edit_description_dialog);
+        if (photo.getDescriptionPhoto() != null) {
+            description.setText(photo.getDescriptionPhoto());
+        }
+
+        dialog.setMessage(getString(R.string.title_dialog_add_description))
+                .setView(dialogLayout)
+                .setPositiveButton(getString(R.string.save), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        preferences.edit().putInt(CODE_DESCRIPTION, 300).apply();
+                        String descriptionOfPlace = description.getText().toString();
+                        //update photo with new description
+                        photo.setDescriptionPhoto(descriptionOfPlace);
+                        updatedPhoto.add(photo);
+
+                        Toast.makeText(getApplicationContext(), getString(R.string.toast_message_description_added), Toast.LENGTH_SHORT).show();
+                    }})
+                .setNegativeButton(getString(R.string.cancel), null)
+                .show();
+    }
+
     //-------------------------------------------------------------------------
-    //CREATE/UPDATE IN DATABASE
+    //CREATE IN DATABASE
     //-------------------------------------------------------------------------
+    /**
+     * save the newly added photos in database
+     */
     private void createNewlyAddedPhotos() {
         for (Photo photo : photoList) {
             photo.setPlaceId(placeId);
@@ -725,18 +720,10 @@ public class AddFormActivity extends AppCompatActivity {
         }
     }
 
-    private void deletePhotos() {
-        for (Long id : deletedPhotosId) {
-            placeViewModel.deletePhoto(id);
-        }
-    }
-
-    private void updatePhotos() {
-        for (Photo photo : updatedPhoto) {
-            placeViewModel.updatePhoto(photo);
-        }
-    }
-
+    /**
+     * create interest in database for one place
+     * @param id the id of the place which has the interest
+     */
     private void createInterestsForAPlace(long id) {
         for (CheckBox checkBox : checkBoxes) {
             if (checkBox.isChecked()) {
@@ -755,6 +742,11 @@ public class AddFormActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * gte all data that user entered and create a place in database
+     * @param idAddress the id of the address of the place
+     * @return the id of the created place
+     */
     private long createPlace(long idAddress){
         long surface = 0;
         int nbrOfRooms = 0;
@@ -787,12 +779,16 @@ public class AddFormActivity extends AppCompatActivity {
         } else {
             //if sold
             String saleDateStr = preferences.getString(DATE_OF_SALE, null);
-            Date saleDate = formatDate(saleDateStr);
+            Date saleDate = UtilsAddFormActivity.formatDate(saleDateStr);
             place = new Place(nbrOfRooms, nbrOfBathrooms, nbrOfBedrooms, type, price, date, saleDate, author, description, surface, idAddress);
         }
         return placeViewModel.createPlace(place);
     }
 
+    /**
+     * create address in database with data entered by user in form
+     * @return the id of the created address
+     */
     private long createAddress() {
         String complement = null;
         int streetNumber = Integer.parseInt(editTextStreetNbr.getText().toString());
@@ -804,13 +800,38 @@ public class AddFormActivity extends AppCompatActivity {
         String city = editTextCity.getText().toString();
         String country = editTextCountry.getText().toString();
         Address address = new Address(streetNumber, streetName, complement, postalCode, city, country);
-        getAndSetLatLngOfPlace(address);
+        UtilsAddFormActivity.getAndSetLatLngOfPlace(this,address);
         return placeViewModel.createAddress(address);
+    }
+
+    //-----------------------------------------------
+    //DELETE
+    //-----------------------------------------------
+    /**
+     * delete the deleted photos in database
+     */
+    private void deletePhotos() {
+        for (Long id : deletedPhotosId) {
+            placeViewModel.deletePhoto(id);
+        }
     }
 
     //------------------------------------------------
     //UPDATE
     //--------------------------------------------------
+    /**
+     * update the updated photos in database
+     */
+    private void updatePhotos() {
+        for (Photo photo : updatedPhoto) {
+            placeViewModel.updatePhoto(photo);
+        }
+    }
+
+    /**
+     * update address in database
+     * @param address the address to update
+     */
     private void updateAddress(Address address) {
         String complement;
         int streetNumber = Integer.parseInt(editTextStreetNbr.getText().toString());
@@ -827,10 +848,14 @@ public class AddFormActivity extends AppCompatActivity {
         address.setCity(city);
         String country = editTextCountry.getText().toString();
         address.setCountry(country);
-        getAndSetLatLngOfPlace(address);
+        UtilsAddFormActivity.getAndSetLatLngOfPlace(this, address);
         placeViewModel.updateAddress(address);
     }
 
+    /**
+     * update a place in database
+     * @param place the place to update
+     */
     private void updatePlace(Place place) {
         long surface;
         int nbrOfRooms;

@@ -39,6 +39,7 @@ import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -131,7 +132,6 @@ public class Utils {
 
     public static String checkIfDateIsPassedOrCurrentAndReturnString(Context context, String selectedDay, String selectedMonth, int selectedYear, int currentDay,
                                                     int currentMonth, int currentYear, Button button) {
-        //String textToSave = null;
         if (selectedYear < currentYear) {
             button.setText(selectedDay + "/" + selectedMonth + "/" + selectedYear);
             return selectedDay + "/" + selectedMonth + "/" + selectedYear;
@@ -156,7 +156,6 @@ public class Utils {
             return null;
         }
     }
-
 
     /*public static String formatLocation(Location location) {
         return location.getLatitude() + "," + location.getLongitude();
@@ -225,7 +224,6 @@ public class Utils {
             textView.setText(context.getString(R.string.not_informed_yet));
         }
     }
-
 
     public static void updateUiPlace(Context context, Place place, TextView managerTextView, TextView creationDateTextView,
                                      TextView priceTextView, TextView descriptionTextView,
