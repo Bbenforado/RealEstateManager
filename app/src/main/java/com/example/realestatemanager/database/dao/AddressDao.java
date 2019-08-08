@@ -23,7 +23,7 @@ public interface AddressDao {
     @Query("SELECT * FROM addresses")
     LiveData<List<Address>> getAddresses();
 
-    @Query("SELECT * FROM addresses WHERE id = :idAddressInPlace")
+    @Query("SELECT * FROM addresses WHERE addressId = :idAddressInPlace")
     LiveData<Address> getAddressOfAPlace(long idAddressInPlace);
 
    /* @Query("SELECT * FROM addresses WHERE idPlace = :placeId")
@@ -44,6 +44,6 @@ public interface AddressDao {
     @Update
     int updateAddress(Address address);
 
-    @Query("DELETE FROM addresses WHERE id = :addressId")
+    @Query("DELETE FROM addresses WHERE addressId = :addressId")
     int deleteAddress(long addressId);
 }

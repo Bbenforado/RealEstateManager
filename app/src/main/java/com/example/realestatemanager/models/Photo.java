@@ -15,10 +15,10 @@ import androidx.room.PrimaryKey;
 public class Photo {
 
     @PrimaryKey(autoGenerate = true)
-    private long id;
+    private long idPhoto;
     private String uri;
     private long placeId;
-    private String description;
+    private String descriptionPhoto;
 
     @Ignore
     public Photo() {
@@ -29,12 +29,12 @@ public class Photo {
         this.uri = uri;
     }
 
-    public long getId() {
-        return id;
+    public long getIdPhoto() {
+        return idPhoto;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setIdPhoto(long id) {
+        this.idPhoto = id;
     }
 
     public String getUri() {
@@ -53,12 +53,12 @@ public class Photo {
         this.placeId = placeId;
     }
 
-    public String getDescription() {
-        return description;
+    public String getDescriptionPhoto() {
+        return descriptionPhoto;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setDescriptionPhoto(String description) {
+        this.descriptionPhoto = description;
     }
 
     //FOR CONTENT PROVIDER
@@ -66,7 +66,7 @@ public class Photo {
         final Photo photo = new Photo();
         if (values.containsKey("uri")) photo.setUri(values.getAsString("uri"));
         if (values.containsKey("placeId")) photo.setPlaceId(values.getAsLong("placeId"));
-        if (values.containsKey("description")) photo.setDescription(values.getAsString("description"));
+        if (values.containsKey("description")) photo.setDescriptionPhoto(values.getAsString("description"));
         return photo;
     }
 

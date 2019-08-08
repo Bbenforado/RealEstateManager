@@ -18,34 +18,34 @@ import androidx.room.PrimaryKey;
 public class Interest {
 
     @PrimaryKey(autoGenerate = true)
-    private long id;
-    private String type;
+    private long idInterest;
+    private String interestType;
     private long idPlace;
-    private long idAddress;
+    private long idAddressForInterest;
 
     @Ignore
     public Interest() {
 
     }
 
-    public Interest(String type, long idPlace) {
-        this.type = type;
+    public Interest(String interestType, long idPlace) {
+        this.interestType = interestType;
         this.idPlace = idPlace;
     }
 
     //-------------------------
     //GETTERS
     //------------------------
-    public long getIdAddress() {
-        return idAddress;
+    public long getIdAddressForInterest() {
+        return idAddressForInterest;
     }
 
-    public String getType() {
-        return type;
+    public String getInterestType() {
+        return interestType;
     }
 
-    public long getId() {
-        return id;
+    public long getIdInterest() {
+        return idInterest;
     }
 
     public long getIdPlace() {
@@ -54,16 +54,16 @@ public class Interest {
     //--------------------
     //SETTERS
     //--------------------
-    public void setIdAddress(long idAddress) {
-        this.idAddress = idAddress;
+    public void setIdAddressForInterest(long idAddress) {
+        this.idAddressForInterest = idAddress;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setInterestType(String type) {
+        this.interestType = type;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setIdInterest(long id) {
+        this.idInterest = id;
     }
 
     public void setIdPlace(long idPlace) {
@@ -73,7 +73,7 @@ public class Interest {
     //FOR CONTENT PROVIDER
     public static Interest fromContentValues(ContentValues values) {
         final Interest interest = new Interest();
-        if (values.containsKey("type")) interest.setType(values.getAsString("type"));
+        if (values.containsKey("type")) interest.setInterestType(values.getAsString("type"));
         if (values.containsKey("idPlace")) interest.setIdPlace(values.getAsLong("idPlace"));
         return interest;
     }

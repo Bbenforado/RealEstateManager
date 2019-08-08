@@ -26,14 +26,14 @@ public class PlaceContentProvider extends ContentProvider {
     public static final String TABLE_PHOTO = Photo.class.getSimpleName();
     public static final String TABLE_INTEREST = Interest.class.getSimpleName();
     public static final Uri URI_PLACE = Uri.parse("content://" + AUTHORITY + "/" + TABLE_PLACE);
-    //public static final String PATH = "content://" + AUTHORITY + "/" + TABLE_PLACE;
+    public static final String PATH = "content://" + AUTHORITY + "/" + TABLE_PLACE;
     public static final Uri URI_ADDRESS = Uri.parse("content://" + AUTHORITY + "/" + TABLE_ADDRESS);
     public static final Uri URI_PHOTO = Uri.parse("content://" + AUTHORITY + "/" + TABLE_PHOTO);
     public static final Uri URI_INTEREST = Uri.parse("content://" + AUTHORITY + "/" + TABLE_INTEREST);
     public static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
     static {
-        uriMatcher.addURI(AUTHORITY, TABLE_PLACE, 1);
+        uriMatcher.addURI(AUTHORITY, URI_PLACE.getPath(), 1);
         uriMatcher.addURI(AUTHORITY, TABLE_ADDRESS, 2);
         uriMatcher.addURI(AUTHORITY, TABLE_PHOTO, 3);
         uriMatcher.addURI(AUTHORITY, TABLE_INTEREST, 4);

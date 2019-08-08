@@ -12,7 +12,7 @@ import java.util.Date;
 
 @Entity(tableName = "places", foreignKeys =
 @ForeignKey(entity = Address.class,
-        parentColumns = "id",
+        parentColumns = "addressId",
         childColumns = "idAddress"))
 public class Place {
 

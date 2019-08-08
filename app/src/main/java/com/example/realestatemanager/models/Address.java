@@ -17,7 +17,7 @@ import com.google.android.gms.maps.model.LatLng;
 public class Address {
 
     @PrimaryKey(autoGenerate = true)
-    private long id;
+    private long addressId;
     private int streetNumber;
     private String streetName;
     private String complement;
@@ -62,8 +62,8 @@ public class Address {
         return latLng;
     }
 
-    public long getId() {
-        return id;
+    public long getAddressId() {
+        return addressId;
     }
 
     public int getStreetNumber() {
@@ -103,8 +103,8 @@ public class Address {
     public void setLatLng(String latLng) {
         this.latLng = latLng;
     }
-    public void setId(long id) {
-        this.id = id;
+    public void setAddressId(long id) {
+        this.addressId = id;
     }
 
     public void setStreetNumber(int streetNumber) {

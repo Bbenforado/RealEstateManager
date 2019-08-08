@@ -240,10 +240,7 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     public boolean areFieldsCorrectlyFilled() {
-        if (buttonTypeOfPlace.getText().equals("Type of place")) {
-            return  false;
-        }
-        return true;
+        return !buttonTypeOfPlace.getText().equals("Type of place");
     }
 
     private boolean areInterestsChecked() {
@@ -256,10 +253,7 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private String getSelectedInterests() {
-        //strInterests = null;
         interests.clear();
-        System.out.println("get selected interests");
-        System.out.println("str interests in this is = " + strInterests);
         for (int i = 0; i < checkBoxes.size(); i++) {
             if (checkBoxes.get(i).isChecked()) {
                 interests.add(checkBoxes.get(i).getText().toString());
@@ -280,107 +274,74 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void queryResults() {
-        System.out.println("query");
-        strQuery = "SELECT * FROM places";
-        //JOIN INTERESTS TABLE
-        strInterests = null;
-        if (areInterestsChecked()) {
-            strInterests = getSelectedInterests();
-            strQuery = strQuery + " INNER JOIN interests ON places.id = interests.idPlace";
-        }
-        //JOIN PHOTOS TABLE
-        nbrOfPhotos = 0;
-        if (!TextUtils.isEmpty(editTextNbrOfPhotos.getText().toString())) {
-            nbrOfPhotos = Integer.parseInt(editTextNbrOfPhotos.getText().toString());
-            strQuery = strQuery + " INNER JOIN photos ON places.id = photos.placeId";
-        }
-        //JOIN ADDRESSES TABLE
-        city = null;
-        if (!TextUtils.isEmpty(editTextCity.getText().toString())) {
-            city = editTextCity.getText().toString();
-            strQuery = strQuery + " INNER JOIN addresses ON places.id = addresses.idPlace";
-        }
-
-        String type = buttonTypeOfPlace.getText().toString();
-        strQuery = strQuery + " WHERE places.type = '" + type + "'";
-
-        if (!buttonStatus.getText().equals(getString(R.string.status_available)) && !buttonStatus.getText().equals("Status")) {
-            strQuery = strQuery + " AND places.dateOfSale IS NOT NULL";
-        }
-        queryParam(editTextMinPrice, "places.price", ">= ");
-        queryParam(editTextMaxPrice, "places.price", "<= ");
-        queryParam(editTextMinSurface, "places.surface", ">= ");
-        queryParam(editTextMaxSurface, "places.surface", "<= ");
-        queryParam(editTextMinNbrRooms, "places.nbrOfRooms", ">= ");
-        queryParam(editTextMaxNbrRooms, "places.nbrOfRooms", "<= ");
-        queryParam(editTextMinNbrbedrooms, "places.nbrOfBedrooms", ">= ");
-        queryParam(editTextMaxNbrbedrooms, "places.nbrOfBedrooms", "<= ");
-        queryParam(editTextMinNbrBathrooms, "places.nbrOfBathrooms", ">= ");
-        queryParam(editTextMaxNbrBathrooms, "places.nbrOfBathrooms", "<= ");
-        queryDates(CREATION_DATE_MIN, "creationDate", " > ");
-        queryDates(CREATION_DATE_MAX, "creationDate", " <= ");
-        queryDates(DATE_OF_SALE_MIN, "dateOfSale", " >= ");
-        queryDates(DATE_OF_SALE_MAX, "dateOfSale", " <= ");
-
-        if (areInterestsChecked()) {
-            System.out.println("str interests = " + strInterests);
-            strQuery = strQuery + "  AND interests.type = '" + strInterests + "'";
-        }
-        if (city != null) {
-            strQuery = strQuery + " AND addresses.city = '" + city + "'";
-        }
-        if (!TextUtils.isEmpty(editTextNbrOfPhotos.getText().toString())) {
-            strQuery = strQuery + " GROUP BY photos.placeId HAVING COUNT (photos.placeId) >= " + nbrOfPhotos;
-        }
-        strQuery = strQuery + ";";
-        System.out.println("final string = " + strQuery);
-        /*SimpleSQLiteQuery queryAddress = new SimpleSQLiteQuery(strQuery);
-        viewModel.getPlaceForGivenParameters(queryAddress).observe(this, new Observer<List<Place>>() {
-            @Override
-            public void onChanged(List<Place> places) {
-                System.out.println("places = " + places.size());
-                if (places.size()>0) {
-                    System.out.println("id search = " + places.get(0).getId());
-                    savePlaces(places);
-                    //clearOldResearch();
-                    launchResultsActivity();
-                } else {
-                    clearOldResearch();
-                    Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.toast_message_no_result_found), Toast.LENGTH_SHORT).show();
-                }
+        if (areFieldsCorrectlyFilled()) {
+            strQuery = "SELECT *, count(*) FROM places, interests, addresses, photos";
+            strInterests = null;
+            if (areInterestsChecked()) {
+                strInterests = getSelectedInterests();
             }
-        });*/
-        /*SimpleSQLiteQuery query = new SimpleSQLiteQuery("SELECT * FROM places INNER JOIN photos ON places.id = photos.placeId " +
-                "GROUP BY photos.placeId HAVING COUNT (photos.placeId) >= 3 ");*/
-        //String query = "SELECT * FROM places AS p INNER JOIN interests AS i ON p.id = i.idPlace WHERE i.type = 'Park';";
-        //String querystr = "SELECT * FROM places AS p INNER JOIN interests AS i ON p.id = i.idPlace WHERE i.type = 'Park';";
-        //String querystr = "SELECT place.id FROM places INNER JOIN interests ON places.id = interests.idPlace WHERE interests.type = 'Park';";
-        String querystr = "SELECT * FROM places AS a, photos AS p INNER JOIN photos ON a.id = p.placeId GROUP BY p.placeId HAVING COUNT (p.placeId) >= 3;";
-        SimpleSQLiteQuery query = new SimpleSQLiteQuery(querystr);
-        /*viewModel.getPlaceForGivenParameters(query).observe(this, new Observer<List<Place>>() {
-            @Override
-            public void onChanged(List<Place> places) {
-                System.out.println("places = " + places.size());
-                if (places.size()>0) {
-                    for (int i = 0; i<places.size(); i++) {
-                        System.out.println("places id = " + places.get(i).getId());
+            nbrOfPhotos = 0;
+            if (!TextUtils.isEmpty(editTextNbrOfPhotos.getText().toString())) {
+                nbrOfPhotos = Integer.parseInt(editTextNbrOfPhotos.getText().toString());
+            }
+            city = null;
+            if (!TextUtils.isEmpty(editTextCity.getText().toString())) {
+                city = editTextCity.getText().toString();
+            }
+            String type = buttonTypeOfPlace.getText().toString();
+            //strQuery = strQuery + " WHERE places.type = '" + type + "'";
+
+            strQuery = strQuery + " WHERE places.idAddress = addresses.addressId AND places.id = interests.idPlace AND places.id = photos.placeId AND places.type = '" + type + "'";
+
+            if (!buttonStatus.getText().equals(getString(R.string.status_available)) && !buttonStatus.getText().equals("Status")) {
+                strQuery = strQuery + " AND places.dateOfSale IS NOT NULL";
+            }
+            queryParam(editTextMinPrice, "places.price", ">= ");
+            queryParam(editTextMaxPrice, "places.price", "<= ");
+            queryParam(editTextMinSurface, "places.surface", ">= ");
+            queryParam(editTextMaxSurface, "places.surface", "<= ");
+            queryParam(editTextMinNbrRooms, "places.nbrOfRooms", ">= ");
+            queryParam(editTextMaxNbrRooms, "places.nbrOfRooms", "<= ");
+            queryParam(editTextMinNbrbedrooms, "places.nbrOfBedrooms", ">= ");
+            queryParam(editTextMaxNbrbedrooms, "places.nbrOfBedrooms", "<= ");
+            queryParam(editTextMinNbrBathrooms, "places.nbrOfBathrooms", ">= ");
+            queryParam(editTextMaxNbrBathrooms, "places.nbrOfBathrooms", "<= ");
+            queryDates(CREATION_DATE_MIN, "creationDate", " > ");
+            queryDates(CREATION_DATE_MAX, "creationDate", " <= ");
+            queryDates(DATE_OF_SALE_MIN, "dateOfSale", " >= ");
+            queryDates(DATE_OF_SALE_MAX, "dateOfSale", " <= ");
+
+            if (areInterestsChecked()) {
+                System.out.println("str interests = " + strInterests);
+                strQuery = strQuery + "  AND interests.interestType = '" + strInterests + "'";
+            }
+            if (city != null) {
+                strQuery = strQuery + " AND addresses.city = '" + city + "'";
+            }
+            if (!TextUtils.isEmpty(editTextNbrOfPhotos.getText().toString())) {
+                strQuery = strQuery + " AND places.id IN (SELECT photos.placeId FROM photos GROUP BY photos.placeId HAVING COUNT(photos.placeId) >= " + nbrOfPhotos + ")";
+            }
+            System.out.println("final string = " + strQuery);
+            strQuery = strQuery + " GROUP BY places.id;";
+            //String query = "SELECT *, count(*) FROM places, interests, addresses, photos WHERE places.idAddress = addresses.addressId AND places.id = interests.idPlace AND places.id = photos.placeId AND places.type = 'Mansion' AND places.id IN (SELECT photos.placeId FROM photos GROUP BY photos.placeId HAVING COUNT(photos.placeId) >= 2) GROUP BY places.id;";
+
+            SimpleSQLiteQuery query1 = new SimpleSQLiteQuery(strQuery);
+            viewModel.getPlacesAndData(query1).observe(this, new Observer<List<PlaceAddressesPhotosAndInterests>>() {
+                @Override
+                public void onChanged(List<PlaceAddressesPhotosAndInterests> placeAddressesPhotosAndInterests) {
+                    if (placeAddressesPhotosAndInterests.size() > 0) {
+                        for (int i = 0; i < placeAddressesPhotosAndInterests.size(); i++) {
+                            savePlaces(placeAddressesPhotosAndInterests);
+                            launchResultsActivity();
+                        }
+                    } else {
+                        Toast.makeText(getApplicationContext(), "No results found", Toast.LENGTH_SHORT).show();
                     }
                 }
-            }
-        });*/
-       /* viewModel.getPlacesAndData(query).observe(this, new Observer<List<PlaceAddressesPhotosAndInterests>>() {
-            @Override
-            public void onChanged(List<PlaceAddressesPhotosAndInterests> placeAddressesPhotosAndInterests) {
-                for(int i = 0; i< placeAddressesPhotosAndInterests.size(); i++) {
-                    System.out.println("size results = " + placeAddressesPhotosAndInterests.size());
-                    System.out.println("place id = " + placeAddressesPhotosAndInterests.get(i).getPlace().getId());
-                    System.out.println("photos = " + placeAddressesPhotosAndInterests.get(i).getPhotos().size());
-                    for (int j = 0; j<placeAddressesPhotosAndInterests.get(i).getPhotos().size(); j++) {
-                        System.out.println("photo id = " + placeAddressesPhotosAndInterests.get(i).getPhotos().get(j).getId());
-                    }
-                }
-            }
-        });*/
+            });
+        } else {
+            Toast.makeText(getApplicationContext(), "You have to choose at least a type of place", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void clearOldResearch() {
@@ -437,7 +398,7 @@ public class SearchActivity extends AppCompatActivity {
         }
     }
 
-    private void savePlaces(List<Place> places) {
+    private void savePlaces(List<PlaceAddressesPhotosAndInterests> places) {
         Gson gson = new Gson();
         preferences.edit().putString(QUERRIED_PLACES, gson.toJson(places)).apply();
     }

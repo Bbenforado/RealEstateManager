@@ -12,6 +12,9 @@ import androidx.room.Update;
 import androidx.sqlite.db.SupportSQLiteQuery;
 
 import com.example.realestatemanager.fragments.ListFragment;
+import com.example.realestatemanager.models.Address;
+import com.example.realestatemanager.models.Interest;
+import com.example.realestatemanager.models.Photo;
 import com.example.realestatemanager.models.Place;
 import com.google.android.material.shape.ShapePath;
 
@@ -29,7 +32,7 @@ public interface PlaceDao {
     @RawQuery(observedEntities = Place.class)
     LiveData<List<Place>> getPlacesForGivenParameters(SupportSQLiteQuery query);
 
-    @Query("SELECT places.id from places INNER JOIN addresses ON places.idAddress = addresses.id WHERE places.idAddress = :idAddress")
+    @Query("SELECT places.id from places INNER JOIN addresses ON places.idAddress = addresses.addressId WHERE places.idAddress = :idAddress")
     long getPlaceId(long idAddress);
 
     @Query("SELECT * FROM places WHERE id = :placeId")

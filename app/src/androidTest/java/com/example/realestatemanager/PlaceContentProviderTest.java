@@ -17,11 +17,11 @@ import com.example.realestatemanager.database.RealEstateManagerDatabase;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
+/*
 @RunWith(AndroidJUnit4.class)
 public class PlaceContentProviderTest {
 
-/*    private ContentResolver contentResolver;
+    private ContentResolver contentResolver;
     private static long id = 1;
 
     @Before
@@ -71,5 +71,5 @@ public class PlaceContentProviderTest {
         values.put("description", "this is description");
 
         return values;
-    }*/
-}
+    }
+}*/

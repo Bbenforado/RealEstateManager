@@ -29,8 +29,8 @@ public class DetailFragmentPhotoViewHolder extends RecyclerView.ViewHolder {
 
     public void updateUi(Photo photo, RequestManager glide) {
         String url = photo.getUri();
-        if (photo.getDescription() != null) {
-            textViewDescription.setText(photo.getDescription());
+        if (photo.getDescriptionPhoto() != null) {
+            textViewDescription.setText(photo.getDescriptionPhoto());
         } else {
             textViewDescription.setText("");
         }

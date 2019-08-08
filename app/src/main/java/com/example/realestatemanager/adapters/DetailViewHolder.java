@@ -26,9 +26,9 @@ public class DetailViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void updateInterestList(Interest interest, Context context) {
-        System.out.println("interest type = " + interest.getType());
-        interestTextView.setText(interest.getType());
-        String type = interest.getType();
+        System.out.println("interest type = " + interest.getInterestType());
+        interestTextView.setText(interest.getInterestType());
+        String type = interest.getInterestType();
         switch (type) {
             case "Park":
                 imageInterest.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_park));

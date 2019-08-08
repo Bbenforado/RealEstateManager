@@ -30,12 +30,14 @@ import com.example.realestatemanager.R;
 import com.example.realestatemanager.activities.AddFormActivity;
 import com.example.realestatemanager.activities.DetailActivity;
 import com.example.realestatemanager.adapters.PlaceRecyclerViewAdapter;
+import com.example.realestatemanager.adapters.RecyclerViewPlaceAdapter;
 import com.example.realestatemanager.injections.Injection;
 import com.example.realestatemanager.injections.ViewModelFactory;
 import com.example.realestatemanager.models.Address;
 import com.example.realestatemanager.models.Interest;
 import com.example.realestatemanager.models.Photo;
 import com.example.realestatemanager.models.Place;
+import com.example.realestatemanager.models.PlaceAddressesPhotosAndInterests;
 import com.example.realestatemanager.utils.ItemClickSupport;
 import com.example.realestatemanager.viewModels.PlaceViewModel;
 import com.facebook.stetho.inspector.protocol.module.Database;
@@ -70,6 +72,8 @@ public class ListFragment extends Fragment {
     private PlaceViewModel viewModel;
     private SharedPreferences preferences;
     private String[] longClickFunctionality = {"Edit place"};
+    private List<Address> addressList;
+    private RecyclerViewPlaceAdapter adapterPlace;
     //----------------------------------------------
     //
     //----------------------------------------------
@@ -80,9 +84,7 @@ public class ListFragment extends Fragment {
     private static final String KEY_RESULTS_ACTIVITY = "keyResultActivity";
     private static final String QUERRIED_PLACES = "querriedPlaces";
     private static final String INDEX_ROW = "index";
-    public static final String QUERRIED_ADDRESSES = "querriedAdresses";
-    public static final String QUERRIED_PHOTOS = "querriedPhotos";
-    public static final String ADDRESS_ID = "addressId";
+    private static final String ADDRESS_ID = "addressId";
 
     public ListFragment() {
         // Required empty public constructor
@@ -96,44 +98,24 @@ public class ListFragment extends Fragment {
         //reset preferences
         /*preferences.edit().putLong(PLACE_ID, -1).apply();
         preferences.edit().putLong(ADDRESS_ID, -1).apply();*/
-        configureRecyclerView();
-        configureOnClickRecyclerView();
+
         configureViewModel();
 
         //if it s results activity
         if (preferences.getInt(KEY_RESULTS_ACTIVITY, -1) == 1) {
             floatingButtonAddPlace.setVisibility(View.GONE);
-            List<Address> addressesList = new ArrayList<>();
-            List<Photo> photoList = new ArrayList<>();
-            List<Place> placeListForResults = retrievedPlaces();
-            updatePlacesList(placeListForResults);
-            for (Place place : placeListForResults) {
-                viewModel.getAddresses().observe(this, new Observer<List<Address>>() {
-                    @Override
-                    public void onChanged(List<Address> addresses) {
-                        for (int i = 0;i<addresses.size(); i++) {
-                            //if (addresses.get(i).getIdPlace() == place.getId()) {
-                            if (addresses.get(i).getId() == place.getIdAddress()) {
-                                addressesList.add(addresses.get(i));
-                                updateAddressesList(addressesList);
-                            }
-                        }
-                    }
-                });
-                viewModel.getPhotos().observe(this, new Observer<List<Photo>>() {
-                    @Override
-                    public void onChanged(List<Photo> photos) {
-                        for (int i = 0; i<photos.size(); i++) {
-                            if (photos.get(i).getPlaceId() == place.getId()) {
-                                photoList.add(photos.get(i));
-                                updatePhotosList(photoList);
-                                System.out.println("photo list = " + photoList.size());
-                            }
-                        }
-                    }
-                });
+            addressList = new ArrayList<>();
+            List<PlaceAddressesPhotosAndInterests> results = retrievedPlaces();
+            for (int i = 0; i<results.size(); i++) {
             }
+
+            configureRecyclerViewForResultsActivity();
+            configureOnClickRecyclerViewForResultActivity();
+            updateData(results);
+
         } else {
+            configureRecyclerView();
+            configureOnClickRecyclerView();
             getPlaces();
             getAddresses();
             getPhotos();
@@ -153,6 +135,44 @@ public class ListFragment extends Fragment {
         this.adapter = new PlaceRecyclerViewAdapter(Glide.with(this));
         this.recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+    }
+
+    private void configureRecyclerViewForResultsActivity() {
+        adapterPlace = new RecyclerViewPlaceAdapter(Glide.with(this));
+        recyclerView.setAdapter(adapterPlace);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+    }
+
+    private void configureOnClickRecyclerViewForResultActivity() {
+        ItemClickSupport.addTo(recyclerView, R.layout.fragment_list_item)
+                .setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+                    @Override
+                    public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                        PlaceAddressesPhotosAndInterests place = adapterPlace.getPlaceAddressesPhotosAndInterests(position);
+                        preferences.edit().putLong(PLACE_ID, place.getPlace().getId()).apply();
+                        preferences.edit().putLong(ADDRESS_ID, place.getPlace().getIdAddress()).apply();
+                        String appMode = preferences.getString(APP_MODE, null);
+
+                        if (appMode.equals(getString(R.string.app_mode_tablet))) {
+                            preferences.edit().putInt(INDEX_ROW, position).apply();
+                            adapterPlace.notifyDataSetChanged();
+                            ((MainActivity)getActivity()).refreshFragmentInfo();
+
+                        } else {
+                            Intent editIntent = new Intent(getContext(), DetailActivity.class);
+                            startActivity(editIntent);
+                        }
+                    }
+                })
+                .setOnItemLongClickListener(new ItemClickSupport.OnItemLongClickListener() {
+                    @Override
+                    public boolean onItemLongClicked(RecyclerView recyclerView, int position, View v) {
+                        PlaceAddressesPhotosAndInterests place = adapterPlace.getPlaceAddressesPhotosAndInterests(position);
+                        displayLongClickDialogForResultActivity(place);
+
+                        return false;
+                    }
+                });
     }
 
     private void configureOnClickRecyclerView() {
@@ -212,14 +232,15 @@ public class ListFragment extends Fragment {
         viewModel.getPhotos().observe(this, this::updatePhotosList);
     }
 
+    private void updateData(List<PlaceAddressesPhotosAndInterests> list) {
+        adapterPlace.updatePlaceData(list);
+    }
+
     private void updatePhotosList(List<Photo> photos) {
         this.adapter.updatePhotoData(photos);
     }
 
     private void updatePlacesList(List<Place> places) {
-        if (places.size()>0) {
-            System.out.println("type = " + places.get(0).getType());
-        }
         this.adapter.updatePlaceData(places);
     }
 
@@ -228,11 +249,11 @@ public class ListFragment extends Fragment {
     }
 
     //FOR RESULTS ACTIVITY
-    private List<Place> retrievedPlaces() {
-        List<Place> placeList;
+    private List<PlaceAddressesPhotosAndInterests> retrievedPlaces() {
+        List<PlaceAddressesPhotosAndInterests> placeList;
         Gson gson = new Gson();
         String json = preferences.getString(QUERRIED_PLACES, null);
-        Type type = new TypeToken<List<Place>>() {
+        Type type = new TypeToken<List<PlaceAddressesPhotosAndInterests>>() {
         }.getType();
         placeList = gson.fromJson(json, type);
         return placeList;
@@ -248,6 +269,21 @@ public class ListFragment extends Fragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 preferences.edit().putLong(PLACE_ID, place.getId()).apply();
+                preferences.edit().putInt(STATUS_FORM_ACTIVITY, 1).apply();
+                Intent editIntent = new Intent(getContext(), AddFormActivity.class);
+                startActivity(editIntent);
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+    private void displayLongClickDialogForResultActivity(PlaceAddressesPhotosAndInterests place) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+        builder.setItems(longClickFunctionality, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                preferences.edit().putLong(PLACE_ID, place.getPlace().getId()).apply();
                 preferences.edit().putInt(STATUS_FORM_ACTIVITY, 1).apply();
                 Intent editIntent = new Intent(getContext(), AddFormActivity.class);
                 startActivity(editIntent);

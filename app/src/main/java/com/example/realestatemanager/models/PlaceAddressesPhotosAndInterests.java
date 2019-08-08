@@ -10,21 +10,25 @@ import java.util.List;
 public class PlaceAddressesPhotosAndInterests {
 
 
-    /*@Embedded
-    public Place place;*/
+    @Embedded
+    public Place place;
 
-    /*@Relation(parentColumn = "id", entityColumn = "idPlace", entity = Address.class)
-    public List<Address> address;
-    @Relation(parentColumn = "id", entityColumn = "placeId", entity = Photo.class)
-    public List<Photo> photos;
-    @Relation(parentColumn = "id", entityColumn = "idPlace", entity = Interest.class)
-    public List<Interest> interests;*/
-/*    @Embedded
+    @Embedded
     public Address address;
-    @Embedded
-    public List<Photo> photos;
-    @Embedded
+
+    @Relation(parentColumn = "id",
+            entityColumn = "idPlace")
     public List<Interest> interests;
+
+    @Relation(parentColumn = "id",
+            entityColumn = "placeId")
+    public List<Photo> photos;
+
+    /*@Embedded
+    public Photo photo;
+
+    @Embedded
+    public Interest interest;*/
 
     public PlaceAddressesPhotosAndInterests() {
     }
@@ -37,7 +41,22 @@ public class PlaceAddressesPhotosAndInterests {
         return address;
     }
 
+    public List<Interest> getInterests() {
+        return interests;
+    }
+
     public List<Photo> getPhotos() {
+        return photos;
+    }
+   /* public Photo getPhoto() {
+        return photo;
+    }
+
+    public Interest getInterest() {
+        return interest;
+    }*/
+
+    /*public List<Photo> getPhotos() {
         return photos;
     }
 

@@ -35,8 +35,8 @@ public class PhotoViewHolder extends RecyclerView.ViewHolder {
         if (statusActivity == 1 || statusActivity == 0) {
             textViewDescription.setVisibility(View.GONE);
         } else {
-            if (photo.getDescription() != null) {
-                textViewDescription.setText(photo.getDescription());
+            if (photo.getDescriptionPhoto() != null) {
+                textViewDescription.setText(photo.getDescriptionPhoto());
             }
         }
     }

@@ -21,4 +21,8 @@ public class RawDataRepository {
     public LiveData<List<PlaceAddressesPhotosAndInterests>> getPlacesAndData(SimpleSQLiteQuery query) {
         return rawDao.getPlacesAndData(query);
     }
+
+    public LiveData<PlaceAddressesPhotosAndInterests> getPlaceAndAddress(SimpleSQLiteQuery query) {
+        return rawDao.getplaceAndAddress(query);
+    }
 }

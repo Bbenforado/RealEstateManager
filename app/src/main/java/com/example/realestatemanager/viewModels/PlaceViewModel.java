@@ -53,6 +53,11 @@ public class PlaceViewModel extends ViewModel {
     //-----------------------------------------------
     //FOR PLACES
     //-------------------------------------------------------
+    public LiveData<PlaceAddressesPhotosAndInterests> getPlaceAndAddress(SimpleSQLiteQuery query) {
+        return rawDataSource.getPlaceAndAddress(query);
+    }
+
+
     public LiveData<List<PlaceAddressesPhotosAndInterests>> getPlacesAndData(SimpleSQLiteQuery query) {
         return rawDataSource.getPlacesAndData(query);
     }

@@ -431,7 +431,7 @@ public class AddFormActivity extends AppCompatActivity {
     private void completeInterestFormWithData(List<Interest> interests) {
         for (int i = 0; i < interests.size(); i++) {
             for (int j = 0; j< checkBoxes.size(); j++) {
-                if (interests.get(i).getType().equals(checkBoxes.get(j).getText().toString())) {
+                if (interests.get(i).getInterestType().equals(checkBoxes.get(j).getText().toString())) {
                     checkBoxes.get(j).setChecked(true);
                 }
             }
@@ -443,7 +443,7 @@ public class AddFormActivity extends AppCompatActivity {
     //---------------------------------------------
     public boolean allPhotosHaveDescription(List<Photo> photos) {
         for (Photo photo : photos) {
-            if (photo.getDescription() == null) {
+            if (photo.getDescriptionPhoto() == null) {
                 return false;
             }
         }
@@ -457,11 +457,11 @@ public class AddFormActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 switch (which) {
                     case 0:
-                        long photoId = photo.getId();
+                        long photoId = photo.getIdPhoto();
                         deletedPhotosId.add(photoId);
 
                         for (int i = 0; i < allPhotos.size(); i++) {
-                            if (allPhotos.get(i).getId() == photoId) {
+                            if (allPhotos.get(i).getIdPhoto() == photoId) {
                                 allPhotos.remove(allPhotos.get(i));
                             }
                         }
@@ -485,8 +485,8 @@ public class AddFormActivity extends AppCompatActivity {
         LayoutInflater inflater = getLayoutInflater();
         View dialogLayout = inflater.inflate(R.layout.dialog_add_description, null);
         final TextInputEditText description = dialogLayout.findViewById(R.id.text_edit_description_dialog);
-        if (photo.getDescription() != null) {
-            description.setText(photo.getDescription());
+        if (photo.getDescriptionPhoto() != null) {
+            description.setText(photo.getDescriptionPhoto());
         }
 
         dialog.setMessage(getString(R.string.title_dialog_add_description))
@@ -497,7 +497,7 @@ public class AddFormActivity extends AppCompatActivity {
                         preferences.edit().putInt(CODE_DESCRIPTION, 300).apply();
                         String descriptionOfPlace = description.getText().toString();
                         //update photo with new description
-                        photo.setDescription(descriptionOfPlace);
+                        photo.setDescriptionPhoto(descriptionOfPlace);
                         updatedPhoto.add(photo);
 
                         Toast.makeText(getApplicationContext(), getString(R.string.toast_message_description_added), Toast.LENGTH_SHORT).show();
@@ -562,7 +562,7 @@ public class AddFormActivity extends AppCompatActivity {
     }
 
     private void sendNotification(String message) {
-        Intent intent = new Intent(this, AddFormActivity.class);
+        Intent intent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
 
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
