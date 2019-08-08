@@ -38,7 +38,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginRight="7dp"
                 android:layout_weight="50"
-                android:backgroundTint="@color/purpleAccent"
+                android:backgroundTint="@color/blue_grey_dark"
                 android:text="Type of place"
                 android:textSize="16sp"
                 android:textAllCaps="false"
@@ -52,7 +52,7 @@
                 android:layout_marginLeft="7dp"
                 android:layout_weight="50"
                 android:textSize="16sp"
-                android:backgroundTint="@color/purpleAccent"
+                android:backgroundTint="@color/blue_grey_dark"
                 android:text="Add pictures"
                 android:textAllCaps="false"
                 app:icon="@drawable/picture" />

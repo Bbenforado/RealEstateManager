@@ -6,9 +6,14 @@
         <!--<item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>-->
-        <item name="colorPrimary">@color/blue</item>
+        <!--<item name="colorPrimary">@color/blue</item>
         <item name="colorPrimaryDark">@color/blueDark</item>
-        <item name="colorAccent">@color/purpleAccent</item>
+        <item name="colorAccent">@color/purpleAccent</item>-->
+        <item name="colorPrimary">#607589</item>
+        <item name="colorPrimaryDark">#354a5c</item>
+        <item name="colorAccent">#ffe260
+
+        </item>
     </style>
 
 </resources>

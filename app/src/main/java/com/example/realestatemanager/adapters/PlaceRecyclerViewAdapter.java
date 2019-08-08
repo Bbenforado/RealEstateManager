@@ -64,7 +64,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceViewHold
                 int index = preferences.getInt(INDEX_ROW, -1);
                 if (index == position) {
                     holder.priceTextView.setTextColor(context.getResources().getColor(R.color.white));
-                    holder.relativeLayout.setBackgroundColor(context.getResources().getColor(R.color.lightBlue));
+                    holder.relativeLayout.setBackgroundColor(context.getResources().getColor(R.color.light_grey));
                     holder.statusTextView.setTextColor(context.getResources().getColor(R.color.white));
                 } else {
                     holder.priceTextView.setTextColor(context.getResources().getColor(R.color.blue));

@@ -3,6 +3,8 @@ package com.example.realestatemanager.activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -24,11 +26,13 @@ import com.example.realestatemanager.R;
 import com.example.realestatemanager.injections.Injection;
 import com.example.realestatemanager.injections.ViewModelFactory;
 import com.example.realestatemanager.models.Address;
+import com.example.realestatemanager.models.PlaceIdAndAddressId;
 import com.example.realestatemanager.viewModels.PlaceViewModel;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -149,8 +153,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             float zoomLevel = 16.0f;
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoomLevel));
 
-            LatLng latLng1 = createNewLatLngForBounds(userLat, userLng, 2000);
-            LatLng latLng2 = createNewLatLngForBounds(userLat, userLng, -2000);
+            LatLng latLng1 = createNewLatLngForBounds(userLat, userLng, 1000);
+            LatLng latLng2 = createNewLatLngForBounds(userLat, userLng, -1000);
 
             LatLngBounds.Builder builder = new LatLngBounds.Builder();
             builder.include(latLng1);
@@ -163,7 +167,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     .title("user location"));
             marker.setTag(-1);
             marker.showInfoWindow();*/
-            getAllAddresses();
+            getPlacesAndShowMarkersOnMap();
         }
     }
 
@@ -174,38 +178,47 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     //GET DATA
-    private void getAllAddresses() {
-        viewModel.getAddresses().observe(this, new Observer<List<Address>>() {
+    private void getPlacesAndShowMarkersOnMap() {
+        viewModel.getPlaceAndAddressId().observe(this, new Observer<List<PlaceIdAndAddressId>>() {
             @Override
-            public void onChanged(List<Address> addresses) {
-
-                for(int i = 0; i<addresses.size(); i++) {
-                    if (addresses.get(i).getLatLng() != null) {
-                        String latLng = addresses.get(i).getLatLng();
-                        //long placeId = addresses.get(i).getIdPlace();
+            public void onChanged(List<PlaceIdAndAddressId> placeIdAndAddressIds) {
+                for (int i = 0; i<placeIdAndAddressIds.size(); i++) {
+                    if (placeIdAndAddressIds.get(i).getLatLng() != null) {
+                        String latLng = placeIdAndAddressIds.get(i).getLatLng();
                         LatLng latLngOfPlace = getLatLngOfPlace(latLng);
-
-                        /*if (bounds.contains(latLngOfPlace)) {
-                            showPlaceOnMap(placeId, latLngOfPlace);
-                        }*/
-                        long placeId = viewModel.getPlaceId(addresses.get(i).getAddressId());
                         if (bounds.contains(latLngOfPlace)) {
-                            showPlaceOnMap(placeId, latLngOfPlace);
+                            String type = placeIdAndAddressIds.get(i).getType();
+                            long placeId = placeIdAndAddressIds.get(i).getId();
+                            showPlaceOnMap(type, placeId, latLngOfPlace);
                         }
-                    } else {
-                        Toast.makeText(getApplicationContext(), getString(R.string.toast_message_place_location_not_found), Toast.LENGTH_SHORT).show();
                     }
                 }
             }
         });
     }
 
-    private void showPlaceOnMap(long id, LatLng latLng) {
+    private void showPlaceOnMap(String type, long id, LatLng latLng) {
         if (latLng != null) {
             CameraUpdateFactory.newLatLng(latLng);
             Marker placeMarker = googleMap.addMarker(new MarkerOptions()
             .position(latLng));
             placeMarker.setTag(id);
+            switch (type) {
+                case "Loft":
+                    placeMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+                    break;
+                case "Mansion":
+                    placeMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
+                    break;
+                case "Duplex":
+                    placeMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+                    break;
+                case "Penthouse":
+                    placeMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+                    break;
+                    default:
+                        placeMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+            }
         } else {
             Toast.makeText(this, getString(R.string.toast_message_place_location_not_found), Toast.LENGTH_SHORT).show();
         }
@@ -265,7 +278,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public void onCameraIdle() {
-        getAllAddresses();
+        //getAllAddresses();
+        getPlacesAndShowMarkersOnMap();
     }
 
     private double getNewLat(double latitude, long meters) {

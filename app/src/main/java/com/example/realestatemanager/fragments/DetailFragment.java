@@ -120,6 +120,8 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
     @BindView(R.id.recycler_view_detail_interest_detail_fragment_tablet_mode) RecyclerView recyclerViewInterests;
     @Nullable
     @BindView(R.id.text_view_no_internet_detail_fragment_tablet_mode) TextView textViewNoInternet;
+    @Nullable
+    @BindView(R.id.text_view_detail_fragment_no_place_saved) TextView textViewNoPlaceSaved;
     //--------------------------------------------------
     //--------------------------------------------------
     private static final String APP_PREFERENCES = "appPreferences";
@@ -127,6 +129,7 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
     private static final String STATUS_FORM_ACTIVITY = "statusFormActivity";
     private static final String APP_MODE = "appMode";
     private static final String ADDRESS_ID = "addressId";
+    public static final String NO_PLACES_SAVED = "noPlacesSaved";
     //----------------------------------------------------
     //-----------------------------------------------------
     private PlaceViewModel viewModel;
@@ -152,6 +155,7 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
         placeId = preferences.getLong(PLACE_ID, -1);
         addressId = preferences.getLong(ADDRESS_ID, -1);
         preferences.edit().putInt(STATUS_FORM_ACTIVITY, -1).apply();
+
         if (placeId != 0 && placeId != -1) {
             configureViewModel();
             if (preferences.getString(APP_MODE, null).equals(getString(R.string.app_mode_phone))) {
@@ -162,34 +166,44 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
                 configureRecyclerViewForTablet();
                 LifecycleOwner owner = getViewLifecycleOwner();
 
-                viewModel.getPlace(placeId).observe(this, new Observer<Place>() {
-                    @Override
-                    public void onChanged(Place place) {
-                        textViewTypeOfPlaceTabletMode.setText(place.getType());
-                        updateUiPlace(getContext(), place, textViewManagerTabletMode, textViewCreationDateTabletMode, textViewPriceTabletMode,
-                                textViewDescriptionTabletMode, textViewSurfaceTabletMode, textViewNbrOfRoomsTabletMode,
-                                textViewNbrOfBedroomsTabletMode, textViewNbrOfBathroomsTabletMode, textViewStatusTabletMode,
-                                textViewDateOfSaleTabletMode, layoutDateOfSaleTabletMode);
-                        getInterests(place.getId());
-                        Utils.updateUiAddress(getContext(), place, viewModel, owner,
-                                textViewStreetTabletMode, textViewComplementTabletMode, textViewPostalCodeAndCityTabletMode,
-                                textViewCountryTabletMode);
-                        configureRecyclerViewForInterestsHorizontal();
-                        price = place.getPrice();
+                if (preferences.getInt(NO_PLACES_SAVED, -1) != 1) {
+                    viewModel.getPlace(placeId).observe(this, new Observer<Place>() {
+                        @Override
+                        public void onChanged(Place place) {
+                            textViewTypeOfPlaceTabletMode.setText(place.getType());
+                            updateUiPlace(getContext(), place, textViewManagerTabletMode, textViewCreationDateTabletMode, textViewPriceTabletMode,
+                                    textViewDescriptionTabletMode, textViewSurfaceTabletMode, textViewNbrOfRoomsTabletMode,
+                                    textViewNbrOfBedroomsTabletMode, textViewNbrOfBathroomsTabletMode, textViewStatusTabletMode,
+                                    textViewDateOfSaleTabletMode, layoutDateOfSaleTabletMode);
+                            getInterests(place.getId());
+                            Utils.updateUiAddress(getContext(), place, viewModel, owner,
+                                    textViewStreetTabletMode, textViewComplementTabletMode, textViewPostalCodeAndCityTabletMode,
+                                    textViewCountryTabletMode);
+                            configureRecyclerViewForInterestsHorizontal();
+                            price = place.getPrice();
+                        }
+                    });
+                    if (mapView != null) {
+                        mapView.onCreate(savedInstanceState);
+                        mapView.getMapAsync(this);
                     }
-                });
-                if (mapView != null) {
-                    mapView.onCreate(savedInstanceState);
-                    mapView.getMapAsync(this);
                 }
+            }
+        } else if (preferences.getString(APP_MODE, null).equals(getString(R.string.app_mode_tablet))) {
+            textViewNoPlaceSaved.setVisibility(View.VISIBLE);
+            if (preferences.getInt(NO_PLACES_SAVED, -1) == 1) {
+                textViewNoPlaceSaved.setText("No place saved for the moment, click on the add button to create one!");
+            } else {
+                textViewNoPlaceSaved.setText("No item selected, click on one item of the list to display details");
             }
         }
         return view;
     }
-    private void configureRecyclerViewForInterestsHorizontal() {
-        this.adapterForInterests = new DetailRecyclerViewAdapter();
-        this.recyclerViewInterests.setAdapter(adapterForInterests);
-        recyclerViewInterests.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayout.HORIZONTAL, false));
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        preferences.edit().putLong(PLACE_ID, -1).apply();
     }
 
     //------------------------------------------------
@@ -232,6 +246,7 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
                 }
             }
         }
+        preferences.edit().putLong(PLACE_ID, -1).apply();
     }
 
     @Override
@@ -259,6 +274,12 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
     //----------------------------------------------
     //CONFIGURATION
     //-----------------------------------------------
+    private void configureRecyclerViewForInterestsHorizontal() {
+        this.adapterForInterests = new DetailRecyclerViewAdapter();
+        this.recyclerViewInterests.setAdapter(adapterForInterests);
+        recyclerViewInterests.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayout.HORIZONTAL, false));
+    }
+
     private void configureViewModel() {
         ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(getContext());
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(PlaceViewModel.class);
@@ -324,7 +345,6 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
                             googleMap.addMarker(new MarkerOptions()
                                     .position(latLngOfAddress));
                         } else {
-                            Toast.makeText(getContext(), getString(R.string.toast_message_place_location_not_found), Toast.LENGTH_SHORT).show();
                             textViewNoInternet.setVisibility(View.VISIBLE);
                             mapView.setVisibility(View.GONE);
                             textViewNoInternet.setText(getContext().getString(R.string.toast_message_address_not_found));

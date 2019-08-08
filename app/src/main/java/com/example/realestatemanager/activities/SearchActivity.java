@@ -21,6 +21,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.sqlite.db.SimpleSQLiteQuery;
 
+import com.example.realestatemanager.MainActivity;
 import com.example.realestatemanager.R;
 import com.example.realestatemanager.fragments.ListFragment;
 import com.example.realestatemanager.injections.Injection;
@@ -109,8 +110,8 @@ public class SearchActivity extends AppCompatActivity {
     public static final String DATE_OF_SALE_MIN = "dateSaleMin";
     public static final String DATE_OF_SALE_MAX = "dateSaleMax";
     public static final String QUERRIED_PLACES = "querriedPlaces";
-    public static final String QUERRIED_ADDRESSES = "querriedAdresses";
-    public static final String QUERRIED_PHOTOS = "querriedPhotos";
+    private static final String APP_MODE = "appMode";
+    public static final String KEY_RESULTS_ACTIVITY = "keyResultActivity";
 
 
 
@@ -447,7 +448,14 @@ public class SearchActivity extends AppCompatActivity {
     //LAUNCH ACTIVITY
     //---------------------------------------------
     private void launchResultsActivity() {
-        Intent resultsActivity = new Intent(this, ResultsFromSearchActivity.class);
-        startActivity(resultsActivity);
+        preferences.edit().putInt(KEY_RESULTS_ACTIVITY, 1).apply();
+        if (preferences.getString(APP_MODE, null ).equals("tablet")) {
+            Intent resultsActivityTabletMode = new Intent(this, MainActivity.class);
+            startActivity(resultsActivityTabletMode);
+        } else {
+            Intent resultsActivity = new Intent(this, ResultsFromSearchActivity.class);
+            startActivity(resultsActivity);
+        }
+
     }
 }

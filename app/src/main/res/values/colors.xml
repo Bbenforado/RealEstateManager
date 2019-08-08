@@ -15,4 +15,11 @@
     <color name="red">#cf002d</color>
     <color name="white">#ffffff</color>
     <color name="lightBlue">#e7e0ff</color>
+
+    <color name="blue_grey">#607589</color>
+    <color name="blue_grey_dark">#354a5c</color>
+    <color name="blue_grey_accent">#252789</color>
+
+    <color name="yellow">#ffe260</color>
+    <color name="light_grey">#d3e6ec</color>
 </resources>

@@ -49,11 +49,6 @@ public class PlaceViewHolder extends RecyclerView.ViewHolder {
         this.typeOfPlaceTextView.setText(place.getType());
         String price = place.getPrice() + " $";
         this.priceTextView.setText(price);
-        /*if (address.getIdPlace() != -1) {
-            if (address.getIdPlace() == place.getId()) {
-                this.cityTextView.setText(address.getCity());
-            }
-        }*/
         if (place.getIdAddress() != -1) {
             if (place.getIdAddress() == address.getAddressId()) {
                 this.cityTextView.setText(address.getCity());

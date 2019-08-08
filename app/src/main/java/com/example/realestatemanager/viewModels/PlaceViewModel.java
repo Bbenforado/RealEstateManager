@@ -14,6 +14,7 @@ import com.example.realestatemanager.models.Interest;
 import com.example.realestatemanager.models.Photo;
 import com.example.realestatemanager.models.Place;
 import com.example.realestatemanager.models.PlaceAddressesPhotosAndInterests;
+import com.example.realestatemanager.models.PlaceIdAndAddressId;
 import com.example.realestatemanager.repositories.AddressDataRepository;
 import com.example.realestatemanager.repositories.InterestDataRepository;
 import com.example.realestatemanager.repositories.PhotoDataRepository;
@@ -111,8 +112,8 @@ public class PlaceViewModel extends ViewModel {
         return addressDataSource.getAddressOfAPlace(idAddressInPlace);
     }
 
-    public long getPlaceId(long idAddress) {
-        return placeDataSource.getPlaceId(idAddress);
+    public LiveData<List<PlaceIdAndAddressId>> getPlaceAndAddressId() {
+        return placeDataSource.getPlaceAndAddressId();
     }
 
     public LiveData<List<Address>> getAddresses() {

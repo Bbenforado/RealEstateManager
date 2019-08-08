@@ -9,17 +9,17 @@
     android:background="@android:color/background_light"
     android:fitsSystemWindows="true">
 
-    <!--<TextView
-        android:id="@+id/text_view_detail_fragment_no_item_selected"
+    <TextView
+        android:id="@+id/text_view_detail_fragment_no_place_saved"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/blue"
-        android:text="Click on one item of the list to display information"
+        android:background="@color/blue_grey"
+        android:text="No place saved for the moment, click on add button to create one!"
         android:textColor="@android:color/white"
         android:elevation="5dp"
         android:layout_gravity="center"
         android:gravity="center"
-        android:visibility="gone"/>-->
+        android:visibility="gone"/>
 
     <TextView
         android:paddingTop="16dp"

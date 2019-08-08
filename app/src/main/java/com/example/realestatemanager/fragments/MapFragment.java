@@ -112,12 +112,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
             if (id != -1 && id != 0) {
                 viewModel.getAddressOfAPlace(addressId).observe(this, new Observer<Address>() {
                     @Override
-                    public void onChanged(com.example.realestatemanager.models.Address adressOfPlace) {
+                    public void onChanged(com.example.realestatemanager.models.Address addressOfPlace) {
 
-                        if (adressOfPlace.getLatLng() != null) {
-                            String latLng = adressOfPlace.getLatLng();
+                        if (addressOfPlace.getLatLng() != null) {
+                            String latLng = addressOfPlace.getLatLng();
                             LatLng latLngOfAddress = getLatLngOfPlace(latLng);
-
 
                             CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLngOfAddress, 16);
                             gMap.animateCamera(cameraUpdate);
@@ -125,7 +124,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                                     .position(latLngOfAddress));
 
                         } else {
-                            Toast.makeText(getContext(), getString(R.string.toast_message_place_location_not_found), Toast.LENGTH_SHORT).show();
+                            mapView.setVisibility(View.GONE);
+                            textViewNoInternet.setText(getString(R.string.toast_message_place_location_not_found));
+                            textViewNoInternet.setVisibility(View.VISIBLE);
                         }
                     }
                 });
@@ -133,9 +134,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                 Toast.makeText(getContext(), getString(R.string.toast_message_address_not_found), Toast.LENGTH_SHORT).show();
             }
     }
-
-
-
 
     @Override
     public void onResume() {

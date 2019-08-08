@@ -26,7 +26,6 @@ public class DetailViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void updateInterestList(Interest interest, Context context) {
-        System.out.println("interest type = " + interest.getInterestType());
         interestTextView.setText(interest.getInterestType());
         String type = interest.getInterestType();
         switch (type) {

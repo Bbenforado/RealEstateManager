@@ -85,6 +85,7 @@ public class ListFragment extends Fragment {
     private static final String QUERRIED_PLACES = "querriedPlaces";
     private static final String INDEX_ROW = "index";
     private static final String ADDRESS_ID = "addressId";
+    public static final String NO_PLACES_SAVED = "noPlacesSaved";
 
     public ListFragment() {
         // Required empty public constructor
@@ -95,10 +96,7 @@ public class ListFragment extends Fragment {
         View result = inflater.inflate(R.layout.fragment_list, container, false);
         ButterKnife.bind(this, result);
         preferences = this.getActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
-        //reset preferences
-        /*preferences.edit().putLong(PLACE_ID, -1).apply();
-        preferences.edit().putLong(ADDRESS_ID, -1).apply();*/
-
+        preferences.edit().putInt(INDEX_ROW, -1).apply();
         configureViewModel();
 
         //if it s results activity
@@ -106,9 +104,6 @@ public class ListFragment extends Fragment {
             floatingButtonAddPlace.setVisibility(View.GONE);
             addressList = new ArrayList<>();
             List<PlaceAddressesPhotosAndInterests> results = retrievedPlaces();
-            for (int i = 0; i<results.size(); i++) {
-            }
-
             configureRecyclerViewForResultsActivity();
             configureOnClickRecyclerViewForResultActivity();
             updateData(results);
@@ -121,6 +116,12 @@ public class ListFragment extends Fragment {
             getPhotos();
         }
         return result;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        preferences.edit().putInt(KEY_RESULTS_ACTIVITY, -1).apply();
     }
 
     //-------------------------------------------
@@ -242,6 +243,11 @@ public class ListFragment extends Fragment {
 
     private void updatePlacesList(List<Place> places) {
         this.adapter.updatePlaceData(places);
+        if (places.size() == 0) {
+            preferences.edit().putInt(NO_PLACES_SAVED, 1).apply();
+        } else {
+            preferences.edit().putInt(NO_PLACES_SAVED, -1).apply();
+        }
     }
 
     private void updateAddressesList(List<Address> addresses) {

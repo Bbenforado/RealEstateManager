@@ -40,7 +40,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:buttonTint="@color/blue"
+            android:buttonTint="@color/blue_grey"
             android:text="School" />
 
         <CheckBox
@@ -48,7 +48,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:buttonTint="@color/blue"
+            android:buttonTint="@color/blue_grey"
             android:text="Market place" />
 
     </LinearLayout>
@@ -62,7 +62,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:buttonTint="@color/blue"
+            android:buttonTint="@color/blue_grey"
             android:text="Park" />
 
         <CheckBox
@@ -70,7 +70,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:buttonTint="@color/blue"
+            android:buttonTint="@color/blue_grey"
             android:text="Hospital" />
 
     </LinearLayout>
@@ -84,7 +84,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:buttonTint="@color/blue"
+            android:buttonTint="@color/blue_grey"
             android:text="Cinema" />
 
         <CheckBox
@@ -92,7 +92,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:buttonTint="@color/blue"
+            android:buttonTint="@color/blue_grey"
             android:text="Theater" />
 
     </LinearLayout>

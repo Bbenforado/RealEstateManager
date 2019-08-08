@@ -49,10 +49,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //
     //----------------------------------------------------
     public static final String APP_PREFERENCES = "appPreferences";
-    //public static final String USER_NAME = "userName";
-    private static final String PLACE_ID = "placeId";
     public static final String APP_MODE = "appMode";
     public static final String KEY_RESULTS_ACTIVITY = "keyResultActivity";
+    private static final String PLACE_ID = "placeId";
 
 
     @Override
@@ -61,8 +60,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
         preferences = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE);
         ButterKnife.bind(this);
-        preferences.edit().putLong(PLACE_ID, -1).apply();
         Stetho.initializeWithDefaults(this);
+        preferences.edit().putLong(PLACE_ID, -1).apply();
 
         //this.textViewMain = findViewById(R.id.activity_second_activity_text_view_main);
         configureToolbar();
@@ -71,6 +70,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         configureAndShowListFragment();
         configureAndShowDetailFragment();
         getAppMode();
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        preferences.edit().putInt(KEY_RESULTS_ACTIVITY, -1).apply();
 
     }
 
@@ -171,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void configureAndShowListFragment(){
-        preferences.edit().putInt(KEY_RESULTS_ACTIVITY, -1).apply();
+        //preferences.edit().putInt(KEY_RESULTS_ACTIVITY, -1).apply();
         listFragment = (ListFragment) getSupportFragmentManager().findFragmentById(R.id.frame_layout_main_list);
         if (listFragment == null) {
             listFragment = new ListFragment();
@@ -184,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void configureAndShowDetailFragment(){
         detailFragment = (DetailFragment) getSupportFragmentManager().findFragmentById(R.id.frame_layout_main_detail);
         //display details of the first place
-        preferences.edit().putLong(PLACE_ID, 1).apply();
+        //preferences.edit().putLong(PLACE_ID, 1).apply();
         if (detailFragment == null && findViewById(R.id.frame_layout_main_detail) != null) {
             detailFragment = new DetailFragment();
             getSupportFragmentManager().beginTransaction()
