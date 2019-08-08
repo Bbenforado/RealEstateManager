@@ -18,7 +18,6 @@ import java.util.List;
 
 public class DetailPhotoRecyclerViewAdapter extends RecyclerView.Adapter<DetailFragmentPhotoViewHolder> {
 
-    private Context context;
     private List<Photo> photoList;
     private RequestManager glide;
 
@@ -30,7 +29,7 @@ public class DetailPhotoRecyclerViewAdapter extends RecyclerView.Adapter<DetailF
     @NonNull
     @Override
     public DetailFragmentPhotoViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        context = viewGroup.getContext();
+        Context context = viewGroup.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.fragment_detail_recycler_view_photos_item, viewGroup, false);
         return new DetailFragmentPhotoViewHolder(view);

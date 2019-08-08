@@ -25,7 +25,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.realestatemanager.R;
 import com.example.realestatemanager.activities.AddFormActivity;
-import com.example.realestatemanager.adapters.DetailFragmentAdapter;
+import com.example.realestatemanager.adapters.DetailFragmentViewPagerAdapter;
 import com.example.realestatemanager.adapters.DetailPhotoRecyclerViewAdapter;
 import com.example.realestatemanager.adapters.DetailRecyclerViewAdapter;
 import com.example.realestatemanager.adapters.PhotoRecyclerViewAdapter;
@@ -61,7 +61,7 @@ import static com.example.realestatemanager.utils.Utils.isNetworkAvailable;
 import static com.example.realestatemanager.utils.Utils.updateUiPlace;
 
 /**
- * A simple {@link Fragment} subclass.
+ * Displays details of the place
  */
 public class DetailFragment extends Fragment implements OnMapReadyCallback {
 
@@ -76,7 +76,6 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
     @Nullable
     @BindView(R.id.main_tabs) TabLayout tabLayout;
     @BindView(R.id.recycler_view_detail_photos) RecyclerView recyclerViewPhotos;
-
     @BindView(R.id.image_view_detail)
     ImageView imageViewPhoto;
     //FOR TABLET MODE
@@ -129,7 +128,7 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
     private static final String STATUS_FORM_ACTIVITY = "statusFormActivity";
     private static final String APP_MODE = "appMode";
     private static final String ADDRESS_ID = "addressId";
-    public static final String NO_PLACES_SAVED = "noPlacesSaved";
+    private static final String NO_PLACES_SAVED = "noPlacesSaved";
     //----------------------------------------------------
     //-----------------------------------------------------
     private PlaceViewModel viewModel;
@@ -206,24 +205,6 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
         preferences.edit().putLong(PLACE_ID, -1).apply();
     }
 
-    //------------------------------------------------
-    //ACTIONS
-    //------------------------------------------------
-    @Optional
-    @OnClick(R.id.material_convert_price_button_tablet_mode)
-    public void convertPrice() {
-        if (buttonConvertPriceTabletMode.getText().toString().equals(getString(R.string.button_text_convert_to_euros))) {
-            int priceInEuros = convertDollarToEuro((int)price);
-            String priceEuros = priceInEuros + " €";
-            textViewPriceTabletMode.setText(priceEuros);
-            buttonConvertPriceTabletMode.setText(getString(R.string.button_text_convert_to_dollars));
-        } else if (buttonConvertPriceTabletMode.getText().toString().equals(getString(R.string.button_text_convert_to_dollars))) {
-            String priceInDollars = price + " $";
-            textViewPriceTabletMode.setText(priceInDollars);
-            buttonConvertPriceTabletMode.setText(getString(R.string.button_text_convert_to_euros));
-        }
-    }
-
     @Override
     public void onResume() {
         if (preferences.getString(APP_MODE, null).equals("tablet") && isNetworkAvailable(getContext())) {
@@ -261,9 +242,24 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
-    //----------------------------------------------
+    //------------------------------------------------
     //ACTIONS
-    //-----------------------------------------------
+    //------------------------------------------------
+    @Optional
+    @OnClick(R.id.material_convert_price_button_tablet_mode)
+    public void convertPrice() {
+        if (buttonConvertPriceTabletMode.getText().toString().equals(getString(R.string.button_text_convert_to_euros))) {
+            int priceInEuros = convertDollarToEuro((int)price);
+            String priceEuros = priceInEuros + " €";
+            textViewPriceTabletMode.setText(priceEuros);
+            buttonConvertPriceTabletMode.setText(getString(R.string.button_text_convert_to_dollars));
+        } else if (buttonConvertPriceTabletMode.getText().toString().equals(getString(R.string.button_text_convert_to_dollars))) {
+            String priceInDollars = price + " $";
+            textViewPriceTabletMode.setText(priceInDollars);
+            buttonConvertPriceTabletMode.setText(getString(R.string.button_text_convert_to_euros));
+        }
+    }
+
     @OnClick(R.id.edit_floating_action_button_detail_fragment)
     public void editPlace() {
         preferences.edit().putInt(STATUS_FORM_ACTIVITY, 1).apply();
@@ -286,7 +282,7 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void configureViewpagerAndTabs() {
-        DetailFragmentAdapter viewPagerAdapter = new DetailFragmentAdapter(getActivity().getSupportFragmentManager(), titles);
+        DetailFragmentViewPagerAdapter viewPagerAdapter = new DetailFragmentViewPagerAdapter(getActivity().getSupportFragmentManager(), titles);
         viewPager.setAdapter(viewPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
         for (int i = 0; i < tabLayout.getTabCount(); i++) {

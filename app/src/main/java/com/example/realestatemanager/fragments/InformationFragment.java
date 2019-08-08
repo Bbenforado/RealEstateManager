@@ -11,7 +11,6 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager.widget.ViewPager;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,11 +19,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.realestatemanager.R;
-import com.example.realestatemanager.adapters.DetailFragmentAdapter;
 import com.example.realestatemanager.adapters.DetailRecyclerViewAdapter;
 import com.example.realestatemanager.injections.Injection;
 import com.example.realestatemanager.injections.ViewModelFactory;
-import com.example.realestatemanager.models.Address;
 import com.example.realestatemanager.models.Interest;
 import com.example.realestatemanager.models.Place;
 import com.example.realestatemanager.utils.Utils;
@@ -39,9 +36,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import static com.example.realestatemanager.utils.Utils.convertDollarToEuro;
-import static com.example.realestatemanager.utils.Utils.displayStatusOfPlace;
-import static com.example.realestatemanager.utils.Utils.getLocationFromAddress;
-import static com.example.realestatemanager.utils.Utils.setInformationOnTextView;
 import static com.example.realestatemanager.utils.Utils.updateUiPlace;
 
 /**

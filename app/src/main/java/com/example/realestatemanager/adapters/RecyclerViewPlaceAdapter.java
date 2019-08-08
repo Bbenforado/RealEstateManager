@@ -1,6 +1,7 @@
 package com.example.realestatemanager.adapters;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,10 @@ public class RecyclerViewPlaceAdapter extends RecyclerView.Adapter<ViewHolderPla
     private List<PlaceAddressesPhotosAndInterests> placeList;
     private Context context;
     private RequestManager glide;
+    private SharedPreferences preferences;
+    public static final String APP_PREFERENCES = "appPreferences";
+    private static final String INDEX_ROW = "index";
+    private static final String APP_MODE = "appMode";
 
 
     public RecyclerViewPlaceAdapter(RequestManager glide) {
@@ -31,6 +36,7 @@ public class RecyclerViewPlaceAdapter extends RecyclerView.Adapter<ViewHolderPla
     @Override
     public ViewHolderPlace onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         context = viewGroup.getContext();
+        preferences = context.getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.fragment_list_item, viewGroup, false);
 
@@ -40,6 +46,18 @@ public class RecyclerViewPlaceAdapter extends RecyclerView.Adapter<ViewHolderPla
     @Override
     public void onBindViewHolder(@NonNull ViewHolderPlace holder, int position) {
         if (placeList.size() > 0) {
+            if (preferences.getString(APP_MODE, null).equals("tablet")) {
+                int index = preferences.getInt(INDEX_ROW, -1);
+                if (index == position) {
+                    holder.priceTextView.setTextColor(context.getResources().getColor(R.color.white));
+                    holder.relativeLayout.setBackgroundColor(context.getResources().getColor(R.color.light_grey));
+                    holder.statusTextView.setTextColor(context.getResources().getColor(R.color.white));
+                } else {
+                    holder.priceTextView.setTextColor(context.getResources().getColor(R.color.blue));
+                    holder.relativeLayout.setBackgroundColor(context.getResources().getColor(R.color.white));
+                    holder.statusTextView.setTextColor(context.getResources().getColor(R.color.blue));
+                }
+            }
             holder.updateUi(this.placeList.get(position), context, glide);
         }
     }

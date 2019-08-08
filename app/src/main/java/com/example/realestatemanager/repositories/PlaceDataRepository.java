@@ -5,6 +5,7 @@ import androidx.sqlite.db.SupportSQLiteQuery;
 
 import com.example.realestatemanager.database.dao.PlaceDao;
 import com.example.realestatemanager.models.Place;
+import com.example.realestatemanager.models.PlaceAddressesPhotosAndInterests;
 import com.example.realestatemanager.models.PlaceIdAndAddressId;
 
 import java.util.List;
@@ -27,12 +28,12 @@ public class PlaceDataRepository {
         return this.placeDao.getPlaces();
     }
 
-    public LiveData<List<Place>> getPlacesForGivenParameters(SupportSQLiteQuery query) {
-        return placeDao.getPlacesForGivenParameters(query);
-    }
-
     public LiveData<List<PlaceIdAndAddressId>> getPlaceAndAddressId() {
         return placeDao.getPlaceAndAddressId();
+    }
+
+    public LiveData<List<PlaceAddressesPhotosAndInterests>> getAllData() {
+        return this.placeDao.getAllData();
     }
 
     //CREATE

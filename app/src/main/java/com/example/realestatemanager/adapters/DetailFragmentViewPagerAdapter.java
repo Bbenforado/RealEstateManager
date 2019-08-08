@@ -14,13 +14,11 @@ import com.example.realestatemanager.fragments.MapFragment;
 import java.nio.charset.Charset;
 import java.util.Map;
 
-public class DetailFragmentAdapter extends FragmentPagerAdapter {
+public class DetailFragmentViewPagerAdapter extends FragmentPagerAdapter {
 
     private String[] titles;
-    private InformationFragment informationFragment;
-    private MapFragment mapFragment;
 
-    public DetailFragmentAdapter(FragmentManager fragmentManager, String[] titles) {
+    public DetailFragmentViewPagerAdapter(FragmentManager fragmentManager, String[] titles) {
         super(fragmentManager);
         this.titles = titles;
     }
@@ -30,10 +28,8 @@ public class DetailFragmentAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                //return InformationFragment.newInstance(position);
                 return new InformationFragment();
             case 1:
-                //return MapFragment.newInstance(position);
                 return new MapFragment();
             default:
                 return InformationFragment.newInstance(position);
@@ -47,10 +43,10 @@ public class DetailFragmentAdapter extends FragmentPagerAdapter {
         // save the appropriate reference depending on position
         switch (position) {
             case 0:
-                informationFragment = (InformationFragment) createdFragment;
+                InformationFragment informationFragment = (InformationFragment) createdFragment;
                 break;
             case 1:
-                mapFragment = (MapFragment) createdFragment;
+                MapFragment mapFragment = (MapFragment) createdFragment;
                 break;
         }
         return createdFragment;

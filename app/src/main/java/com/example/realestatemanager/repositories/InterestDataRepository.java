@@ -17,27 +17,13 @@ public class InterestDataRepository {
         this.interestDao = interestDao;
     }
 
-    //GET PLACE
-    public LiveData<Interest> getInterest(long idPlace) {
-        return this.interestDao.getInterest(idPlace);
-    }
-
     public LiveData<List<Interest>> getInterests(long placeId) {
         return this.interestDao.getInterests(placeId);
-    }
-
-    public LiveData<List<Long>> getPlaceIdForGivenParameters(SupportSQLiteQuery query) {
-        return interestDao.getPlacesIdForGivenParameters(query);
     }
 
     //CREATE
     public long createInterest(Interest interest) {
         return interestDao.createInterest(interest);
-    }
-
-    //UPDATE
-    public void updateInterest(Interest interest) {
-        interestDao.updateInterest(interest);
     }
 
     //DELETE

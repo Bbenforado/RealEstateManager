@@ -1,13 +1,8 @@
 package com.example.realestatemanager.viewModels;
 
-import android.database.Observable;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.sqlite.db.SimpleSQLiteQuery;
-import androidx.sqlite.db.SupportSQLiteQuery;
 
 import com.example.realestatemanager.models.Address;
 import com.example.realestatemanager.models.Interest;
@@ -38,9 +33,6 @@ public class PlaceViewModel extends ViewModel {
     private final RawDataRepository rawDataSource;
     private final Executor executor;
 
-    /*@Nullable
-    private LiveData<Place> currentPlace;*/
-
     public PlaceViewModel(PlaceDataRepository placeDataSource, AddressDataRepository addressDataSource,
                           InterestDataRepository interestDataSource, PhotoDataRepository photoDataRepository, RawDataRepository rawDataRepository, Executor executor) {
         this.placeDataSource = placeDataSource;
@@ -52,28 +44,21 @@ public class PlaceViewModel extends ViewModel {
     }
 
     //-----------------------------------------------
-    //FOR PLACES
+    //FOR PLACES ADDRESSES PHOTOS INTERESTS
     //-------------------------------------------------------
-    public LiveData<PlaceAddressesPhotosAndInterests> getPlaceAndAddress(SimpleSQLiteQuery query) {
-        return rawDataSource.getPlaceAndAddress(query);
-    }
-
-
     public LiveData<List<PlaceAddressesPhotosAndInterests>> getPlacesAndData(SimpleSQLiteQuery query) {
         return rawDataSource.getPlacesAndData(query);
     }
 
+    public LiveData<List<PlaceAddressesPhotosAndInterests>> getAllData() {
+        return placeDataSource.getAllData();
+    }
 
+    //----------------------
+    //FOR PLACES
+    //-------------------------
     public LiveData<Place> getPlace(long placeId) {
         return placeDataSource.getPlace(placeId);
-    }
-
-    public LiveData<List<Place>> getPlaces() {
-        return placeDataSource.getPlaces();
-    }
-
-    public LiveData<List<Place>> getPlaceForGivenParameters(SupportSQLiteQuery query) {
-        return placeDataSource.getPlacesForGivenParameters(query);
     }
 
     public long createPlace(Place place) {
@@ -101,23 +86,12 @@ public class PlaceViewModel extends ViewModel {
     //-----------------------------------------------------
     //FOR ADDRESSES
     //--------------------------------------------------------------
-    public LiveData<List<Long>> getPlaceIdForGivenParamFromAddresses(SimpleSQLiteQuery query) {
-        return addressDataSource.getPlaceIfForGivenParamFromAdresses (query);
-    }
-
-    /*public LiveData<Address> getAddress(long placeId) {
-        return addressDataSource.getAddress(placeId);
-    }*/
     public LiveData<Address> getAddressOfAPlace(long idAddressInPlace) {
         return addressDataSource.getAddressOfAPlace(idAddressInPlace);
     }
 
     public LiveData<List<PlaceIdAndAddressId>> getPlaceAndAddressId() {
         return placeDataSource.getPlaceAndAddressId();
-    }
-
-    public LiveData<List<Address>> getAddresses() {
-        return addressDataSource.getAddresses();
     }
 
     public long createAddress(Address address) {
@@ -145,42 +119,14 @@ public class PlaceViewModel extends ViewModel {
     //-------------------------------------------------
     //FOR INTERESTS
     //-----------------------------------------------------
-    public LiveData<List<Long>> getPlaceIdForGivenParameters(SupportSQLiteQuery query) {
-        return interestDataSource.getPlaceIdForGivenParameters(query);
-    }
-
-
     public void createInterest(Interest interest) {
-        /*Callable<Long> insertCallable = () -> interestDataSource.createInterest(interest);
-        long rowId = 0;
-
-        ExecutorService executorService = Executors.newFixedThreadPool(10);
-        Future<Long> future = executorService.submit(insertCallable);
-        try {
-            rowId = future.get();
-        } catch (InterruptedException e1) {
-            e1.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-        return rowId;*/
         executor.execute(() -> {
             interestDataSource.createInterest(interest);
         });
     }
 
-    public void updateInterest(Interest interest) {
-        executor.execute(() -> {
-            interestDataSource.updateInterest(interest);
-        });
-    }
-
     public LiveData<List<Interest>> getInterests(long placeId) {
         return interestDataSource.getInterests(placeId);
-    }
-
-    public LiveData<Interest> getInterest(long placeId) {
-        return interestDataSource.getInterest(placeId);
     }
 
     public void deleteInterests(long placeId) {
@@ -204,10 +150,6 @@ public class PlaceViewModel extends ViewModel {
 
     public LiveData<List<Photo>> getPhotosForAPlace(long placeId) {
         return photoDataSource.getPhotosForAPlace(placeId);
-    }
-
-    public LiveData<List<Long>> getPlaceIdForGivenParam(SupportSQLiteQuery query) {
-        return photoDataSource.getPlaceIdForGivenParam(query);
     }
 
     public void updatePhoto(Photo photo) {

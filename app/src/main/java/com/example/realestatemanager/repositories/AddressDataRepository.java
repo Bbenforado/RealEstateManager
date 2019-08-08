@@ -11,25 +11,12 @@ import java.util.List;
 public class AddressDataRepository {
 
     private final AddressDao addressDao;
-
     public AddressDataRepository(AddressDao addressDao) {
         this.addressDao = addressDao;
     }
 
-    //GET PLACE
-    /*public LiveData<Address> getAddress(long placeId) {
-        return this.addressDao.getAddress(placeId);
-    }*/
     public LiveData<Address> getAddressOfAPlace(long idAddressInPlace) {
         return this.addressDao.getAddressOfAPlace(idAddressInPlace);
-    }
-
-    public LiveData<List<Long>> getPlaceIfForGivenParamFromAdresses(SimpleSQLiteQuery query) {
-        return addressDao.getPlacesIdForGivenParameters(query);
-    }
-
-    public LiveData<List<Address>> getAddresses() {
-        return this.addressDao.getAddresses();
     }
 
     //CREATE

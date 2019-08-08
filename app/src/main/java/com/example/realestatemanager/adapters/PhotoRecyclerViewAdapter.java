@@ -42,7 +42,6 @@ public class PhotoRecyclerViewAdapter extends RecyclerView.Adapter<PhotoViewHold
 
     @Override
     public void onBindViewHolder(@NonNull PhotoViewHolder holder, int position) {
-
         holder.updateUi(photoList.get(position), this.glide, this.statusActivity);
     }
 

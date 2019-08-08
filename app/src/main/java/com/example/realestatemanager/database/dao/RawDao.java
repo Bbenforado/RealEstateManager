@@ -19,7 +19,4 @@ public interface RawDao {
 
     @RawQuery (observedEntities = {Place.class, Photo.class, Interest.class, Address.class})
     LiveData<List<PlaceAddressesPhotosAndInterests>> getPlacesAndData(SimpleSQLiteQuery query);
-
-    @RawQuery (observedEntities = {Place.class, Address.class, Photo.class, Interest.class})
-    LiveData<PlaceAddressesPhotosAndInterests> getplaceAndAddress(SimpleSQLiteQuery query);
 }

@@ -25,24 +25,16 @@ public interface PhotoDao {
     @Query("SELECT * FROM photos WHERE placeId = :idPlace")
     LiveData<List<Photo>> getPhotosForAPlace(long idPlace);
 
-    @Query("SELECT * FROM photos WHERE placeId = :idPlace")
-    LiveData<Photo> getPhoto(long idPlace);
-
-    @Query("SELECT * FROM photos WHERE placeId = :placeId")
-    Cursor getPhotosWithCursor(long placeId);
-
-    @RawQuery(observedEntities = Photo.class)
-    LiveData<List<Long>> getPlacesIdForGivenParameters(SupportSQLiteQuery query);
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long createPhoto(Photo photo);
-
-    @Insert
-    long insertPhoto(Photo photo);
 
     @Update
     int updatePhoto(Photo photo);
 
     @Query("DELETE FROM photos WHERE idPhoto = :id")
     int deletePhoto(long id);
+
+    //FOR CONTENT PROVIDER
+    @Query("SELECT * FROM photos WHERE placeId = :placeId")
+    Cursor getPhotosWithCursor(long placeId);
 }

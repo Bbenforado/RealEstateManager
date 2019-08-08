@@ -18,21 +18,12 @@ public class PhotoDataRepository {
         this.photoDao = photoDao;
     }
 
-    //GET
-    public LiveData<Photo> getPhoto(long idPlace) {
-        return this.photoDao.getPhoto(idPlace);
-    }
-
     public LiveData<List<Photo>> getPhotos() {
         return this.photoDao.getPhotos();
     }
 
     public LiveData<List<Photo>> getPhotosForAPlace(long placeId) {
         return this.photoDao.getPhotosForAPlace(placeId);
-    }
-
-    public LiveData<List<Long>> getPlaceIdForGivenParam(SupportSQLiteQuery query) {
-        return photoDao.getPlacesIdForGivenParameters(query);
     }
 
     //CREATE
