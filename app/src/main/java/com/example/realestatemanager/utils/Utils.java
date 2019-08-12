@@ -268,10 +268,19 @@ public class Utils {
                 } else {
                     textViewComplement.setVisibility(View.GONE);
                 }
-                textViewPostalCodeAndCity.setText(address.getPostalCode() + " " + address.getCity());
-                textViewCountry.setText(address.getCountry());
+                textViewPostalCodeAndCity.setText(address.getPostalCode() + " " + setFirstLetterUpperCase(address.getCity()));
+                textViewCountry.setText(setFirstLetterUpperCase(address.getCountry()));
             }
         });
+    }
+
+    public static String setFirstLetterUpperCase(String str) {
+        String stringToFormat = str;
+        if (!Character.isUpperCase(stringToFormat.codePointAt(0))) {
+            stringToFormat = str.substring(0, 1).toUpperCase() + str.substring(1);
+            return stringToFormat;
+        }
+        return stringToFormat;
     }
 
 }

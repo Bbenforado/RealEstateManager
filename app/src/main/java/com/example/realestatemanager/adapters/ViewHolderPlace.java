@@ -14,6 +14,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.realestatemanager.R;
 import com.example.realestatemanager.models.Photo;
 import com.example.realestatemanager.models.PlaceAddressesPhotosAndInterests;
+import com.example.realestatemanager.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +45,8 @@ public class ViewHolderPlace extends RecyclerView.ViewHolder {
         this.typeOfPlaceTextView.setText(placeAddressesPhotosAndInterests.getPlace().getType());
         String price = placeAddressesPhotosAndInterests.getPlace().getPrice() + " $";
         this.priceTextView.setText(price);
-        this.cityTextView.setText(placeAddressesPhotosAndInterests.getAddress().getCity());
+        
+        cityTextView.setText(Utils.setFirstLetterUpperCase(placeAddressesPhotosAndInterests.getAddress().getCity()));
 
         List<Photo> photoList = new ArrayList<>();
         if (placeAddressesPhotosAndInterests.getPhotos().size() != 0) {

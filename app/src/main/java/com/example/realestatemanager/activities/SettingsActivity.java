@@ -44,7 +44,6 @@ public class SettingsActivity extends AppCompatActivity {
         if (preferences.getString(USER_NAME, null) != null) {
             displayInfo();
         } else {
-            //Toast.makeText(this, getString(R.string.toast_message_save_your_name), Toast.LENGTH_SHORT).show();
             displayDialogAddYourName();
         }
     }
