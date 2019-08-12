@@ -5,6 +5,7 @@ import com.example.realestatemanager.activities.SearchActivity;
 import com.example.realestatemanager.models.Photo;
 import com.example.realestatemanager.models.Place;
 import com.example.realestatemanager.utils.Utils;
+import com.example.realestatemanager.utils.UtilsAddFormActivity;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.button.MaterialButton;
 
@@ -97,12 +98,12 @@ public class ExampleUnitTest {
     public void allPhotosHaveDescriptionTest() {
         List<Photo> photos = new ArrayList<>();
         Photo photo1 = new Photo();
-        photo1.setDescription("some description");
+        photo1.setDescriptionPhoto("some description");
         Photo photo2 = new Photo();
         photos.add(photo1);
         photos.add(photo2);
-        AddFormActivity activity = new AddFormActivity();
-        boolean hasPhotoDescription = activity.allPhotosHaveDescription(photos);
+        //AddFormActivity activity = new AddFormActivity();
+        boolean hasPhotoDescription = UtilsAddFormActivity.allPhotosHaveDescription(photos);
         assertNotNull(hasPhotoDescription);
         assertFalse(hasPhotoDescription);
     }

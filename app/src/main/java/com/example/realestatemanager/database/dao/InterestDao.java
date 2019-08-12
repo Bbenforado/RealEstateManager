@@ -30,6 +30,12 @@ public interface InterestDao {
     int deleteInterests(long id);
 
     //FOR CONTENT PROVIDER
-    @Query("SELECT * FROM interests WHERE idPlace = :placeId")
-    Cursor getInterestsWithCursor(long placeId);
+    @Query("SELECT * FROM interests WHERE idInterest = :id")
+    Cursor getInterestsWithCursor(long id);
+
+    @Insert
+    long insertInterest(Interest interest);
+
+    @Update
+    int updateInterest(Interest interest);
 }

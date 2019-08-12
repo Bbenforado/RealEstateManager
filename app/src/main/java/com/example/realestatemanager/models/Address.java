@@ -2,6 +2,7 @@ package com.example.realestatemanager.models;
 
 import android.content.ContentValues;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Ignore;
@@ -10,10 +11,6 @@ import androidx.room.PrimaryKey;
 import com.google.android.gms.maps.model.LatLng;
 
 @Entity(tableName = "addresses")
-        /*;foreignKeys =
-        @ForeignKey(entity = Place.class,
-                parentColumns = "id",
-                childColumns = "idPlace"))*/
 public class Address {
 
     @PrimaryKey(autoGenerate = true)
@@ -24,8 +21,6 @@ public class Address {
     private String postalCode;
     private String city;
     private String country;
-    /*private long idPlace;
-    private long idInterest;*/
     private String latLng;
 
 
@@ -34,17 +29,6 @@ public class Address {
 
     }
 
-    //for place
-    /*public Address(long idPlace, int streetNumber, String streetName, String complement, String postalCode, String city,
-                   String country) {
-        this.streetNumber = streetNumber;
-        this.streetName = streetName;
-        this.complement = complement;
-        this.postalCode = postalCode;
-        this.country = country;
-        this.city = city;
-        this.idPlace = idPlace;
-    }*/
     public Address(int streetNumber, String streetName, String complement, String postalCode,
                    String city, String country) {
         this.streetNumber = streetNumber;
@@ -86,14 +70,6 @@ public class Address {
         return country;
     }
 
-   /* public long getIdPlace() {
-        return idPlace;
-    }
-
-    public long getIdInterest() {
-        return idInterest;
-    }*/
-
     public String getCity() {
         return city;
     }
@@ -127,28 +103,33 @@ public class Address {
         this.country = country;
     }
 
-    /*public void setIdPlace(long idPlace) {
-        this.idPlace = idPlace;
-    }
-
-    public void setIdInterest(long idInterest) {
-        this.idInterest = idInterest;
-    }*/
-
     public void setCity(String city) {
         this.city = city;
     }
 
     //FOR CONTENT PROVIDER
-    /*public static Address fromContentValues(ContentValues values) {
+    public static Address fromContentValues(ContentValues values) {
         final Address address = new Address();
         if (values.containsKey("streetNumber")) address.setStreetNumber(values.getAsInteger("streetNumber"));
         if (values.containsKey("streetName")) address.setStreetName(values.getAsString("streetName"));
         if (values.containsKey("complement")) address.setComplement(values.getAsString("complement"));
         if (values.containsKey("postalCode")) address.setPostalCode(values.getAsString("postalCode"));
         if (values.containsKey("country")) address.setCountry(values.getAsString("country"));
-        if (values.containsKey("idPlace")) address.setIdPlace(values.getAsLong("idPlace"));
         if (values.containsKey("city")) address.setCity(values.getAsString("city"));
+        if (values.containsKey("latLng")) address.setLatLng(values.getAsString("latLng"));
         return address;
-    }*/
+    }
+
+    public static Address fromContentValuesUpdate(ContentValues values) {
+        final Address address = new Address();
+        if (values.containsKey("addressId")) address.setAddressId(values.getAsLong("addressId"));
+        if (values.containsKey("streetNumber")) address.setStreetNumber(values.getAsInteger("streetNumber"));
+        if (values.containsKey("streetName")) address.setStreetName(values.getAsString("streetName"));
+        if (values.containsKey("complement")) address.setComplement(values.getAsString("complement"));
+        if (values.containsKey("postalCode")) address.setPostalCode(values.getAsString("postalCode"));
+        if (values.containsKey("country")) address.setCountry(values.getAsString("country"));
+        if (values.containsKey("city")) address.setCity(values.getAsString("city"));
+        if (values.containsKey("latLng")) address.setLatLng(values.getAsString("latLng"));
+        return address;
+    }
 }

@@ -11,10 +11,7 @@ import androidx.room.PrimaryKey;
         foreignKeys =
         @ForeignKey(entity = Place.class,
         parentColumns = "id",
-        childColumns = "idPlace"))/*,
-        @ForeignKey(entity = Address.class,
-        parentColumns = "id",
-        childColumns = "idAddress")})*/
+        childColumns = "idPlace"))
 public class Interest {
 
     @PrimaryKey(autoGenerate = true)
@@ -71,10 +68,18 @@ public class Interest {
     }
 
     //FOR CONTENT PROVIDER
-    public static Interest fromContentValues(ContentValues values) {
+    public static Interest fromContentValues(ContentValues values, long idPlace) {
         final Interest interest = new Interest();
-        if (values.containsKey("type")) interest.setInterestType(values.getAsString("type"));
+        if (values.containsKey("interestType")) interest.setInterestType(values.getAsString("interestType"));
+        interest.setIdPlace(idPlace);
+        return interest;
+    }
+
+    public static Interest fromContentValuesForUpdate(ContentValues values) {
+        final Interest interest = new Interest();
+        if (values.containsKey("interestType")) interest.setInterestType(values.getAsString("interestType"));
         if (values.containsKey("idPlace")) interest.setIdPlace(values.getAsLong("idPlace"));
+        if (values.containsKey("idInterest")) interest.setIdInterest(values.getAsLong("idInterest"));
         return interest;
     }
 }

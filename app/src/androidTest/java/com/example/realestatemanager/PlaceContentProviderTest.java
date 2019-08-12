@@ -8,20 +8,35 @@ import android.net.Uri;
 import androidx.room.Room;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
+
+import static com.example.realestatemanager.provider.PlaceContentProvider.AUTHORITY;
+import static com.example.realestatemanager.provider.PlaceContentProvider.TABLE_ADDRESS;
+import static com.example.realestatemanager.provider.PlaceContentProvider.TABLE_INTEREST;
+import static com.example.realestatemanager.provider.PlaceContentProvider.TABLE_PHOTO;
+import static com.example.realestatemanager.provider.PlaceContentProvider.TABLE_PLACE;
+import static com.example.realestatemanager.provider.PlaceContentProvider.URI_ADDRESS;
+import static com.example.realestatemanager.provider.PlaceContentProvider.URI_INTEREST;
+import static com.example.realestatemanager.provider.PlaceContentProvider.URI_PHOTO;
+import static com.example.realestatemanager.provider.PlaceContentProvider.URI_PLACE;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import com.example.realestatemanager.database.RealEstateManagerDatabase;
+import com.example.realestatemanager.provider.PlaceContentProvider;
+import com.example.realestatemanager.utils.Utils;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-/*
 @RunWith(AndroidJUnit4.class)
 public class PlaceContentProviderTest {
 
     private ContentResolver contentResolver;
+   private static final Uri URI_PLACE_UPDATE = Uri.parse("content://" + AUTHORITY + "/" + TABLE_PLACE + "/1");
+    private static final Uri URI_ADDRESS_UPDATE = Uri.parse("content://" + AUTHORITY + "/" + TABLE_ADDRESS + "/1");
+    private static final Uri URI_PHOTO_UPDATE = Uri.parse("content://" + AUTHORITY + "/" + TABLE_PHOTO + "/1");
+    private static final Uri URI_INTEREST_UPDATE = Uri.parse("content://" + AUTHORITY + "/" + TABLE_INTEREST + "/1");
     private static long id = 1;
 
     @Before
@@ -33,30 +48,137 @@ public class PlaceContentProviderTest {
         contentResolver = InstrumentationRegistry.getInstrumentation().getContext().getContentResolver();
     }
 
+    //---------------------------------------
+    //INSERT DATA
+    //------------------------------------------
     @Test
-    public void getPlacesWhenNoPlaceInserted() {
-        final Cursor cursor =
-                contentResolver.query(ContentUris.withAppendedId(
-                        PlaceContentProvider.URI_PLACE, id), null,
-                        null, null, null);
-        assertThat(cursor, notNullValue());
-        assertThat(cursor.getCount(), is(0));
-        cursor.close();
+    public void insertAndGetPlaceAddressInterest() {
+        //insert address
+        contentResolver.insert(PlaceContentProvider.URI_ADDRESS, generateAddress());
+        //insert place
+        contentResolver.insert(PlaceContentProvider.URI_PLACE, generatePlace());
+        //insert interest
+        contentResolver.insert(PlaceContentProvider.URI_INTEREST, generateInterest());
+        //insert photo
+        String url = "https://www.livingspaces.com/globalassets/images/inspiration/transitional_livingroom_244463_2.jpg";
+        String description = "this is description";
+        contentResolver.insert(PlaceContentProvider.URI_PHOTO, generatePhoto(url, description));
+
+        //get place
+        final Cursor cursorPlace = contentResolver.query(ContentUris
+                        .withAppendedId(PlaceContentProvider.URI_PLACE, id),
+                null, null, null, null);
+
+        assertThat(cursorPlace, notNullValue());
+        assertThat(cursorPlace.getCount(), is(1));
+        assertThat(cursorPlace.moveToFirst(), is(true));
+        assertThat(cursorPlace.getString(cursorPlace.getColumnIndexOrThrow("type")), is("Mansion"));
+        //assertThat(cursorPlace.getString(cursorPlace.getColumnIndex("type")), is("Loft"));
+        cursorPlace.close();
+
+        //get address
+        final Cursor cursorAddress = contentResolver.query(ContentUris.withAppendedId(PlaceContentProvider.URI_ADDRESS, id),
+                null, null, null, null);
+        assertThat(cursorAddress, notNullValue());
+        assertThat(cursorAddress.getCount(), is(1));
+        cursorAddress.close();
+
+        //get interest
+        final Cursor cursorInterest = contentResolver.query(ContentUris.withAppendedId(URI_INTEREST, id),
+                null, null, null, null);
+        assertThat(cursorInterest.getCount(), is(1));
+        cursorInterest.close();
+
+        //get photo
+        final Cursor cursorPhoto = contentResolver.query(ContentUris.withAppendedId(URI_PHOTO, id),
+                null, null, null, null);
+        assertThat(cursorPhoto.getCount(), is(1));
+        cursorPhoto.close();
 
     }
 
+    //------------------------------------
+    //UPDATE DATA
+    //----------------------------------------
     @Test
-    public void insertAndGetPlace() {
-        final Uri uri = contentResolver.insert(PlaceContentProvider.URI_PLACE, generatePlace());
+    public void updatePlace() {
+        contentResolver.update(URI_PLACE, generateUpdatedPlace(id, id), null, null);
 
-        final Cursor cursor = contentResolver.query(ContentUris
-                        .withAppendedId(PlaceContentProvider.URI_PLACE, id),
+        final Cursor cursorUpdatedPlace = contentResolver.query(ContentUris.withAppendedId(URI_PLACE, id),
                 null, null, null, null);
-        assertThat(cursor, notNullValue());
-        assertThat(cursor.getCount(), is(1));
-        assertThat(cursor.moveToFirst(), is(true));
-        assertThat(cursor.getString(cursor.getColumnIndexOrThrow("type")), is("Loft"));
+        assertThat(cursorUpdatedPlace, notNullValue());
+        assertThat(cursorUpdatedPlace.getCount(), is(1));
+        assertThat(cursorUpdatedPlace.getString(cursorUpdatedPlace.getColumnIndex("author")), is("michelle"));
+        cursorUpdatedPlace.close();
+    }
 
+    @Test
+    public void updateAddress() {
+        contentResolver.update(URI_ADDRESS_UPDATE, generateUpdatedAddress(id), null, null);
+        final Cursor cursorUpdatedAddress = contentResolver.query(ContentUris.withAppendedId(URI_ADDRESS, id),
+                null, null, null, null);
+        assertThat(cursorUpdatedAddress, notNullValue());
+        assertThat(cursorUpdatedAddress.getString(cursorUpdatedAddress.getColumnIndex("streetName")), is("rue stephenson"));
+        cursorUpdatedAddress.close();
+    }
+
+    @Test
+    public void updatePhoto() {
+        String url = "https://ksassets.timeincuk.net/wp/uploads/sites/56/2019/07/Ideal-Home-July-19-Country-bathroom-620x620.jpg";
+        String description = "New description";
+        contentResolver.update(URI_PHOTO_UPDATE, generateUpdatedPhoto(url, description), null, null);
+        final Cursor cursorUpdatedPhoto = contentResolver.query(ContentUris.withAppendedId(URI_PHOTO, id),
+                null, null, null, null);
+        assertThat(cursorUpdatedPhoto, notNullValue());
+        assertThat(cursorUpdatedPhoto.getString(cursorUpdatedPhoto.getColumnIndex("descriptionPhoto")), is("New description"));
+        cursorUpdatedPhoto.close();
+    }
+
+    @Test
+    public void updateInterest() {
+        contentResolver.update(URI_INTEREST_UPDATE, generateInterestForUpdate(id, id), null, null);
+        final Cursor cursorUpdatedInterest = contentResolver.query(ContentUris.withAppendedId(URI_INTEREST, id),
+                null, null, null, null);
+        assertThat(cursorUpdatedInterest, notNullValue());
+        assertThat(cursorUpdatedInterest.getString(cursorUpdatedInterest.getColumnIndex("interestType")), is("Park"));
+        cursorUpdatedInterest.close();
+    }
+
+    //-----------------------------------
+    //DELETE
+    //--------------------------------------
+    /*@Test
+    public void deletePlaceTest() {
+        contentResolver.delete(URI_PLACE_DELETE, null, null);
+        contentResolver.delete(URI_ADDRESS_DELETE, null, null);
+        final Cursor cursor = contentResolver.query(ContentUris.withAppendedId(PlaceContentProvider.URI_PLACE, id),
+                null, null, null, null);
+        assertThat(cursor.getCount(), is(0));
+    }
+
+    @Test
+    public void deleteAddressTest() {
+        contentResolver.delete(URI_ADDRESS_DELETE, null, null);
+        final Cursor cursor = contentResolver.query(ContentUris.withAppendedId(PlaceContentProvider.URI_ADDRESS, id),
+                null, null, null, null);
+        assertThat(cursor.getCount(), is(0));
+    }*/
+
+
+    //------------------------------------
+    //GENERATE DATA OBJECTS METHODS
+    //---------------------------------------
+    private ContentValues generateAddress(){
+        final ContentValues values = new ContentValues();
+        values.put("streetNumber", "30");
+        values.put("streetName", "rue riquet");
+        values.put("complement", "rdc");
+        values.put("postalCode", "75019");
+        values.put("city", "paris");
+        values.put("country", "france");
+        values.put("latLng", "48.888732, 2.373055");
+
+        return values;
     }
 
     private ContentValues generatePlace(){
@@ -72,4 +194,62 @@ public class PlaceContentProviderTest {
 
         return values;
     }
-}*/
+    private ContentValues generateUpdatedPlace(long id, long idAddress) {
+        final ContentValues values = new ContentValues();
+        values.put("type", "Mansion");
+        values.put("price", "200000");
+        values.put("id", id);
+        values.put("idAddress", idAddress);
+        values.put("surface", "300");
+        values.put("nbrOfRooms", "4");
+        values.put("nbrOfBedrooms", "2");
+        values.put("nbrOfBathrooms", "2");
+        values.put("author", "michelle");
+        values.put("description", "this is new description");
+        return values;
+    }
+
+    private ContentValues generateUpdatedAddress(long id) {
+        final ContentValues values = new ContentValues();
+        values.put("addressId", id);
+        values.put("streetNumber", "5");
+        values.put("streetName", "rue stephenson");
+        values.put("complement", "");
+        values.put("postalCode", "75018");
+        values.put("city", "paris");
+        values.put("country", "france");
+        values.put("latLng", "48.885223, 2.356729");
+        return values;
+    }
+
+    private ContentValues generateInterest(){
+        final ContentValues values = new ContentValues();
+        values.put("interestType", "Hospital");
+
+        return values;
+    }
+
+    private ContentValues generateInterestForUpdate(long id, long idPlace) {
+        final ContentValues values = new ContentValues();
+        values.put("interestType", "Park");
+        values.put("idInterest", id);
+        values.put("idPlace", idPlace);
+        return values;
+    }
+
+    private ContentValues generatePhoto(String url, String description) {
+        final ContentValues values = new ContentValues();
+        values.put("uri", url);
+        values.put("descriptionPhoto", description);
+        return values;
+    }
+
+    private ContentValues generateUpdatedPhoto(String url, String description) {
+        final ContentValues values = new ContentValues();
+        values.put("idPhoto", id);
+        values.put("uri", url);
+        values.put("descriptionPhoto", description);
+        values.put("placeId", id);
+        return values;
+    }
+}

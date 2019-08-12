@@ -78,6 +78,7 @@ import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
 import static com.example.realestatemanager.utils.UtilsAddFormActivity.allPhotosHaveDescription;
+import static com.example.realestatemanager.utils.UtilsAddFormActivity.method;
 
 public class AddFormActivity extends AppCompatActivity {
 
@@ -867,10 +868,13 @@ public class AddFormActivity extends AppCompatActivity {
         long price = Long.parseLong(editTextPrice.getText().toString());
         place.setPrice(price);
 
-        if (!TextUtils.isEmpty(editTextSurface.getText().toString())) {
+        /*if (!TextUtils.isEmpty(editTextSurface.getText().toString())) {
             surface = Long.parseLong(editTextSurface.getText().toString());
             place.setSurface(surface);
-        }
+        }*/
+
+        place.setSurface(method(editTextSurface));
+
         if (!TextUtils.isEmpty(editTextNbrOfRooms.getText().toString())) {
             nbrOfRooms = Integer.parseInt(editTextNbrOfRooms.getText().toString());
             place.setNbrOfRooms(nbrOfRooms);

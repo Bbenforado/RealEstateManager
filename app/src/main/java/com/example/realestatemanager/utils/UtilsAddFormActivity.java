@@ -1,9 +1,11 @@
 package com.example.realestatemanager.utils;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import com.example.realestatemanager.models.Address;
 import com.example.realestatemanager.models.Photo;
+import com.google.android.material.textfield.TextInputEditText;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -48,5 +50,21 @@ public class UtilsAddFormActivity {
             }
         }
         return true;
+    }
+
+    public static long method(TextInputEditText editText) {
+        long value = 0;
+        if (!TextUtils.isEmpty(editText.getText().toString())) {
+            return Long.parseLong(editText.getText().toString());
+        }
+        return value;
+    }
+
+    public static int methoddeux(TextInputEditText editText) {
+        int number = 0;
+        if (!TextUtils.isEmpty(editText.getText().toString())) {
+            return Integer.parseInt(editText.getText().toString());
+        }
+        return number;
     }
 }

@@ -269,7 +269,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public boolean onMarkerClick(Marker marker) {
+        System.out.println("come here");
         long tag = (long) marker.getTag();
+        System.out.println("id  = " + tag);
             preferences.edit().putLong(PLACE_ID, tag).apply();
             Intent detailIntent = new Intent(this, DetailActivity.class);
             startActivity(detailIntent);

@@ -156,7 +156,7 @@ public class Place {
 
 
     //FOR CONTENT PROVIDER
-    public static Place fromContentValues(ContentValues values) {
+    public static Place fromContentValues(ContentValues values, long id, Date creationdate) {
         final Place place = new Place();
         if (values.containsKey("type")) place.setType(values.getAsString("type"));
         if (values.containsKey("price")) place.setPrice(values.getAsInteger("price"));
@@ -166,6 +166,26 @@ public class Place {
         if (values.containsKey("nbrOfBathrooms")) place.setNbrOfBathrooms(values.getAsInteger("nbrOfBathrooms"));
         if (values.containsKey("author")) place.setAuthor(values.getAsString("author"));
         if (values.containsKey("description")) place.setDescription(values.getAsString("description"));
+        //if (values.containsKey("idAddress")) place.setIdAddress(id);
+        place.setIdAddress(id);
+        place.setCreationDate(creationdate);
+        return place;
+    }
+
+
+    public static Place fromContentValuesUpdate(ContentValues values, Date date) {
+        final Place place = new Place();
+        if (values.containsKey("id")) place.setId(values.getAsLong("id"));
+        if (values.containsKey("idAddress")) place.setIdAddress(values.getAsLong("idAddress"));
+        if (values.containsKey("type")) place.setType(values.getAsString("type"));
+        if (values.containsKey("price")) place.setPrice(values.getAsInteger("price"));
+        if (values.containsKey("surface")) place.setSurface(values.getAsLong("surface"));
+        if (values.containsKey("nbrOfRooms")) place.setNbrOfRooms(values.getAsInteger("nbrOfRooms"));
+        if (values.containsKey("nbrOfBedrooms")) place.setNbrOfBedrooms(values.getAsInteger("nbrOfBedrooms"));
+        if (values.containsKey("nbrOfBathrooms")) place.setNbrOfBathrooms(values.getAsInteger("nbrOfBathrooms"));
+        if (values.containsKey("author")) place.setAuthor(values.getAsString("author"));
+        if (values.containsKey("description")) place.setDescription(values.getAsString("description"));
+        place.setCreationDate(date);
         return place;
     }
 }

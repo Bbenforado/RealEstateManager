@@ -32,6 +32,12 @@ public interface PlaceDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long createPlace(Place place);
 
+    @Insert
+    long insertPlace(Place place);
+
+    @Query("DELETE FROM places WHERE id = :id")
+    int deletePlace(long id);
+
     @Update
     int updatePlace(Place place);
 

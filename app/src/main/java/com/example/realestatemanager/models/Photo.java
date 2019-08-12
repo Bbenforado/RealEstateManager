@@ -62,11 +62,20 @@ public class Photo {
     }
 
     //FOR CONTENT PROVIDER
-    public static Photo fromContentValues(ContentValues values) {
+    public static Photo fromContentValues(ContentValues values, long id) {
         final Photo photo = new Photo();
         if (values.containsKey("uri")) photo.setUri(values.getAsString("uri"));
+        photo.setPlaceId(id);
+        if (values.containsKey("descriptionPhoto")) photo.setDescriptionPhoto(values.getAsString("descriptionPhoto"));
+        return photo;
+    }
+
+    public static Photo fromContentValuesUpdate(ContentValues values) {
+        final Photo photo = new Photo();
+        if (values.containsKey("idPhoto")) photo.setIdPhoto(values.getAsLong("idPhoto"));
+        if (values.containsKey("uri")) photo.setUri(values.getAsString("uri"));
         if (values.containsKey("placeId")) photo.setPlaceId(values.getAsLong("placeId"));
-        if (values.containsKey("description")) photo.setDescriptionPhoto(values.getAsString("description"));
+        if (values.containsKey("descriptionPhoto")) photo.setDescriptionPhoto(values.getAsString("descriptionPhoto"));
         return photo;
     }
 

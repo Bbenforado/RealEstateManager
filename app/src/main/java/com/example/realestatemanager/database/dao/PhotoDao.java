@@ -35,6 +35,9 @@ public interface PhotoDao {
     int deletePhoto(long id);
 
     //FOR CONTENT PROVIDER
-    @Query("SELECT * FROM photos WHERE placeId = :placeId")
-    Cursor getPhotosWithCursor(long placeId);
+    @Query("SELECT * FROM photos WHERE idPhoto = :id")
+    Cursor getPhotosWithCursor(long id);
+
+    @Insert
+    long insertPhoto(Photo photo);
 }
