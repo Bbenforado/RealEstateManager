@@ -44,7 +44,8 @@ public class SettingsActivity extends AppCompatActivity {
         if (preferences.getString(USER_NAME, null) != null) {
             displayInfo();
         } else {
-            Toast.makeText(this, getString(R.string.toast_message_save_your_name), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, getString(R.string.toast_message_save_your_name), Toast.LENGTH_SHORT).show();
+            displayDialogAddYourName();
         }
     }
 
@@ -89,5 +90,19 @@ public class SettingsActivity extends AppCompatActivity {
                     }})
                 .setNegativeButton(getString(R.string.cancel), null)
                 .show();
+    }
+
+    private void displayDialogAddYourName() {
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+        builder.setTitle(R.string.dialog_title_save_your_name)
+                .setMessage(R.string.dialog_message_save_your_name)
+                .setNeutralButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        android.app.AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }

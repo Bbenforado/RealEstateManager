@@ -37,8 +37,10 @@ public class DetailPhotoRecyclerViewAdapter extends RecyclerView.Adapter<DetailF
 
     @Override
     public void onBindViewHolder(@NonNull DetailFragmentPhotoViewHolder holder, int position) {
-            holder.updateUi(photoList.get(position), glide);
+        String numberOfPictures = String.valueOf(photoList.size());
 
+        holder.textViewNumberPictures.setText(numberOfPictures);
+        holder.updateUi(photoList.get(position), glide);
     }
 
     @Override

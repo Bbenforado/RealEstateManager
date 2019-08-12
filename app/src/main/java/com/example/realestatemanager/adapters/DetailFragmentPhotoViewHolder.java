@@ -21,6 +21,8 @@ public class DetailFragmentPhotoViewHolder extends RecyclerView.ViewHolder {
     ImageView imageView;
     @BindView(R.id.text_view_photo_description)
     TextView textViewDescription;
+    @BindView(R.id.camera_image) ImageView cameraImage;
+    @BindView(R.id.text_view_number_of_pictures) TextView textViewNumberPictures;
 
     public DetailFragmentPhotoViewHolder(@NonNull View itemView) {
         super(itemView);

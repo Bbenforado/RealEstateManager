@@ -336,7 +336,8 @@ public class SearchActivity extends AppCompatActivity {
                             launchResultsActivity();
                         }
                     } else {
-                        Toast.makeText(getApplicationContext(), "No results found", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getApplicationContext(), "No results found", Toast.LENGTH_SHORT).show();
+                        displayDialogNoResultsFound();
                     }
                 }
             });
@@ -406,6 +407,20 @@ public class SearchActivity extends AppCompatActivity {
     //-----------------------------------------------
     //DIALOGS METHODS
     //--------------------------------------------------
+    private void displayDialogNoResultsFound() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.dialog_no_results_found)
+                .setMessage(R.string.dialog_message_try_again)
+                .setNeutralButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
     private void displayDialog(String[] choices, MaterialButton button, String title) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(title);

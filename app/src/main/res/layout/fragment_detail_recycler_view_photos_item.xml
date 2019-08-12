@@ -23,6 +23,26 @@
         android:layout_marginBottom="10dp"
         android:layout_toRightOf="@+id/image_detail_interest"/>
 
+    <ImageView
+        android:id="@+id/camera_image"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/ic_camera"
+        android:layout_alignRight="@+id/image_view_detail_photo"
+        android:layout_alignBottom="@+id/image_view_detail_photo"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="30dp"/>
+    <TextView
+        android:id="@+id/text_view_number_of_pictures"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/camera_image"
+        android:layout_alignBottom="@+id/image_view_detail_photo"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="33dp"
+        android:textColor="@android:color/white"
+        android:textSize="12sp"/>
+
 
 
 </RelativeLayout>
