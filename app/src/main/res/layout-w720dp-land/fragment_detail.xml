@@ -84,7 +84,7 @@
                     <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Creation date: "
+                    android:text="@string/creation_date_detail"
                     android:textSize="10sp"/>
 
                     <TextView
@@ -92,7 +92,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
-                        android:textSize="10sp"/>
+                        android:textSize="10sp"
+                        android:layout_marginStart="10dp" />
 
             </LinearLayout>
 
@@ -114,7 +115,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Date of sale: "
+                android:text="@string/date_of_sale_detail"
                 android:textSize="10sp"/>
 
             <TextView
@@ -122,7 +123,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:textSize="10sp"/>
+                android:textSize="10sp"
+                android:layout_marginStart="10dp" />
 
         </LinearLayout>
 
@@ -130,7 +132,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="Description"
+            android:text="@string/description_hint"
             android:textStyle="bold" />
 
         <TextView
@@ -139,7 +141,8 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="7dp"
             android:layout_marginTop="10dp"
-            android:layout_marginBottom="20dp" />
+            android:layout_marginBottom="20dp"
+            android:layout_marginEnd="7dp" />
 
         <View
             android:layout_width="match_parent"
@@ -183,12 +186,13 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
-                            android:layout_marginLeft="20dp">
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginStart="20dp">
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Price"
+                                android:text="@string/price_detail"
                                 android:layout_marginBottom="5dp"
                                 android:textStyle="bold"/>
 
@@ -230,12 +234,13 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:layout_marginLeft="20dp">
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginStart="20dp">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Surface"
+                            android:text="@string/surface_detail"
                             android:layout_marginBottom="5dp"
                             android:textStyle="bold"/>
 
@@ -264,12 +269,13 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:layout_marginLeft="20dp">
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginStart="20dp">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Number of rooms"
+                            android:text="@string/number_of_rooms_hint"
                             android:layout_marginBottom="5dp"
                             android:textStyle="bold"/>
 
@@ -298,13 +304,14 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:layout_marginLeft="20dp">
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginStart="20dp">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textStyle="bold"
-                            android:text="Number of bedrooms"
+                            android:text="@string/nbr_of_bedrooms_hint"
                             android:layout_marginBottom="5dp"/>
 
                         <TextView
@@ -332,13 +339,14 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:layout_marginLeft="20dp">
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginStart="20dp">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textStyle="bold"
-                            android:text="Number of bathrooms"
+                            android:text="@string/nbr_of_bathrooms_hint"
                             android:layout_marginBottom="5dp"/>
 
                         <TextView
@@ -362,7 +370,7 @@
                     android:layout_marginTop="10dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Location :"
+                    android:text="@string/location_detail"
                     android:textStyle="bold"/>
 
                 <TextView
@@ -409,7 +417,8 @@
                         android:id="@+id/real_estate_manager_text_view_detail_fragment_tablet_mode"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"/>
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginStart="10dp" />
 
                 </LinearLayout>
             </LinearLayout>
@@ -458,7 +467,7 @@
             android:layout_marginTop="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Interests near this place :"
+            android:text="@string/interests_title_detail"
             android:textStyle="bold"/>
 
         <androidx.recyclerview.widget.RecyclerView

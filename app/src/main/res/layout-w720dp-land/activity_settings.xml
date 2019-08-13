@@ -39,7 +39,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="30dp"
             android:textSize="22sp"
-            android:text="Your name"/>
+            android:text="@string/your_name_setting"/>
 
     </LinearLayout>
 
@@ -52,7 +52,7 @@
             android:layout_gravity="center"
             android:padding="16dp"
             android:textSize="16sp"
-            android:text="Change user name"
+            android:text="@string/change_username_button"
             android:textAllCaps="false"/>
 
     </LinearLayout>

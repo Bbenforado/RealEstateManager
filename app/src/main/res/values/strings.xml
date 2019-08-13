@@ -66,6 +66,10 @@
     <string name="dialog_title_save_your_name">Save your name</string>
     <string name="dialog_message_save_your_name">Click on the button to save your name</string>
 
+    //FOR SETTINGS XML FILE
+    <string name="your_name_setting">Your name</string>
+    <string name="change_username_button">Change username</string>
+
     //FOR PLACE VIEWHOLDER
     <string name="status_sold">Sold</string>
     <string name="status_available">Available</string>
@@ -74,9 +78,20 @@
     <string name="app_mode_phone">phone</string>
     <string name="app_mode_tablet">tablet</string>
 
+    //FOR DETAIL FRAG XML
+    <string name="creation_date_detail">Creation date:</string>
+    <string name="date_of_sale_detail">Date of sale:</string>
+    <string name="price_detail">Price</string>
+    <string name="surface_detail">Surface</string>
+    <string name="location_detail">Location:</string>
+    <string name="interests_title_detail">Interests near this place:</string>
+
     //FOR INFORMATION FRAGMENT
     <string name="button_text_convert_to_euros">Convert to euros</string>
     <string name="button_text_convert_to_dollars">Convert to dollars</string>
+
+    //FOR INFORMATION FRAG XML
+    <string name="convert_price_button">Convert to euros</string>
 
     //FOR MAP FRAGMENT
     <string name="toast_message_address_not_found">Address not found</string>
@@ -106,5 +121,21 @@
     <string name="creation_date_search_activity">Creation date</string>
     <string name="date_of_sale_search_activity">Date of sale</string>
     <string name="button_search">Search</string>
+
+    //FOR DIALOGS
+    <string name="dialog_add_description">Type description here…</string>
+    <string name="dialog_last_name">Last name</string>
+    <string name="dialog_first_name">First name</string>
+
+    //FOR INTEREST XML
+    <string name="school">School</string>
+    <string name="hospital">Hospital</string>
+    <string name="market_place">Market place</string>
+    <string name="theater">Theater</string>
+    <string name="cinema">Cinema</string>
+    <string name="park">Park</string>
+
+    //FOR NAV HEADER
+    <string name="app_name_nav_header">Real Estate Manager</string>
 
 </resources>

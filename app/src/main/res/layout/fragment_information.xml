@@ -24,7 +24,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Creation date: "
+                    android:text="@string/creation_date_detail"
                     android:textSize="10sp"/>
 
                 <TextView
@@ -32,8 +32,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
-                    android:textSize="10sp"
-                    android:text="creation date here"/>
+                    android:textSize="10sp"/>
 
             </LinearLayout>
 
@@ -41,7 +40,6 @@
                 android:id="@+id/status_text_view_detail_fragment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="status here"
                 android:textSize="9sp"
                 android:layout_alignParentRight="true"/>
 
@@ -56,7 +54,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Date of sale: "
+            android:text="@string/date_of_sale_detail"
             android:textSize="10sp"/>
 
 
@@ -66,7 +64,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:textSize="10sp"
-            android:text="date of sale here"/>
+            android:layout_marginStart="10dp" />
 
     </LinearLayout>
 
@@ -74,7 +72,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="Description"
+                android:text="@string/description_hint"
                 android:textStyle="bold" />
 
         <TextView
@@ -84,7 +82,7 @@
             android:layout_marginRight="7dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="20dp"
-            android:text="this is description blah bla blabla this is cool place nice location and all very cool place." />
+            android:layout_marginEnd="7dp" />
 
         <View
             android:layout_width="match_parent"
@@ -122,20 +120,20 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:layout_marginLeft="20dp">
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginStart="20dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Price"
+                        android:text="@string/price_detail"
                         android:layout_marginBottom="5dp"
                         android:textStyle="bold"/>
 
                     <TextView
                         android:id="@+id/text_view_price_detail_fragment"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="price here"/>
+                        android:layout_height="wrap_content"/>
 
                 </LinearLayout>
 
@@ -144,7 +142,7 @@
                         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Convert to euros"
+                        android:text="@string/convert_price_button"
                         android:textSize="9sp"
                         android:layout_alignParentRight="true"
                         android:textAllCaps="false"/>
@@ -168,20 +166,20 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:layout_marginLeft="20dp">
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginStart="20dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Surface"
+                        android:text="@string/surface_detail"
                         android:layout_marginBottom="5dp"
                         android:textStyle="bold"/>
 
                     <TextView
                         android:id="@+id/text_view_surface_detail_fragment"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="300 m2"/>
+                        android:layout_height="wrap_content"/>
 
                 </LinearLayout>
             </LinearLayout>
@@ -202,20 +200,20 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:layout_marginLeft="20dp">
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginStart="20dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Number of rooms"
+                        android:text="@string/number_of_rooms_hint"
                         android:layout_marginBottom="5dp"
                         android:textStyle="bold"/>
 
                     <TextView
                         android:id="@+id/text_view_nbr_rooms_detail_fragment"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="5"/>
+                        android:layout_height="wrap_content"/>
 
                 </LinearLayout>
             </LinearLayout>
@@ -236,20 +234,20 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:layout_marginLeft="20dp">
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginStart="20dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textStyle="bold"
-                        android:text="Number of bedrooms"
+                        android:text="@string/nbr_of_bedrooms_hint"
                         android:layout_marginBottom="5dp"/>
 
                     <TextView
                         android:id="@+id/text_view_nbr_bathrooms_detail_fragment"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="1"/>
+                        android:layout_height="wrap_content"/>
 
                 </LinearLayout>
             </LinearLayout>
@@ -270,20 +268,20 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:layout_marginLeft="20dp">
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginStart="20dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textStyle="bold"
-                        android:text="Number of bathrooms"
+                        android:text="@string/nbr_of_bathrooms_hint"
                         android:layout_marginBottom="5dp"/>
 
                     <TextView
                         android:id="@+id/text_view_nbr_bedrooms_detail_fragment"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="2"/>
+                        android:layout_height="wrap_content"/>
 
                 </LinearLayout>
 
@@ -302,7 +300,7 @@
             android:layout_marginTop="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Interests near this place :"
+            android:text="@string/interests_title_detail"
             android:textStyle="bold"/>
 
         <androidx.recyclerview.widget.RecyclerView
@@ -323,30 +321,26 @@
         android:layout_marginTop="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Location :"
+        android:text="@string/location_detail"
         android:textStyle="bold"/>
 
     <TextView
         android:id="@+id/street_address_text_view_information"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="street address here"/>
+        android:layout_height="wrap_content"/>
     <TextView
         android:id="@+id/complement_text_view_information"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="complement"/>
+        android:layout_height="wrap_content"/>
     <TextView
         android:id="@+id/postal_code_and_city_text_view_information"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="postal code + city"/>
+        android:layout_height="wrap_content"/>
     <TextView
         android:id="@+id/country_text_view_information"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textStyle="bold"
-        android:text="country here"/>
+        android:textStyle="bold"/>
 
     <View
         android:layout_width="match_parent"
@@ -372,7 +366,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:text="manager here"/>
+                android:layout_marginStart="10dp" />
 
         </LinearLayout>
 </LinearLayout>

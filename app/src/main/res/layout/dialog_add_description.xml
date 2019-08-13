@@ -21,6 +21,6 @@
             android:inputType="text|textCapSentences"
             android:textSize="12sp"
             android:singleLine="true"
-            android:hint="Type description here..."/>
+            android:hint="@string/dialog_add_description"/>
     </com.google.android.material.textfield.TextInputLayout>
 </LinearLayout>

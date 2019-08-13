@@ -33,14 +33,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:text="Type of place"
                 android:textStyle="bold"/>
 
             <TextView
                 android:id="@+id/status_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="if its available"
                 android:textSize="9sp"
                 android:paddingTop="3dp"
                 android:layout_alignParentRight="true"/>
@@ -57,8 +55,7 @@
                 android:id="@+id/city_text_view"
                 android:layout_width="210dp"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
-                android:text="City"/>
+                android:textSize="12sp"/>
 
         </RelativeLayout>
 
@@ -71,7 +68,6 @@
                 android:id="@+id/price_text_view"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:text="Price"
                 android:textSize="16sp"
                 android:textColor="@color/colorAccent"/>
 
