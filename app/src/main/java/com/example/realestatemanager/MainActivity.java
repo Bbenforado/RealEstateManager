@@ -74,10 +74,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onStop() {
+        super.onStop();
         preferences.edit().putInt(KEY_RESULTS_ACTIVITY, -1).apply();
-
     }
 
     @Override
@@ -178,6 +177,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void configureAndShowListFragment(){
         //preferences.edit().putInt(KEY_RESULTS_ACTIVITY, -1).apply();
+        System.out.println("key result = " + preferences.getInt(KEY_RESULTS_ACTIVITY, -1));
         listFragment = (ListFragment) getSupportFragmentManager().findFragmentById(R.id.frame_layout_main_list);
         if (listFragment == null) {
             listFragment = new ListFragment();

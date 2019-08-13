@@ -83,6 +83,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="number"
+                        android:singleLine="true"
                         android:textSize="14sp"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -98,6 +99,7 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/text_edit_max_price_search_activity"
                         android:inputType="number"
+                        android:singleLine="true"
                         android:textSize="14sp"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -135,6 +137,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="number"
+                        android:singleLine="true"
                         android:textSize="14sp"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -150,6 +153,7 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/text_edit_max_surface_search_activity"
                         android:inputType="number"
+                        android:singleLine="true"
                         android:textSize="14sp"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -187,6 +191,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="number"
+                        android:singleLine="true"
                         android:textSize="14sp"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -202,6 +207,7 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/text_edit_max_nbr_rooms_search_activity"
                         android:inputType="number"
+                        android:singleLine="true"
                         android:textSize="14sp"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -240,6 +246,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="number"
+                        android:singleLine="true"
                         android:textSize="14sp"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -255,6 +262,7 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/text_edit_max_nbr_bedrooms_search_activity"
                         android:inputType="number"
+                        android:singleLine="true"
                         android:textSize="14sp"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -292,6 +300,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="number"
+                        android:singleLine="true"
                         android:textSize="14sp"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -307,6 +316,7 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/text_edit_max_nbr_bathrooms_search_activity"
                         android:inputType="number"
+                        android:singleLine="true"
                         android:textSize="14sp"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -344,6 +354,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="number"
+                        android:singleLine="true"
                         android:textSize="14sp"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -380,7 +391,9 @@
                         android:id="@+id/text_edit_city_search_activity"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:inputType="textCapSentences"
                         android:maxLines="1"
+                        android:singleLine="true"
                         android:textSize="14sp"/>
 
                 </com.google.android.material.textfield.TextInputLayout>

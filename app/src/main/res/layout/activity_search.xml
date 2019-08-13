@@ -46,7 +46,8 @@
                 android:layout_marginLeft="10dp"
                 android:layout_weight="1"
                 android:textSize="12sp"
-                android:textAllCaps="false"/>
+                android:textAllCaps="false"
+                android:layout_marginStart="10dp" />
 
         </LinearLayout>
 
@@ -62,7 +63,8 @@
                 android:layout_gravity="center"
                 android:layout_marginRight="10dp"
                 android:textSize="14sp"
-                android:text="Price"/>
+                android:text="@string/price_hint"
+                android:layout_marginEnd="10dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -73,12 +75,13 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:hint="min">
+                    android:hint="@string/min">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/text_edit_min_price_search_activity"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:singleLine="true"
                         android:inputType="number"
                         android:textSize="12sp"/>
 
@@ -88,13 +91,14 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:hint="max">
+                    android:hint="@string/max">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:id="@+id/text_edit_max_price_search_activity"
                         android:inputType="number"
+                        android:singleLine="true"
                         android:textSize="12sp"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -114,7 +118,8 @@
                 android:layout_marginRight="10dp"
                 android:layout_gravity="center"
                 android:textSize="14sp"
-                android:text="Surface"/>
+                android:text="@string/surface_hint"
+                android:layout_marginEnd="10dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -125,13 +130,14 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:hint="min">
+                    android:hint="@string/min">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/text_edit_min_surface_search_activity"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="number"
+                        android:singleLine="true"
                         android:textSize="12sp"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -140,13 +146,14 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:hint="max">
+                    android:hint="@string/max">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:id="@+id/text_edit_max_surface_search_activity"
                         android:inputType="number"
+                        android:singleLine="true"
                         android:textSize="12sp"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -166,7 +173,8 @@
                 android:layout_gravity="center"
                 android:layout_marginRight="10dp"
                 android:textSize="14sp"
-                android:text="Number of rooms"/>
+                android:text="@string/number_of_rooms_hint"
+                android:layout_marginEnd="10dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -177,13 +185,14 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:hint="min">
+                    android:hint="@string/min">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/text_edit_min_nbr_rooms_search_activity"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="number"
+                        android:singleLine="true"
                         android:textSize="12sp"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -192,13 +201,14 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:hint="max">
+                    android:hint="@string/max">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:id="@+id/text_edit_max_nbr_rooms_search_activity"
                         android:inputType="number"
+                        android:singleLine="true"
                         android:textSize="12sp"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -217,9 +227,10 @@
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="10dp"
-                android:text="Number of bedrooms"
+                android:text="@string/nbr_of_bedrooms_hint"
                 android:textSize="14sp"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center"
+                android:layout_marginEnd="10dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -230,13 +241,14 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:hint="min">
+                    android:hint="@string/min">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/text_edit_min_nbr_bedrooms_search_activity"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="number"
+                        android:singleLine="true"
                         android:textSize="12sp"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -245,13 +257,14 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:hint="max">
+                    android:hint="@string/max">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:id="@+id/text_edit_max_nbr_bedrooms_search_activity"
                         android:inputType="number"
+                        android:singleLine="true"
                         android:textSize="12sp"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -268,10 +281,11 @@
             <TextView
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="Number of bathrooms"
+                android:text="@string/nbr_of_bathrooms_hint"
                 android:textSize="14sp"
                 android:layout_marginRight="10dp"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center"
+                android:layout_marginEnd="10dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -282,13 +296,14 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:hint="min">
+                    android:hint="@string/min">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/text_edit_min_nbr_bathrooms_search_activity"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="number"
+                        android:singleLine="true"
                         android:textSize="12sp"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -297,13 +312,14 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:hint="max">
+                    android:hint="@string/max">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:id="@+id/text_edit_max_nbr_bathrooms_search_activity"
                         android:inputType="number"
+                        android:singleLine="true"
                         android:textSize="12sp"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -320,10 +336,11 @@
             <TextView
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="Number of photos"
+                android:text="@string/nbr_of_photos"
                 android:textSize="14sp"
                 android:layout_marginRight="10dp"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center"
+                android:layout_marginEnd="10dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -334,13 +351,14 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:hint="min">
+                    android:hint="@string/nbr_of_photos_hint">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/text_edit_min_nbr_photos_search_activity"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="number"
+                        android:singleLine="true"
                         android:textSize="12sp"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -357,10 +375,11 @@
             <TextView
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="City"
+                android:text="@string/city_hint"
                 android:textSize="14sp"
                 android:layout_marginRight="10dp"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center"
+                android:layout_marginEnd="10dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -371,12 +390,14 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:hint="Type city here...">
+                    android:hint="@string/city_hint_search_activity">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/text_edit_city_search_activity"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:inputType="textCapSentences"
+                        android:singleLine="true"
                         android:maxLines="1"
                         android:textSize="12sp"/>
 
@@ -396,9 +417,10 @@
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="10dp"
-                android:text="Creation date"
+                android:text="@string/creation_date_search_activity"
                 android:textSize="14sp"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center"
+                android:layout_marginEnd="10dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -424,7 +446,8 @@
                     android:layout_height="wrap_content"
                     android:textSize="12sp"
                     android:hint="05/03/2019"
-                    android:padding="15dp" />
+                    android:padding="15dp"
+                    android:layout_marginStart="10dp" />
 
             </LinearLayout>
 
@@ -443,7 +466,8 @@
                 android:layout_gravity="center"
                 android:textSize="14sp"
                 android:layout_marginRight="10dp"
-                android:text="Date of sale"/>
+                android:text="@string/date_of_sale_search_activity"
+                android:layout_marginEnd="10dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -469,7 +493,8 @@
                     android:layout_height="wrap_content"
                     android:hint="05/03/2019"
                     android:textSize="12sp"
-                    android:padding="15dp" />
+                    android:padding="15dp"
+                    android:layout_marginStart="10dp" />
 
             </LinearLayout>
 
@@ -486,7 +511,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="Search"
+            android:text="@string/button_search"
             android:textSize="12sp"
             android:textAllCaps="false"/>
 

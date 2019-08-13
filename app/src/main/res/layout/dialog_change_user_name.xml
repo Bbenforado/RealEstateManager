@@ -20,7 +20,9 @@
             android:layout_height="wrap_content"
             app:hintEnabled="true"
             android:textSize="12sp"
+            android:singleLine="true"
             android:maxLines="1"
+            android:inputType="textCapSentences"
             android:hint="Last name"/>
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -38,6 +40,8 @@
                 android:layout_height="wrap_content"
                 app:hintEnabled="true"
                 android:textSize="12sp"
+                android:inputType="textCapSentences"
+                android:singleLine="true"
                 android:maxLines="1"
                 android:hint="First name"/>
 

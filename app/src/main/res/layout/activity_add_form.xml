@@ -35,10 +35,11 @@
                 android:layout_marginRight="7dp"
                 android:layout_weight="50"
                 android:backgroundTint="@color/blue_grey_dark"
-                android:text="Type of place"
+                android:text="@string/button_generic_text_type_of_place"
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                app:icon="@drawable/house" />
+                app:icon="@drawable/house"
+                android:layout_marginEnd="7dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/button_add_pictures"
@@ -49,9 +50,10 @@
                 android:layout_weight="50"
                 android:textSize="12sp"
                 android:backgroundTint="@color/blue_grey_dark"
-                android:text="Add pictures"
+                android:text="@string/button_add_pictures"
                 android:textAllCaps="false"
-                app:icon="@drawable/picture" />
+                app:icon="@drawable/picture"
+                android:layout_marginStart="7dp" />
 
         </LinearLayout>
 
@@ -72,7 +74,8 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="10dp"
-                android:src="@drawable/price_tag" />
+                android:src="@drawable/price_tag"
+                android:layout_marginEnd="10dp" />
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
@@ -87,7 +90,8 @@
                     android:id="@+id/text_edit_price"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Price (dollars)"
+                    android:hint="@string/price_hint"
+                    android:singleLine="true"
                     android:inputType="number"
                     android:maxLines="1"
                     android:textSize="12sp"
@@ -109,7 +113,8 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="10dp"
-                android:src="@drawable/ic_surface" />
+                android:src="@drawable/ic_surface"
+                android:layout_marginEnd="10dp" />
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
@@ -124,7 +129,8 @@
                     android:id="@+id/text_edit_surface"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Surface (m²)"
+                    android:hint="@string/surface_hint"
+                    android:singleLine="true"
                     android:inputType="number"
                     android:maxLines="1"
                     android:textSize="12sp"
@@ -146,7 +152,8 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="10dp"
-                android:src="@drawable/number_of_room" />
+                android:src="@drawable/number_of_room"
+                android:layout_marginEnd="10dp" />
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
@@ -161,7 +168,8 @@
                     android:id="@+id/text_edit_nbr_of_rooms"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Number of rooms"
+                    android:hint="@string/number_of_rooms_hint"
+                    android:singleLine="true"
                     android:inputType="number"
                     android:maxLines="1"
                     android:textSize="12sp"
@@ -176,13 +184,15 @@
             android:layout_height="45dp"
             android:layout_marginLeft="30dp"
             app:boxStrokeColor="@color/blue"
-            app:errorEnabled="true">
+            app:errorEnabled="true"
+            android:layout_marginStart="30dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/text_edit_nbr_of_bedrooms"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Number of bedrooms"
+                android:hint="@string/nbr_of_bedrooms_hint"
+                android:singleLine="true"
                 android:inputType="number"
                 android:maxLines="1"
                 android:textSize="12sp"
@@ -196,13 +206,15 @@
             android:layout_height="45dp"
             android:layout_marginLeft="30dp"
             app:boxStrokeColor="@color/blue"
-            app:errorEnabled="true">
+            app:errorEnabled="true"
+            android:layout_marginStart="30dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/text_edit_nbr_of_bathrooms"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Number of bathrooms"
+                android:hint="@string/nbr_of_bathrooms_hint"
+                android:singleLine="true"
                 android:inputType="number"
                 android:maxLines="1"
                 android:textSize="12sp"
@@ -222,7 +234,8 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="10dp"
-                android:src="@drawable/edit" />
+                android:src="@drawable/edit"
+                android:layout_marginEnd="10dp" />
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
@@ -236,8 +249,9 @@
                     android:id="@+id/text_edit_description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Description"
+                    android:hint="@string/description_hint"
                     android:textSize="12sp"
+                    android:inputType="textCapSentences"
                     app:hintEnabled="true" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -256,7 +270,8 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="10dp"
-                android:src="@drawable/address" />
+                android:src="@drawable/address"
+                android:layout_marginEnd="10dp" />
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
@@ -270,7 +285,8 @@
                     android:id="@+id/text_edit_street_nbr"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Number"
+                    android:hint="@string/street_nbr_hint"
+                    android:singleLine="true"
                     android:inputType="number"
                     android:maxLines="1"
                     android:textSize="12sp"
@@ -285,14 +301,17 @@
                 android:layout_marginLeft="10dp"
                 android:layout_weight="80"
                 app:boxStrokeColor="@color/blue"
-                app:errorEnabled="true">
+                app:errorEnabled="true"
+                android:layout_marginStart="10dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edit_text_street_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Street name"
+                    android:hint="@string/street_name_hint"
                     android:maxLines="1"
+                    android:singleLine="true"
+                    android:inputType="textCapSentences"
                     android:textSize="12sp"
                     app:hintEnabled="true" />
 
@@ -311,13 +330,16 @@
                 android:layout_height="45dp"
                 android:layout_marginLeft="30dp"
                 app:boxStrokeColor="@color/blue"
-                app:errorEnabled="true">
+                app:errorEnabled="true"
+                android:layout_marginStart="30dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edit_text_complement"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Complement"
+                    android:hint="@string/complement_hint"
+                    android:singleLine="true"
+                    android:inputType="textCapSentences"
                     android:maxLines="1"
                     android:textSize="12sp"
                     app:hintEnabled="true" />
@@ -338,14 +360,16 @@
                 android:layout_marginLeft="30dp"
                 android:layout_weight="50"
                 app:boxStrokeColor="@color/blue"
-                app:errorEnabled="true">
+                app:errorEnabled="true"
+                android:layout_marginStart="30dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/text_edit_postal_code"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Postal code"
+                    android:hint="@string/postal_code_hint"
                     android:inputType="number"
+                    android:singleLine="true"
                     android:maxLines="1"
                     android:textSize="12sp"
                     app:hintEnabled="true" />
@@ -359,13 +383,16 @@
                 android:layout_marginLeft="10dp"
                 android:layout_weight="50"
                 app:boxStrokeColor="@color/blue"
-                app:errorEnabled="true">
+                app:errorEnabled="true"
+                android:layout_marginStart="10dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/text_edit_city"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="City"
+                    android:hint="@string/city_hint"
+                    android:singleLine="true"
+                    android:inputType="textCapSentences"
                     android:maxLines="1"
                     android:textSize="12sp"
                     app:hintEnabled="true" />
@@ -385,13 +412,16 @@
                 android:layout_height="45dp"
                 android:layout_marginLeft="30dp"
                 app:boxStrokeColor="@color/blue"
-                app:errorEnabled="true">
+                app:errorEnabled="true"
+                android:layout_marginStart="30dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/text_edit_country"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Country"
+                    android:hint="@string/country_hint"
+                    android:singleLine="true"
+                    android:inputType="textCapSentences"
                     android:maxLines="1"
                     android:textSize="12sp"
                     app:hintEnabled="true" />
@@ -412,7 +442,8 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="10dp"
-                android:src="@drawable/user" />
+                android:src="@drawable/user"
+                android:layout_marginEnd="10dp"/>
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
@@ -425,7 +456,9 @@
                     android:id="@+id/text_edit_author"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Real estate agent"
+                    android:hint="@string/real_estate_agent_hint"
+                    android:singleLine="true"
+                    android:inputType="textCapSentences"
                     android:maxLines="1"
                     android:textSize="12sp"
                     app:hintEnabled="true" />
@@ -460,7 +493,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Date of sale: " />
+                android:text="@string/date_of_sale_text_view_text" />
 
             <Button
                 android:id="@+id/spinner_button_sale_date"

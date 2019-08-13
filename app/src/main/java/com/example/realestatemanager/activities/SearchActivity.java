@@ -113,8 +113,6 @@ public class SearchActivity extends AppCompatActivity {
     private static final String APP_MODE = "appMode";
     public static final String KEY_RESULTS_ACTIVITY = "keyResultActivity";
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -317,7 +315,7 @@ public class SearchActivity extends AppCompatActivity {
                 strQuery = strQuery + "  AND interests.interestType = '" + strInterests + "'";
             }
             if (city != null) {
-                strQuery = strQuery + " AND addresses.city = '" + city + "'";
+                strQuery = strQuery + " AND UPPER(addresses.city) = UPPER('" + city + "')";
             }
             if (!TextUtils.isEmpty(editTextNbrOfPhotos.getText().toString())) {
                 strQuery = strQuery + " AND places.id IN (SELECT photos.placeId FROM photos GROUP BY photos.placeId HAVING COUNT(photos.placeId) >= " + nbrOfPhotos + ")";
@@ -464,13 +462,13 @@ public class SearchActivity extends AppCompatActivity {
     //---------------------------------------------
     private void launchResultsActivity() {
         preferences.edit().putInt(KEY_RESULTS_ACTIVITY, 1).apply();
-        if (preferences.getString(APP_MODE, null ).equals("tablet")) {
+        //if (preferences.getString(APP_MODE, null ).equals("tablet")) {
             Intent resultsActivityTabletMode = new Intent(this, MainActivity.class);
             startActivity(resultsActivityTabletMode);
-        } else {
+        /*} else {
             Intent resultsActivity = new Intent(this, ResultsFromSearchActivity.class);
             startActivity(resultsActivity);
-        }
+        }*/
 
     }
 }

@@ -35,6 +35,23 @@
     <string name="button_generic_text_type_of_place">Type of place</string>
     <string name="toast_message_date_not_correct">You have to choose a passed or present date</string>
 
+    //ADD FORM ACTIVITY XML FILE
+    <string name="button_add_pictures">Add pictures</string>
+    <string name="price_hint">Price (dollars)</string>
+    <string name="surface_hint">Surface (m²)</string>
+    <string name="number_of_rooms_hint">Number of rooms</string>
+    <string name="nbr_of_bedrooms_hint">Number of bedrooms</string>
+    <string name="nbr_of_bathrooms_hint">Number of bathrooms</string>
+    <string name="description_hint">Description</string>
+    <string name="street_nbr_hint">Number</string>
+    <string name="street_name_hint">Street name</string>
+    <string name="complement_hint">Complement</string>
+    <string name="postal_code_hint">Postal code</string>
+    <string name="city_hint">City</string>
+    <string name="country_hint">Country</string>
+    <string name="real_estate_agent_hint">Real estate agent</string>
+    <string name="date_of_sale_text_view_text">Date of sale: </string>
+
     //FOR MAP ACTIVITY
     <string name="permission_granted">Permission granted</string>
     <string name="permission_denied">Permission denied</string>
@@ -77,8 +94,17 @@
     <string name="toast_message_field_value_missing">You have to inform at least type of place</string>
     <string name="toast_message_no_result_found">No results found for theses criteria :(</string>
     <string name="dialog_no_results_found">No results found</string>
-    <string name="dialog_message_try_again">Try with new criteria...</string>
+    <string name="dialog_message_try_again">Try with new criteria…</string>
     <string name="dialog_ok">Ok</string>
 
+    //FOR SEARCH ACTIVITY XML FILE
+    <string name="min">Min</string>
+    <string name="max">Max</string>
+    <string name="nbr_of_photos">Number of photos</string>
+    <string name="nbr_of_photos_hint">Type number of photos…</string>
+    <string name="city_hint_search_activity">Type city here…</string>
+    <string name="creation_date_search_activity">Creation date</string>
+    <string name="date_of_sale_search_activity">Date of sale</string>
+    <string name="button_search">Search</string>
 
 </resources>

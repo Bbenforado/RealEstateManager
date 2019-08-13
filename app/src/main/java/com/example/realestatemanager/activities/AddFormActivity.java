@@ -801,6 +801,8 @@ public class AddFormActivity extends AppCompatActivity {
             complement = editTextComplement.getText().toString();
         }
         String postalCode = editTextPostalCode.getText().toString();
+
+
         String city = editTextCity.getText().toString();
         String country = editTextCountry.getText().toString();
         Address address = new Address(streetNumber, streetName, complement, postalCode, city, country);
