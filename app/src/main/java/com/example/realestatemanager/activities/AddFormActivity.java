@@ -61,6 +61,7 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -412,7 +413,9 @@ public class AddFormActivity extends AppCompatActivity {
             editTextNbrOfBedrooms.setText(getString(R.string.not_informed_yet));
         }
         if (place.getDateOfSale() != null) {
-            saleDateButton.setText(place.getDateOfSale().toString());
+            DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            String strDate = dateFormat.format(place.getDateOfSale());
+            saleDateButton.setText(strDate);
         }
     }
 
