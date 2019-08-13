@@ -108,7 +108,7 @@ public class ListFragment extends Fragment {
         return result;
     }
 
-    @Override
+   /* @Override
     public void onDestroyView() {
         super.onDestroyView();
         System.out.println("on destroy view frag list");
@@ -122,7 +122,7 @@ public class ListFragment extends Fragment {
         System.out.println("on dstroy frag list");
         preferences.edit().putInt(KEY_RESULTS_ACTIVITY, -1).apply();
         System.out.println("key result = " + preferences.getInt(KEY_RESULTS_ACTIVITY, -1));
-    }
+    }*/
 
     //-------------------------------------------
     //CONFIGURATION
