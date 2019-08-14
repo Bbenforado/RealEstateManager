@@ -7,6 +7,7 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.RoomWarnings;
 import androidx.room.Update;
 import com.example.realestatemanager.models.Place;
 import com.example.realestatemanager.models.PlaceAddressesPhotosAndInterests;
@@ -23,9 +24,11 @@ public interface PlaceDao {
     @Query("SELECT * FROM places WHERE id = :placeId")
     LiveData<Place> getPlace(long placeId);
 
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @Query("SELECT places.id, places.type, addresses.addressId, addresses.latLng, count(*) FROM places, addresses WHERE places.idAddress = addresses.addressId GROUP BY places.id")
     LiveData<List<PlaceIdAndAddressId>> getPlaceAndAddressId();
 
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @Query("SELECT *, count(*) FROM places, addresses, photos, interests WHERE places.idAddress = addresses.addressId AND places.id = interests.idPlace AND places.id = photos.placeId GROUP BY places.id")
     LiveData<List<PlaceAddressesPhotosAndInterests>> getAllData();
 

@@ -1,8 +1,10 @@
 package com.example.realestatemanager.utils;
 
+import android.content.ContentUris;
 import android.content.Context;
 import android.text.TextUtils;
 
+import com.example.realestatemanager.R;
 import com.example.realestatemanager.models.Address;
 import com.example.realestatemanager.models.Photo;
 import com.google.android.material.textfield.TextInputEditText;
@@ -43,6 +45,10 @@ public class UtilsAddFormActivity {
         address.setLatLng(latLng);
     }
 
+    /**
+     * @param photos list of photos added by user
+     * @return if photos have description saved
+     */
     public static boolean allPhotosHaveDescription(List<Photo> photos) {
         for (Photo photo : photos) {
             if (photo.getDescriptionPhoto() == null) {
@@ -52,19 +58,52 @@ public class UtilsAddFormActivity {
         return true;
     }
 
-    public static long method(TextInputEditText editText) {
+    public static long getLongFromEditText(TextInputEditText editText) {
         long value = 0;
-        if (!TextUtils.isEmpty(editText.getText().toString())) {
+        if (!TextUtils.isEmpty(editText.getText().toString()) && !editText.getText().toString().equals("Not informed yet")) {
             return Long.parseLong(editText.getText().toString());
         }
         return value;
     }
 
-    public static int methoddeux(TextInputEditText editText) {
+    public static int getIntFromEditText(TextInputEditText editText) {
         int number = 0;
-        if (!TextUtils.isEmpty(editText.getText().toString())) {
+        if (!TextUtils.isEmpty(editText.getText().toString()) && !editText.getText().toString().equals("Not informed yet")) {
             return Integer.parseInt(editText.getText().toString());
         }
         return number;
+    }
+
+    public static String getStringFromEditText(TextInputEditText editText) {
+        String description = null;
+        if (!TextUtils.isEmpty(editText.getText().toString()) && !editText.getText().toString().equals("Not informed yet")) {
+            description = editText.getText().toString();
+            return description;
+        }
+        return description;
+    }
+
+    public static void setDataValueTextToEditText(String value, Context context, TextInputEditText editText) {
+        if (value != null) {
+            editText.setText(value);
+        } else {
+            editText.setText(context.getString(R.string.not_informed_yet));
+        }
+    }
+
+    public static void setDataValueLongToEditText(long value, Context context, TextInputEditText editText) {
+        if (value != 0) {
+            editText.setText(String.valueOf(value));
+        }else {
+            editText.setText(context.getString(R.string.not_informed_yet));
+        }
+    }
+
+    public static void setDataValueIntToEditText(int value, Context context, TextInputEditText editText) {
+        if (value != 0) {
+            editText.setText(String.valueOf(value));
+        } else {
+            editText.setText(context.getString(R.string.not_informed_yet));
+        }
     }
 }

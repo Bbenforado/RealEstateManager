@@ -73,6 +73,8 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
     FloatingActionButton editFloatingActionButton;
     @Nullable
     @BindView(R.id.viewpager) ViewPager viewPager;
+    /*@Nullable
+    @BindView(R.id.custom_view_pager) ViewPager customViewPager;*/
     @Nullable
     @BindView(R.id.main_tabs) TabLayout tabLayout;
     @BindView(R.id.recycler_view_detail_photos) RecyclerView recyclerViewPhotos;
@@ -284,7 +286,9 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
     private void configureViewpagerAndTabs() {
         DetailFragmentViewPagerAdapter viewPagerAdapter = new DetailFragmentViewPagerAdapter(getActivity().getSupportFragmentManager(), titles);
         viewPager.setAdapter(viewPagerAdapter);
+        //customViewPager.setAdapter(viewPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
+        //tabLayout.setupWithViewPager(customViewPager);
         for (int i = 0; i < tabLayout.getTabCount(); i++) {
             tabLayout.getTabAt(i).setIcon(iconTabLayout[i]);
         }

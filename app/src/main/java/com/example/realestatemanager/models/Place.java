@@ -6,11 +6,13 @@ import android.content.ContentValues;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Ignore;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import java.util.Date;
 
-@Entity(tableName = "places", foreignKeys =
+@Entity(indices = {@Index("idAddress")},
+        tableName = "places", foreignKeys =
 @ForeignKey(entity = Address.class,
         parentColumns = "addressId",
         childColumns = "idAddress"))

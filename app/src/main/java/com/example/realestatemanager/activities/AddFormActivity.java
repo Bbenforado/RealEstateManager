@@ -79,7 +79,13 @@ import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
 import static com.example.realestatemanager.utils.UtilsAddFormActivity.allPhotosHaveDescription;
-import static com.example.realestatemanager.utils.UtilsAddFormActivity.method;
+import static com.example.realestatemanager.utils.UtilsAddFormActivity.formatDate;
+import static com.example.realestatemanager.utils.UtilsAddFormActivity.getIntFromEditText;
+import static com.example.realestatemanager.utils.UtilsAddFormActivity.getLongFromEditText;
+import static com.example.realestatemanager.utils.UtilsAddFormActivity.getStringFromEditText;
+import static com.example.realestatemanager.utils.UtilsAddFormActivity.setDataValueIntToEditText;
+import static com.example.realestatemanager.utils.UtilsAddFormActivity.setDataValueLongToEditText;
+import static com.example.realestatemanager.utils.UtilsAddFormActivity.setDataValueTextToEditText;
 
 public class AddFormActivity extends AppCompatActivity {
 
@@ -125,7 +131,6 @@ public class AddFormActivity extends AppCompatActivity {
     private List<Photo> allPhotos;
     private List<Long> deletedPhotosId;
     private List<Photo> updatedPhoto;
-    private SimpleDateFormat formatter;
     @State String buttonTypeText;
     @State String dateSaleText;
     private long addressId;
@@ -153,47 +158,16 @@ public class AddFormActivity extends AppCompatActivity {
         saleDateButton.setHint(Utils.getTodayDate());
         status = preferences.getInt(STATUS_FORM_ACTIVITY, -1);
         preferences.edit().putInt(CODE_DESCRIPTION, -1).apply();
-        configureToolbar();
-        photoList = new ArrayList<>();
-        allPhotos = new ArrayList<>();
-        deletedPhotosId = new ArrayList<>();
-        updatedPhoto = new ArrayList<>();
-        formatter = new SimpleDateFormat("dd/MM/yyyy");
 
+        configureToolbar();
+        initializeArrayLists();
         configureViewModel();
-        checkBoxes = Arrays.asList(checkBoxSchool, checkBoxMarketPlace, checkBoxPark, checkBoxHospital, checkBoxCinema, checkBoxTheater);
         //if it s to edit one existing place
         if (status == 1) {
             placeId = preferences.getLong(PLACE_ID, -1);
             addressId = preferences.getLong(ADDRESS_ID, -1);
             configureRecyclerView(allPhotos);
-            placeViewModel.getPlace(placeId).observe(this, new Observer<Place>() {
-                @Override
-                public void onChanged(Place place) {
-                    completeFormWithPlaceData(place);
-                }
-            });
-            placeViewModel.getAddressOfAPlace(addressId).observe(this, new Observer<Address>() {
-                @Override
-                public void onChanged(Address address) {
-                    completeAddressFormWithData(address);
-                }
-            });
-            placeViewModel.getInterests(placeId).observe(this, new Observer<List<Interest>>() {
-                @Override
-                public void onChanged(List<Interest> interests) {
-                    completeInterestFormWithData(interests);
-                }
-            });
-
-            placeViewModel.getPhotosForAPlace(placeId).observe(this, photos -> {
-                // update UI if it s not called from add description
-                if (preferences.getInt(CODE_DESCRIPTION, -1) != 300) {
-                    allPhotos.addAll(photos);
-                    adapter.notifyDataSetChanged();
-                }
-                preferences.edit().putInt(CODE_DESCRIPTION, 0).apply();
-            });
+            completeFormWithAllData();
         } else {
             //if it s to add one new place
             configureRecyclerView(photoList);
@@ -238,29 +212,7 @@ public class AddFormActivity extends AppCompatActivity {
                 //if it s to update an existing place
                 if (fieldsAreCorrectlyFilled()) {
                     if (allPhotos.size() > 0 && allPhotosHaveDescription(allPhotos)) {
-                        placeViewModel.getPlace(placeId).observe(this, new Observer<Place>() {
-                            @Override
-                            public void onChanged(Place place) {
-                                updatePlace(place);
-                            }
-                        });
-                        if (photoList.size() > 0) {
-                            createNewlyAddedPhotos();
-                        }
-                        if (deletedPhotosId.size() > 0) {
-                            deletePhotos();
-                        }
-                        if (updatedPhoto.size() > 0) {
-                           updatePhotos();
-                        }
-                        placeViewModel.deleteInterests(placeId);
-                        createInterestsForAPlace(placeId);
-                        placeViewModel.getAddressOfAPlace(addressId).observe(this, new Observer<Address>() {
-                            @Override
-                            public void onChanged(Address address) {
-                                updateAddress(address);
-                            }
-                        });
+                        updateDataInDatabase();
                         sendNotification(this.getString(R.string.place_updated));
                         launchMainActivity();
                     } else {
@@ -320,6 +272,14 @@ public class AddFormActivity extends AppCompatActivity {
         ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(this);
         placeViewModel = ViewModelProviders.of(this, viewModelFactory).get(PlaceViewModel.class);
     }
+
+    private void initializeArrayLists() {
+        photoList = new ArrayList<>();
+        allPhotos = new ArrayList<>();
+        deletedPhotosId = new ArrayList<>();
+        updatedPhoto = new ArrayList<>();
+        checkBoxes = Arrays.asList(checkBoxSchool, checkBoxMarketPlace, checkBoxPark, checkBoxHospital, checkBoxCinema, checkBoxTheater);
+    }
     //-------------------------------------
     //ACTIONS
     //----------------------------------
@@ -365,14 +325,42 @@ public class AddFormActivity extends AppCompatActivity {
     //----------------------------------------------
     //UPDATE UI WITH DATA
     //-----------------------------------------------
+    private void completeFormWithAllData() {
+        placeViewModel.getPlace(placeId).observe(this, new Observer<Place>() {
+            @Override
+            public void onChanged(Place place) {
+                completeFormWithPlaceData(place);
+            }
+        });
+        placeViewModel.getAddressOfAPlace(addressId).observe(this, new Observer<Address>() {
+            @Override
+            public void onChanged(Address address) {
+                completeAddressFormWithData(address);
+            }
+        });
+        placeViewModel.getInterests(placeId).observe(this, new Observer<List<Interest>>() {
+            @Override
+            public void onChanged(List<Interest> interests) {
+                completeInterestFormWithData(interests);
+            }
+        });
+
+        placeViewModel.getPhotosForAPlace(placeId).observe(this, photos -> {
+            // update UI if it s not called from add description
+            if (preferences.getInt(CODE_DESCRIPTION, -1) != 300) {
+                allPhotos.addAll(photos);
+                adapter.notifyDataSetChanged();
+            }
+            preferences.edit().putInt(CODE_DESCRIPTION, 0).apply();
+        });
+    }
+
     private void restoreState() {
         if (buttonTypeText != null) {
             typeOfPlaceButton.setText(buttonTypeText);
-            //buttonTypeText = null;
         }
         if (dateSaleText != null) {
             saleDateButton.setText(dateSaleText);
-            //dateSaleText = null;
         }
     }
     private void displayRealEstateManagerName() {
@@ -386,32 +374,11 @@ public class AddFormActivity extends AppCompatActivity {
         typeOfPlaceButton.setText(place.getType());
         editTextPrice.setText(String.valueOf(place.getPrice()));
         editTextAuthor.setText(place.getAuthor());
-
-        if (place.getDescription() != null) {
-            editTextDescription.setText(place.getDescription());
-        } else {
-            editTextDescription.setText(getString(R.string.not_informed_yet));
-        }
-        if (place.getSurface() != 0) {
-            editTextSurface.setText(String.valueOf(place.getSurface()));
-        }else {
-            editTextSurface.setText(getString(R.string.not_informed_yet));
-        }
-        if (place.getNbrOfRooms() != 0) {
-            editTextNbrOfRooms.setText(String.valueOf(place.getNbrOfRooms()));
-        } else {
-            editTextNbrOfRooms.setText(getString(R.string.not_informed_yet));
-        }
-        if (place.getNbrOfBathrooms() != 0) {
-            editTextNbrOfBathrooms.setText(String.valueOf(place.getNbrOfBathrooms()));
-        } else {
-            editTextNbrOfBathrooms.setText(getString(R.string.not_informed_yet));
-        }
-        if (place.getNbrOfBedrooms() != 0) {
-            editTextNbrOfBedrooms.setText(String.valueOf(place.getNbrOfBedrooms()));
-        } else {
-            editTextNbrOfBedrooms.setText(getString(R.string.not_informed_yet));
-        }
+        setDataValueTextToEditText(place.getDescription(), this, editTextDescription);
+        setDataValueLongToEditText(place.getSurface(), this, editTextSurface);
+        setDataValueIntToEditText(place.getNbrOfRooms(), this, editTextNbrOfRooms);
+        setDataValueIntToEditText(place.getNbrOfBedrooms(), this, editTextNbrOfBedrooms);
+        setDataValueIntToEditText(place.getNbrOfBathrooms(), this, editTextNbrOfBathrooms);
         if (place.getDateOfSale() != null) {
             DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
             String strDate = dateFormat.format(place.getDateOfSale());
@@ -463,7 +430,6 @@ public class AddFormActivity extends AppCompatActivity {
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-
             File photoFile = null;
             try {
                 photoFile = createImageFile();
@@ -752,33 +718,18 @@ public class AddFormActivity extends AppCompatActivity {
      * @return the id of the created place
      */
     private long createPlace(long idAddress){
-        long surface = 0;
-        int nbrOfRooms = 0;
-        int nbrOfBathrooms = 0;
-        int nbrOfBedrooms= 0;
-        String description = null;
         String type = typeOfPlaceButton.getText().toString();
         long price = Long.parseLong(editTextPrice.getText().toString());
-        if (!TextUtils.isEmpty(editTextSurface.getText().toString())) {
-            surface = Long.parseLong(editTextSurface.getText().toString());
-        }
-        if (!TextUtils.isEmpty(editTextNbrOfRooms.getText().toString())) {
-            nbrOfRooms = Integer.parseInt(editTextNbrOfRooms.getText().toString());
-        }
-        if (!TextUtils.isEmpty(editTextNbrOfBathrooms.getText().toString())) {
-            nbrOfBathrooms = Integer.parseInt(editTextNbrOfBathrooms.getText().toString());
-        }
-        if (!TextUtils.isEmpty(editTextNbrOfBedrooms.getText().toString())) {
-            nbrOfBedrooms = Integer.parseInt(editTextNbrOfBedrooms.getText().toString());
-        }
-        if (!TextUtils.isEmpty(editTextDescription.getText().toString())) {
-            description = editTextDescription.getText().toString();
-        }
+        long surface = getIntFromEditText(editTextSurface);
+        int nbrOfRooms = getIntFromEditText(editTextNbrOfRooms);
+        int nbrOfBathrooms = getIntFromEditText(editTextNbrOfBathrooms);
+        int nbrOfBedrooms = getIntFromEditText(editTextNbrOfBedrooms);
+        String description = getStringFromEditText(editTextDescription);
         String author = editTextAuthor.getText().toString();
         Date date = new Date();
         Place place;
         if (TextUtils.isEmpty(saleDateButton.getText())) {
-            //is available
+            //if available
             place = new Place(nbrOfRooms, nbrOfBathrooms, nbrOfBedrooms, type, price, date, null, author, description, surface, idAddress);
         } else {
             //if sold
@@ -801,10 +752,9 @@ public class AddFormActivity extends AppCompatActivity {
             complement = editTextComplement.getText().toString();
         }
         String postalCode = editTextPostalCode.getText().toString();
-
-
         String city = editTextCity.getText().toString();
         String country = editTextCountry.getText().toString();
+
         Address address = new Address(streetNumber, streetName, complement, postalCode, city, country);
         UtilsAddFormActivity.getAndSetLatLngOfPlace(this,address);
         return placeViewModel.createAddress(address);
@@ -839,21 +789,12 @@ public class AddFormActivity extends AppCompatActivity {
      * @param address the address to update
      */
     private void updateAddress(Address address) {
-        String complement;
-        int streetNumber = Integer.parseInt(editTextStreetNbr.getText().toString());
-        address.setStreetNumber(streetNumber);
-        String streetName = editTextStreetName.getText().toString();
-        address.setStreetName(streetName);
-        if (!TextUtils.isEmpty(editTextComplement.getText().toString())) {
-            complement = editTextComplement.getText().toString();
-            address.setComplement(complement);
-        }
-        String postalCode = editTextPostalCode.getText().toString();
-        address.setPostalCode(postalCode);
-        String city = editTextCity.getText().toString();
-        address.setCity(city);
-        String country = editTextCountry.getText().toString();
-        address.setCountry(country);
+        address.setStreetNumber(getIntFromEditText(editTextStreetNbr));
+        address.setStreetName(editTextStreetName.getText().toString());
+        address.setComplement(getStringFromEditText(editTextComplement));
+        address.setPostalCode(editTextPostalCode.getText().toString());
+        address.setCity(editTextCity.getText().toString());
+        address.setCountry(editTextCountry.getText().toString());
         UtilsAddFormActivity.getAndSetLatLngOfPlace(this, address);
         placeViewModel.updateAddress(address);
     }
@@ -863,52 +804,47 @@ public class AddFormActivity extends AppCompatActivity {
      * @param place the place to update
      */
     private void updatePlace(Place place) {
-        long surface;
-        int nbrOfRooms;
-        int nbrOfBathrooms;
-        int nbrOfBedrooms;
-        String description;
         String type = typeOfPlaceButton.getText().toString();
         place.setType(type);
-        long price = Long.parseLong(editTextPrice.getText().toString());
-        place.setPrice(price);
-
-        /*if (!TextUtils.isEmpty(editTextSurface.getText().toString())) {
-            surface = Long.parseLong(editTextSurface.getText().toString());
-            place.setSurface(surface);
-        }*/
-
-        place.setSurface(method(editTextSurface));
-
-        if (!TextUtils.isEmpty(editTextNbrOfRooms.getText().toString())) {
-            nbrOfRooms = Integer.parseInt(editTextNbrOfRooms.getText().toString());
-            place.setNbrOfRooms(nbrOfRooms);
-        }
-        if (!TextUtils.isEmpty(editTextNbrOfBathrooms.getText().toString())) {
-            nbrOfBathrooms = Integer.parseInt(editTextNbrOfBathrooms.getText().toString());
-            place.setNbrOfBathrooms(nbrOfBathrooms);
-        }
-        if (!TextUtils.isEmpty(editTextNbrOfBedrooms.getText().toString())) {
-            nbrOfBedrooms = Integer.parseInt(editTextNbrOfBedrooms.getText().toString());
-            place.setNbrOfBedrooms(nbrOfBedrooms);
-        }
-        if (!TextUtils.isEmpty(editTextDescription.getText().toString())) {
-            description = editTextDescription.getText().toString();
-            place.setDescription(description);
-        }
+        place.setPrice(getLongFromEditText(editTextPrice));
+        place.setSurface(getLongFromEditText(editTextSurface));
+        place.setNbrOfRooms(getIntFromEditText(editTextNbrOfRooms));
+        place.setNbrOfBathrooms(getIntFromEditText(editTextNbrOfBathrooms));
+        place.setNbrOfBedrooms(getIntFromEditText(editTextNbrOfBedrooms));
+        place.setDescription(getStringFromEditText(editTextDescription));
 
         if (preferences.getString(DATE_OF_SALE, null) != null) {
-            Date date = null;
-            try {
-                date = formatter.parse(preferences.getString(DATE_OF_SALE, null));
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            place.setDateOfSale(date);
+            place.setDateOfSale(formatDate(preferences.getString(DATE_OF_SALE, null)));
         }
 
         String author = editTextAuthor.getText().toString();
         place.setAuthor(author);
         placeViewModel.updatePlace(place);
+    }
+
+    private void updateDataInDatabase() {
+        placeViewModel.getPlace(placeId).observe(this, new Observer<Place>() {
+            @Override
+            public void onChanged(Place place) {
+                updatePlace(place);
+            }
+        });
+        if (photoList.size() > 0) {
+            createNewlyAddedPhotos();
+        }
+        if (deletedPhotosId.size() > 0) {
+            deletePhotos();
+        }
+        if (updatedPhoto.size() > 0) {
+            updatePhotos();
+        }
+        placeViewModel.deleteInterests(placeId);
+        createInterestsForAPlace(placeId);
+        placeViewModel.getAddressOfAPlace(addressId).observe(this, new Observer<Address>() {
+            @Override
+            public void onChanged(Address address) {
+                updateAddress(address);
+            }
+        });
     }
 }

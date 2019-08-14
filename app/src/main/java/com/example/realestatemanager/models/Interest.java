@@ -5,9 +5,11 @@ import android.content.ContentValues;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Ignore;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "interests",
+@Entity(indices = {@Index("idPlace")},
+        tableName = "interests",
         foreignKeys =
         @ForeignKey(entity = Place.class,
         parentColumns = "id",
