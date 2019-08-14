@@ -1,14 +1,11 @@
 package com.example.realestatemanager.utils;
 
 
-import android.app.AlertDialog;
 import android.content.Context;
 
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
-import android.location.Location;
 
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -19,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -26,20 +24,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.realestatemanager.R;
-import com.example.realestatemanager.adapters.DetailRecyclerViewAdapter;
+import com.example.realestatemanager.adapters.InterestRecyclerViewAdapter;
 import com.example.realestatemanager.injections.Injection;
 import com.example.realestatemanager.injections.ViewModelFactory;
-import com.example.realestatemanager.models.Interest;
 import com.example.realestatemanager.models.Place;
 import com.example.realestatemanager.viewModels.PlaceViewModel;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.button.MaterialButton;
 
-import org.w3c.dom.Text;
-
 import java.io.IOException;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -77,7 +71,12 @@ public class Utils {
         return wifi.isWifiEnabled();
     }
 
+    public static int convertEuroToDollar(int euros) {
+        return (int) Math.round(euros * 1.10454);
+    }
     //---------------------------------------------------------------------------------------------------------------------
+    //APP
+    //--------------------------
     /**
      * verify if there is a internet connection
      * @return
@@ -88,11 +87,9 @@ public class Utils {
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
-
-    public static int convertEuroToDollar(int euros) {
-        return (int) Math.round(euros * 1.10454);
-    }
-
+    //------------------------------------
+    //ADD FORM / SEARCH ACTIVITY
+    //------------------------------------
     public static String addZeroToDate(String string) {
         if (string.length() == 1) {
             string = "0" + string;
@@ -100,24 +97,22 @@ public class Utils {
         }
         return string;
     }
-
+    //-----------------------------------
+    //SEARCH ACTIVITY
+    //--------------------------------------
     public static void checkIfDateIsPassedOrCurrent(Context context, String selectedDay, String selectedMonth, int selectedYear, int currentDay,
                                                     int currentMonth, int currentYear, Button button, SharedPreferences preferences,
                                                     final String KEY) {
-        String textToSave = null;
         if (selectedYear < currentYear) {
             button.setText(selectedDay + "/" + selectedMonth + "/" + selectedYear);
-            textToSave = selectedDay + "/" + selectedMonth + "/" + selectedYear;
             preferences.edit().putString(KEY, selectedDay +"/"+ selectedMonth +  "/" + selectedYear).apply();
         } else if(selectedYear == currentYear) {
             if (Integer.parseInt(selectedMonth) < currentMonth) {
                 button.setText(selectedDay + "/" + selectedMonth + "/" + selectedYear);
-                textToSave = selectedDay + "/" + selectedMonth + "/" + selectedYear;
                 preferences.edit().putString(KEY, selectedDay +"/"+ selectedMonth +  "/" + selectedYear).apply();
             } else if (Integer.parseInt(selectedMonth) == currentMonth) {
                 if (Integer.parseInt(selectedDay) <= currentDay) {
                     button.setText(selectedDay + "/" + selectedMonth + "/" + selectedYear);
-                    textToSave = selectedDay + "/" + selectedMonth + "/" + selectedYear;
                     preferences.edit().putString(KEY, selectedDay +"/"+ selectedMonth +  "/" + selectedYear).apply();
                 } else {
                     Toast.makeText(context, context.getString(R.string.toast_message_date_not_correct), Toast.LENGTH_SHORT).show();
@@ -129,7 +124,9 @@ public class Utils {
             Toast.makeText(context, context.getString(R.string.toast_message_date_not_correct), Toast.LENGTH_SHORT).show();
         }
     }
-
+    //------------------------------------------
+    //ADD FORM ACTIVITY
+    //------------------------------------------
     public static String checkIfDateIsPassedOrCurrentAndReturnString(Context context, String selectedDay, String selectedMonth, int selectedYear, int currentDay,
                                                     int currentMonth, int currentYear, Button button) {
         if (selectedYear < currentYear) {
@@ -156,19 +153,15 @@ public class Utils {
             return null;
         }
     }
-
-    /*public static String formatLocation(Location location) {
-        return location.getLatitude() + "," + location.getLongitude();
-    }*/
-
+    //------------------------------------
+    //MAP ACTIVITY / MAP FRAGMENT / UTILS ADD FORM ACTIVITY
+    //-----------------------------------------
     public static String getLocationFromAddress(Context context, String strAddress) {
         Geocoder coder = new Geocoder(context);
         List<Address> address;
         LatLng latLng;
         String latLngOfAddress = null;
-
         try {
-            // May throw an IOException
             address = coder.getFromLocationName(strAddress, 5);
             if (address == null) {
                 return null;
@@ -181,30 +174,15 @@ public class Utils {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-
         return latLngOfAddress;
     }
-
+    //--------------------------------
     public static String getParenthesesContent(String str){
         return str.substring(str.indexOf('(')+1,str.indexOf(')'));
     }
 
-    public static LatLng getLatLngOfPlace(String latlng) {
-        String[] retrievedLatLng = latlng.split(",");
-        double latitude = Double.parseDouble(retrievedLatLng[0]);
-        double longitude = Double.parseDouble(retrievedLatLng[1]);
-        return new LatLng(latitude, longitude);
-    }
-
-    //for recycler view interests (detail frag tablet mode & information frag)
-
-    public static void configureRecyclerViewForInterests(Context context, DetailRecyclerViewAdapter adapter, RecyclerView recyclerViewInterest) {
-        recyclerViewInterest.setAdapter(adapter);
-        recyclerViewInterest.setLayoutManager(new LinearLayoutManager(context));
-    }
-
-    public static void displayStatusOfPlace(Context context, Place place, TextView statusTextView,
-                                            TextView dateOfSaleTextView, LinearLayout layoutDateOfSale) {
+    private static void displayStatusOfPlace(Context context, Place place, TextView statusTextView,
+                                             TextView dateOfSaleTextView, LinearLayout layoutDateOfSale) {
         if (place.getDateOfSale() == null) {
             layoutDateOfSale.setVisibility(View.GONE);
             statusTextView.setText(context.getString(R.string.status_available));
@@ -217,14 +195,25 @@ public class Utils {
         }
     }
 
-    public static void setInformationOnTextView(Context context, int number, TextView textView) {
+    private static void setInformationOnTextView(Context context, int number, TextView textView) {
         if (number != 0) {
             textView.setText(String.valueOf(number));
         } else {
             textView.setText(context.getString(R.string.not_informed_yet));
         }
     }
-
+    //-------------------------------------
+    //DETAIL FRAGMENT / MAP ACTIVITY / MAP FRAGMENT
+    //------------------------------------------------
+    public static LatLng getLatLngOfPlace(String latlng) {
+        String[] retrievedLatLng = latlng.split(",");
+        double latitude = Double.parseDouble(retrievedLatLng[0]);
+        double longitude = Double.parseDouble(retrievedLatLng[1]);
+        return new LatLng(latitude, longitude);
+    }
+    //--------------------------------------------
+    //DETAIL FRAGMENT / INFORMATION FRAGMENT
+    //----------------------------------------------
     public static void updateUiPlace(Context context, Place place, TextView managerTextView, TextView creationDateTextView,
                                      TextView priceTextView, TextView descriptionTextView,
                                      TextView surfaceTextView, TextView nbrRoomsTextView,
@@ -274,6 +263,21 @@ public class Utils {
         });
     }
 
+    public static void convertPrice(Context context, MaterialButton button, TextView priceTextView, long price) {
+        if (button.getText().toString().equals(context.getString(R.string.button_text_convert_to_euros))) {
+            int priceInEuros = convertDollarToEuro((int)price);
+            String priceEuro = priceInEuros + " €";
+            priceTextView.setText(priceEuro);
+            button.setText(context.getString(R.string.button_text_convert_to_dollars));
+        } else if (button.getText().toString().equals(context.getString(R.string.button_text_convert_to_dollars))) {
+            String priceDollars = price + " $";
+            priceTextView.setText(priceDollars);
+            button.setText(context.getString(R.string.button_text_convert_to_euros));
+        }
+    }
+    //----------------------------------------
+    //LIST PLACE VIEW HOLDER
+    //-------------------------------------------
     public static String setFirstLetterUpperCase(String str) {
         String stringToFormat = str;
         if (!Character.isUpperCase(stringToFormat.codePointAt(0))) {
@@ -282,5 +286,4 @@ public class Utils {
         }
         return stringToFormat;
     }
-
 }

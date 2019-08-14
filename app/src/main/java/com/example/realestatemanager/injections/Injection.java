@@ -1,6 +1,5 @@
 package com.example.realestatemanager.injections;
 
-import android.content.ContentUris;
 import android.content.Context;
 
 import com.example.realestatemanager.database.RealEstateManagerDatabase;

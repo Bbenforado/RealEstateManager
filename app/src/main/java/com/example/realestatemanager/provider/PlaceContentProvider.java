@@ -42,7 +42,6 @@ public class PlaceContentProvider extends ContentProvider {
     public static final Uri URI_PHOTO = Uri.parse("content://" + AUTHORITY + "/" + TABLE_PHOTO);
     public static final Uri URI_INTEREST = Uri.parse("content://" + AUTHORITY + "/" + TABLE_INTEREST);
     public static final UriMatcher uriMatcher;
-
     public static final String ID_ADDRESS_FOR_CONTENT_PROVIDER = "idAddressContentProvider";
     public static final String ID_PLACE_FOR_CONTENT_PROVIDER = "idPlaceContentProvider";
     public static final String APP_PREFERENCES = "appPreferences";
@@ -60,7 +59,6 @@ public class PlaceContentProvider extends ContentProvider {
         uriMatcher.addURI(AUTHORITY, TABLE_INTEREST_ITEM, 8);
     }
 
-
     @Override
     public boolean onCreate() {
         preferences = getContext().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
@@ -71,9 +69,6 @@ public class PlaceContentProvider extends ContentProvider {
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection,
                         @Nullable String[] selectionArgs, @Nullable String sortOrder) {
-
-        System.out.println("query");
-
         if (getContext() != null) {
             switch (uriMatcher.match(uri)) {
                 //FOR TABLE PLACE
@@ -184,41 +179,11 @@ public class PlaceContentProvider extends ContentProvider {
 
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-       /* if (getContext() != null) {
-            switch (uriMatcher.match(uri)) {
-                case 5:
-                    final int countPlace =
-                            RealEstateManagerDatabase.getInstance(getContext()).placeDao()
-                                    .deletePlace(ContentUris.parseId(uri));
-                    getContext().getContentResolver().notifyChange(uri, null);
-                    return countPlace;
-                case 6:
-                    final int countAddress =
-                            RealEstateManagerDatabase.getInstance(getContext()).addressDao()
-                                    .deleteAddress(ContentUris.parseId(uri));
-                    getContext().getContentResolver().notifyChange(uri, null);
-                    return countAddress;
-                case 3:
-                    *//*final int countPhoto =
-                            RealEstateManagerDatabase.getInstance(getContext()).photoDao()
-                                    .deletePhoto(ContentUris.parseId(uri));
-                    getContext().getContentResolver().notifyChange(uri, null);
-                    return countPhoto;*//*
-                case 4:
-                    *//*final int countInterest =
-                            RealEstateManagerDatabase.getInstance(getContext()).interestDao()
-                                    .deleteInterests(ContentUris.parseId(uri));
-                    getContext().getContentResolver().notifyChange(uri, null);
-                    return countInterest;*//*
-            }
-        }*/
-        //throw new IllegalArgumentException("Failed to delete row into " + uri);
         throw new IllegalArgumentException("You can t delete data for this app");
     }
 
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
-        System.out.println("update method");
         if (getContext() != null) {
             switch (uriMatcher.match(uri)) {
                 case 1:

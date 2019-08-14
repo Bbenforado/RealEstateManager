@@ -15,7 +15,7 @@ import com.example.realestatemanager.models.Photo;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class DetailFragmentPhotoViewHolder extends RecyclerView.ViewHolder {
+public class DetailFragmentPhotoPhoneModeViewHolder extends RecyclerView.ViewHolder {
 
     @BindView(R.id.image_view_detail_photo)
     ImageView imageView;
@@ -24,7 +24,7 @@ public class DetailFragmentPhotoViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.camera_image) ImageView cameraImage;
     @BindView(R.id.text_view_number_of_pictures) TextView textViewNumberPictures;
 
-    public DetailFragmentPhotoViewHolder(@NonNull View itemView) {
+    public DetailFragmentPhotoPhoneModeViewHolder(@NonNull View itemView) {
         super(itemView);
         ButterKnife.bind(this, itemView);
     }

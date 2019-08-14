@@ -31,6 +31,9 @@ public class Photo {
         this.uri = uri;
     }
 
+    //---------------------------------------
+    //GETTERS AND SETTERS
+    //-------------------------------------------
     public long getIdPhoto() {
         return idPhoto;
     }

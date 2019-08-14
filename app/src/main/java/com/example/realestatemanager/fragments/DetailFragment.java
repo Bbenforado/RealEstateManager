@@ -26,9 +26,9 @@ import com.bumptech.glide.Glide;
 import com.example.realestatemanager.R;
 import com.example.realestatemanager.activities.AddFormActivity;
 import com.example.realestatemanager.adapters.DetailFragmentViewPagerAdapter;
-import com.example.realestatemanager.adapters.DetailPhotoRecyclerViewAdapter;
-import com.example.realestatemanager.adapters.DetailRecyclerViewAdapter;
-import com.example.realestatemanager.adapters.PhotoRecyclerViewAdapter;
+import com.example.realestatemanager.adapters.DetailPhotoPhoneModeRecyclerViewAdapter;
+import com.example.realestatemanager.adapters.InterestRecyclerViewAdapter;
+import com.example.realestatemanager.adapters.PhotoFormAndTabletModeRecyclerViewAdapter;
 import com.example.realestatemanager.injections.Injection;
 import com.example.realestatemanager.injections.ViewModelFactory;
 import com.example.realestatemanager.models.Address;
@@ -137,8 +137,8 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
     private SharedPreferences preferences;
     private String[] titles = {"Information", "View location"};
     private int[] iconTabLayout = {R.drawable.house_white, R.drawable.ic_address_white};
-    private DetailPhotoRecyclerViewAdapter adapter;
-    private DetailRecyclerViewAdapter adapterForInterests;
+    private DetailPhotoPhoneModeRecyclerViewAdapter adapter;
+    private InterestRecyclerViewAdapter adapterForInterests;
     private long placeId;
     private long addressId;
     private long price;
@@ -171,15 +171,7 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
                     viewModel.getPlace(placeId).observe(this, new Observer<Place>() {
                         @Override
                         public void onChanged(Place place) {
-                            textViewTypeOfPlaceTabletMode.setText(place.getType());
-                            updateUiPlace(getContext(), place, textViewManagerTabletMode, textViewCreationDateTabletMode, textViewPriceTabletMode,
-                                    textViewDescriptionTabletMode, textViewSurfaceTabletMode, textViewNbrOfRoomsTabletMode,
-                                    textViewNbrOfBedroomsTabletMode, textViewNbrOfBathroomsTabletMode, textViewStatusTabletMode,
-                                    textViewDateOfSaleTabletMode, layoutDateOfSaleTabletMode);
-                            getInterests(place.getId());
-                            Utils.updateUiAddress(getContext(), place, viewModel, owner,
-                                    textViewStreetTabletMode, textViewComplementTabletMode, textViewPostalCodeAndCityTabletMode,
-                                    textViewCountryTabletMode);
+                            updateUiWithData(place, owner);
                             configureRecyclerViewForInterestsHorizontal();
                             price = place.getPrice();
                         }
@@ -193,9 +185,9 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
         } else if (preferences.getString(APP_MODE, null).equals(getString(R.string.app_mode_tablet))) {
             textViewNoPlaceSaved.setVisibility(View.VISIBLE);
             if (preferences.getInt(NO_PLACES_SAVED, -1) == 1) {
-                textViewNoPlaceSaved.setText("No place saved for the moment, click on the add button to create one!");
+                textViewNoPlaceSaved.setText(getString(R.string.no_place_for_the_moment));
             } else {
-                textViewNoPlaceSaved.setText("No item selected, click on one item of the list to display details");
+                textViewNoPlaceSaved.setText(getString(R.string.no_item_selected));
             }
         }
         return view;
@@ -244,90 +236,6 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
-    //------------------------------------------------
-    //ACTIONS
-    //------------------------------------------------
-    @Optional
-    @OnClick(R.id.material_convert_price_button_tablet_mode)
-    public void convertPrice() {
-        if (buttonConvertPriceTabletMode.getText().toString().equals(getString(R.string.button_text_convert_to_euros))) {
-            int priceInEuros = convertDollarToEuro((int)price);
-            String priceEuros = priceInEuros + " €";
-            textViewPriceTabletMode.setText(priceEuros);
-            buttonConvertPriceTabletMode.setText(getString(R.string.button_text_convert_to_dollars));
-        } else if (buttonConvertPriceTabletMode.getText().toString().equals(getString(R.string.button_text_convert_to_dollars))) {
-            String priceInDollars = price + " $";
-            textViewPriceTabletMode.setText(priceInDollars);
-            buttonConvertPriceTabletMode.setText(getString(R.string.button_text_convert_to_euros));
-        }
-    }
-
-    @OnClick(R.id.edit_floating_action_button_detail_fragment)
-    public void editPlace() {
-        preferences.edit().putInt(STATUS_FORM_ACTIVITY, 1).apply();
-        Intent intent = new Intent(getContext(), AddFormActivity.class);
-        startActivity(intent);
-    }
-
-    //----------------------------------------------
-    //CONFIGURATION
-    //-----------------------------------------------
-    private void configureRecyclerViewForInterestsHorizontal() {
-        this.adapterForInterests = new DetailRecyclerViewAdapter();
-        this.recyclerViewInterests.setAdapter(adapterForInterests);
-        recyclerViewInterests.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayout.HORIZONTAL, false));
-    }
-
-    private void configureViewModel() {
-        ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(getContext());
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(PlaceViewModel.class);
-    }
-
-    private void configureViewpagerAndTabs() {
-        DetailFragmentViewPagerAdapter viewPagerAdapter = new DetailFragmentViewPagerAdapter(getActivity().getSupportFragmentManager(), titles);
-        viewPager.setAdapter(viewPagerAdapter);
-        //customViewPager.setAdapter(viewPagerAdapter);
-        tabLayout.setupWithViewPager(viewPager);
-        //tabLayout.setupWithViewPager(customViewPager);
-        for (int i = 0; i < tabLayout.getTabCount(); i++) {
-            tabLayout.getTabAt(i).setIcon(iconTabLayout[i]);
-        }
-        tabLayout.setTabMode(TabLayout.MODE_FIXED);
-    }
-
-    private void configureRecyclerView() {
-        this.adapter = new DetailPhotoRecyclerViewAdapter(Glide.with(this));
-        this.recyclerViewPhotos.setAdapter(adapter);
-        recyclerViewPhotos.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayout.HORIZONTAL, false));
-    }
-
-    private void configureRecyclerViewForTablet() {
-        viewModel.getPhotosForAPlace(placeId).observe(getViewLifecycleOwner(), new Observer<List<Photo>>() {
-            @Override
-            public void onChanged(List<Photo> photos) {
-                PhotoRecyclerViewAdapter adapter = new PhotoRecyclerViewAdapter(photos, Glide.with(getContext()));
-                recyclerViewPhotos.setAdapter(adapter);
-                recyclerViewPhotos.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayout.HORIZONTAL, false));
-            }
-        });
-    }
-
-    private void getPhotos(long placeId) {
-        viewModel.getPhotosForAPlace(placeId).observe(this, this::updatePhotoList);
-    }
-
-    private void updatePhotoList(List<Photo> photos) {
-        if (photos.size() > 0) {
-            this.adapter.updatePhotoData(photos);
-            recyclerViewPhotos.setVisibility(View.VISIBLE);
-            imageViewPhoto.setVisibility(View.GONE);
-        } else {
-            recyclerViewPhotos.setVisibility(View.GONE);
-            imageViewPhoto.setVisibility(View.VISIBLE);
-            imageViewPhoto.setImageResource(R.drawable.no_image);
-        }
-    }
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         MapsInitializer.initialize(getContext());
@@ -359,6 +267,69 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
             mapView.setVisibility(View.GONE);
         }
     }
+    //------------------------------------------------
+    //ACTIONS
+    //------------------------------------------------
+    @Optional
+    @OnClick(R.id.material_convert_price_button_tablet_mode)
+    public void convertPrice() {
+        Utils.convertPrice(getContext(), buttonConvertPriceTabletMode, textViewPriceTabletMode, price);
+    }
+
+    @OnClick(R.id.edit_floating_action_button_detail_fragment)
+    public void editPlace() {
+        preferences.edit().putInt(STATUS_FORM_ACTIVITY, 1).apply();
+        Intent intent = new Intent(getContext(), AddFormActivity.class);
+        startActivity(intent);
+    }
+    //----------------------------------------------
+    //CONFIGURATION
+    //-----------------------------------------------
+    private void configureRecyclerViewForInterestsHorizontal() {
+        this.adapterForInterests = new InterestRecyclerViewAdapter();
+        this.recyclerViewInterests.setAdapter(adapterForInterests);
+        recyclerViewInterests.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayout.HORIZONTAL, false));
+    }
+
+    private void configureViewModel() {
+        ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(getContext());
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(PlaceViewModel.class);
+    }
+
+    private void configureViewpagerAndTabs() {
+        DetailFragmentViewPagerAdapter viewPagerAdapter = new DetailFragmentViewPagerAdapter(getActivity().getSupportFragmentManager(), titles);
+        viewPager.setAdapter(viewPagerAdapter);
+        //customViewPager.setAdapter(viewPagerAdapter);
+        tabLayout.setupWithViewPager(viewPager);
+        //tabLayout.setupWithViewPager(customViewPager);
+        for (int i = 0; i < tabLayout.getTabCount(); i++) {
+            tabLayout.getTabAt(i).setIcon(iconTabLayout[i]);
+        }
+        tabLayout.setTabMode(TabLayout.MODE_FIXED);
+    }
+
+    private void configureRecyclerView() {
+        this.adapter = new DetailPhotoPhoneModeRecyclerViewAdapter(Glide.with(this));
+        this.recyclerViewPhotos.setAdapter(adapter);
+        recyclerViewPhotos.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayout.HORIZONTAL, false));
+    }
+
+    private void configureRecyclerViewForTablet() {
+        viewModel.getPhotosForAPlace(placeId).observe(getViewLifecycleOwner(), new Observer<List<Photo>>() {
+            @Override
+            public void onChanged(List<Photo> photos) {
+                PhotoFormAndTabletModeRecyclerViewAdapter adapter = new PhotoFormAndTabletModeRecyclerViewAdapter(photos, Glide.with(getContext()));
+                recyclerViewPhotos.setAdapter(adapter);
+                recyclerViewPhotos.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayout.HORIZONTAL, false));
+            }
+        });
+    }
+    //--------------------------------------
+    //GET DATA
+    //--------------------------------------
+    private void getPhotos(long placeId) {
+        viewModel.getPhotosForAPlace(placeId).observe(this, this::updatePhotoList);
+    }
 
     private void getInterests(long placeId) {
         viewModel.getInterests(placeId).observe(this, this::updateInterestsList);
@@ -368,5 +339,31 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
         if (interests.size()>0) {
             this.adapterForInterests.updateInterestData(interests);
         }
+    }
+
+    private void updatePhotoList(List<Photo> photos) {
+        if (photos.size() > 0) {
+            this.adapter.updatePhotoData(photos);
+            recyclerViewPhotos.setVisibility(View.VISIBLE);
+            imageViewPhoto.setVisibility(View.GONE);
+        } else {
+            recyclerViewPhotos.setVisibility(View.GONE);
+            imageViewPhoto.setVisibility(View.VISIBLE);
+            imageViewPhoto.setImageResource(R.drawable.no_image);
+        }
+    }
+    //------------------------------
+    //UPDATE UI
+    //---------------------------------
+    private void updateUiWithData(Place place, LifecycleOwner owner) {
+        textViewTypeOfPlaceTabletMode.setText(place.getType());
+        updateUiPlace(getContext(), place, textViewManagerTabletMode, textViewCreationDateTabletMode, textViewPriceTabletMode,
+                textViewDescriptionTabletMode, textViewSurfaceTabletMode, textViewNbrOfRoomsTabletMode,
+                textViewNbrOfBedroomsTabletMode, textViewNbrOfBathroomsTabletMode, textViewStatusTabletMode,
+                textViewDateOfSaleTabletMode, layoutDateOfSaleTabletMode);
+        getInterests(place.getId());
+        Utils.updateUiAddress(getContext(), place, viewModel, owner,
+                textViewStreetTabletMode, textViewComplementTabletMode, textViewPostalCodeAndCityTabletMode,
+                textViewCountryTabletMode);
     }
 }

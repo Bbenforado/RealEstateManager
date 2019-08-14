@@ -31,7 +31,6 @@ import static com.example.realestatemanager.utils.Utils.isInternetAvailable;
 import static com.example.realestatemanager.utils.Utils.isNetworkAvailable;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
-
     //-----------------------------------------
     //BIND VIEWS
     //----------------------------------------
@@ -53,7 +52,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static final String KEY_RESULTS_ACTIVITY = "keyResultActivity";
     private static final String PLACE_ID = "placeId";
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,7 +68,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         configureAndShowListFragment();
         configureAndShowDetailFragment();
         getAppMode();
-
     }
 
     @Override
@@ -83,10 +80,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onBackPressed() {
          if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
-        } else {
+        } else if (preferences.getInt(KEY_RESULTS_ACTIVITY, -1) == 1) {
+             Intent searchActivity = new Intent(this, SearchActivity.class);
+             startActivity(searchActivity);
+         } else {
              moveTaskToBack(true);
-            //super.onBackPressed();
-        }
+         }
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -156,7 +155,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         this.drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
-
     //----------------------------------------
     //CONFIGURATION
     //-------------------------------------------
@@ -177,7 +175,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void configureAndShowListFragment(){
-        //preferences.edit().putInt(KEY_RESULTS_ACTIVITY, -1).apply();
         listFragment = (ListFragment) getSupportFragmentManager().findFragmentById(R.id.frame_layout_main_list);
         if (listFragment == null) {
             listFragment = new ListFragment();
@@ -189,8 +186,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void configureAndShowDetailFragment(){
         detailFragment = (DetailFragment) getSupportFragmentManager().findFragmentById(R.id.frame_layout_main_detail);
-        //display details of the first place
-        //preferences.edit().putLong(PLACE_ID, 1).apply();
         if (detailFragment == null && findViewById(R.id.frame_layout_main_detail) != null) {
             detailFragment = new DetailFragment();
             getSupportFragmentManager().beginTransaction()
@@ -198,12 +193,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     .commit();
         }
     }
-
+    //--------------------------------------
+    //--------------------------------------
     public void refreshFragmentInfo() {
         detailFragment = new DetailFragment();
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.frame_layout_main_detail, detailFragment)
                 .commit();
     }
-
 }

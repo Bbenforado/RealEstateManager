@@ -38,9 +38,6 @@ public interface PlaceDao {
     @Insert
     long insertPlace(Place place);
 
-    @Query("DELETE FROM places WHERE id = :id")
-    int deletePlace(long id);
-
     @Update
     int updatePlace(Place place);
 

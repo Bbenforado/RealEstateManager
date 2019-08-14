@@ -22,6 +22,7 @@ import com.example.realestatemanager.injections.Injection;
 import com.example.realestatemanager.injections.ViewModelFactory;
 import com.example.realestatemanager.models.Address;
 import com.example.realestatemanager.models.Place;
+import com.example.realestatemanager.utils.Utils;
 import com.example.realestatemanager.viewModels.PlaceViewModel;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -51,7 +52,6 @@ import static com.example.realestatemanager.utils.Utils.isNetworkAvailable;
  * A simple {@link Fragment} subclass.
  */
 public class MapFragment extends Fragment implements OnMapReadyCallback{
-
     //-----------------------------------
     //BIND VIEWS
     //-------------------------------
@@ -63,10 +63,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     //-----------------------------------------
     private static final String APP_PREFERENCES = "appPreferences";
     private static final String PLACE_ID = "placeId";
-    public static final String ADDRESS_ID = "addressId";
-    //-------------------------------------------
-    //-----------------------------------------------
-    private SharedPreferences preferences;
+    private static final String ADDRESS_ID = "addressId";
     private PlaceViewModel viewModel;
     private long id;
     private long addressId;
@@ -79,9 +76,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_map, container, false);
-        preferences = getActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+        //-------------------------------------------
+        //-----------------------------------------------
+        SharedPreferences preferences = getActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         ButterKnife.bind(this, view);
         configureViewModel();
         id = preferences.getLong(PLACE_ID, -1);
@@ -100,7 +98,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
             }
           } else {
            textViewNoInternet.setVisibility(View.VISIBLE);
-
         }
         return view;
     }

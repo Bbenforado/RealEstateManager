@@ -15,12 +15,12 @@ import com.example.realestatemanager.models.Interest;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class DetailViewHolder extends RecyclerView.ViewHolder {
+public class InterestViewHolder extends RecyclerView.ViewHolder {
 
     @BindView(R.id.text_view_interest) TextView interestTextView;
     @BindView(R.id.image_detail_interest) ImageView imageInterest;
 
-    public DetailViewHolder(@NonNull View itemView) {
+    public InterestViewHolder(@NonNull View itemView) {
         super(itemView);
         ButterKnife.bind(this, itemView);
     }

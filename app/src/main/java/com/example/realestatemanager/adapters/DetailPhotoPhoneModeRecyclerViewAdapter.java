@@ -10,33 +10,32 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.RequestManager;
 import com.example.realestatemanager.R;
-import com.example.realestatemanager.models.Interest;
 import com.example.realestatemanager.models.Photo;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DetailPhotoRecyclerViewAdapter extends RecyclerView.Adapter<DetailFragmentPhotoViewHolder> {
+public class DetailPhotoPhoneModeRecyclerViewAdapter extends RecyclerView.Adapter<DetailFragmentPhotoPhoneModeViewHolder> {
 
     private List<Photo> photoList;
     private RequestManager glide;
 
-    public DetailPhotoRecyclerViewAdapter(RequestManager glide) {
+    public DetailPhotoPhoneModeRecyclerViewAdapter(RequestManager glide) {
         this.photoList = new ArrayList<>();
         this.glide = glide;
     }
 
     @NonNull
     @Override
-    public DetailFragmentPhotoViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public DetailFragmentPhotoPhoneModeViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         Context context = viewGroup.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.fragment_detail_recycler_view_photos_item, viewGroup, false);
-        return new DetailFragmentPhotoViewHolder(view);
+        return new DetailFragmentPhotoPhoneModeViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull DetailFragmentPhotoViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull DetailFragmentPhotoPhoneModeViewHolder holder, int position) {
         String numberOfPictures = String.valueOf(photoList.size());
 
         holder.textViewNumberPictures.setText(numberOfPictures);

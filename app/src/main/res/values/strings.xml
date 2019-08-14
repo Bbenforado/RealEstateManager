@@ -77,6 +77,8 @@
     //FOR DETAIL FRAGMENT
     <string name="app_mode_phone">phone</string>
     <string name="app_mode_tablet">tablet</string>
+    <string name="no_place_for_the_moment">No place saved for the moment, click on the add button to create one!</string>
+    <string name="no_item_selected">No item selected, click on one item of the list to display details</string>
 
     //FOR DETAIL FRAG XML
     <string name="creation_date_detail">Creation date:</string>

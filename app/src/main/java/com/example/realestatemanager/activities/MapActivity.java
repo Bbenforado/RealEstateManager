@@ -129,7 +129,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
         showMyLocation();
     }
-
     //-----------------------------------------
     //CONFIGURATION
     //--------------------------------------------
@@ -137,7 +136,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(this);
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(PlaceViewModel.class);
     }
-
     //------------------------------------------
     //METHODS
     //-------------------------------------------
@@ -163,8 +161,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
             /*Marker marker;
             marker = googleMap.addMarker(new MarkerOptions()
-                    .position(latLng)
-                    .title("user location"));
+                    .position(latLng));
+                   // .title("user location"));
             marker.setTag(-1);
             marker.showInfoWindow();*/
             getPlacesAndShowMarkersOnMap();
@@ -269,18 +267,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        System.out.println("come here");
+        System.out.println("on marker click");
         long tag = (long) marker.getTag();
-        System.out.println("id  = " + tag);
             preferences.edit().putLong(PLACE_ID, tag).apply();
             Intent detailIntent = new Intent(this, DetailActivity.class);
             startActivity(detailIntent);
-        return false;
+            return false;
     }
 
     @Override
     public void onCameraIdle() {
-        //getAllAddresses();
         getPlacesAndShowMarkersOnMap();
     }
 

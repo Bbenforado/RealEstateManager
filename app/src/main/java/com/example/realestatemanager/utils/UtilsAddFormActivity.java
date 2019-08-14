@@ -1,6 +1,5 @@
 package com.example.realestatemanager.utils;
 
-import android.content.ContentUris;
 import android.content.Context;
 import android.text.TextUtils;
 
@@ -15,8 +14,6 @@ import java.util.Date;
 import java.util.List;
 
 public class UtilsAddFormActivity {
-
-    //ADD FORM ACTIVITY
     /**
      * format date, pattern : dd/MM/yyyy
      * @param date the date to format
@@ -75,12 +72,12 @@ public class UtilsAddFormActivity {
     }
 
     public static String getStringFromEditText(TextInputEditText editText) {
-        String description = null;
+        String description;
         if (!TextUtils.isEmpty(editText.getText().toString()) && !editText.getText().toString().equals("Not informed yet")) {
             description = editText.getText().toString();
             return description;
         }
-        return description;
+        return null;
     }
 
     public static void setDataValueTextToEditText(String value, Context context, TextInputEditText editText) {

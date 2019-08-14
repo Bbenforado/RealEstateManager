@@ -30,7 +30,4 @@ public interface AddressDao {
     //FOR CONTENT PROVIDER
     @Query("SELECT * FROM addresses WHERE addressId = :id")
     Cursor getAddressWithCursor(long id);
-
-    @Query("DELETE FROM addresses WHERE addressId = :id")
-    int deleteAddress(long id);
 }

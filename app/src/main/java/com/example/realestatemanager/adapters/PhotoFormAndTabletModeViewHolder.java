@@ -15,14 +15,14 @@ import com.example.realestatemanager.models.Photo;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class PhotoViewHolder extends RecyclerView.ViewHolder {
+public class PhotoFormAndTabletModeViewHolder extends RecyclerView.ViewHolder {
 
     @BindView(R.id.photo_recycler_view_item_image)
     ImageView imageView;
     @BindView(R.id.text_view_description_detail_fragment_tablet_mode)
     TextView textViewDescription;
 
-    public PhotoViewHolder(@NonNull View itemView) {
+    public PhotoFormAndTabletModeViewHolder(@NonNull View itemView) {
         super(itemView);
         ButterKnife.bind(this, itemView);
     }

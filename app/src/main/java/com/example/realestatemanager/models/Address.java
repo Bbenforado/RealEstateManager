@@ -23,7 +23,6 @@ public class Address {
     private String country;
     private String latLng;
 
-
     @Ignore
     public Address() {
 

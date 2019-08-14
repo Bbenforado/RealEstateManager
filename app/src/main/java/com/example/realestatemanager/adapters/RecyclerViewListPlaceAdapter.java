@@ -16,7 +16,7 @@ import com.example.realestatemanager.models.PlaceAddressesPhotosAndInterests;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RecyclerViewPlaceAdapter extends RecyclerView.Adapter<ViewHolderPlace> {
+public class RecyclerViewListPlaceAdapter extends RecyclerView.Adapter<ListPlaceViewHolder> {
 
     private List<PlaceAddressesPhotosAndInterests> placeList;
     private Context context;
@@ -27,24 +27,24 @@ public class RecyclerViewPlaceAdapter extends RecyclerView.Adapter<ViewHolderPla
     private static final String APP_MODE = "appMode";
 
 
-    public RecyclerViewPlaceAdapter(RequestManager glide) {
+    public RecyclerViewListPlaceAdapter(RequestManager glide) {
         this.placeList = new ArrayList<>();
         this.glide = glide;
     }
 
     @NonNull
     @Override
-    public ViewHolderPlace onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public ListPlaceViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         context = viewGroup.getContext();
         preferences = context.getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.fragment_list_item, viewGroup, false);
 
-        return new ViewHolderPlace(view);
+        return new ListPlaceViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolderPlace holder, int position) {
+    public void onBindViewHolder(@NonNull ListPlaceViewHolder holder, int position) {
         if (placeList.size() > 0) {
             if (preferences.getString(APP_MODE, null).equals("tablet")) {
                 int index = preferences.getInt(INDEX_ROW, -1);

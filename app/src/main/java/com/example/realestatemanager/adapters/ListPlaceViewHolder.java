@@ -1,8 +1,6 @@
 package com.example.realestatemanager.adapters;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.net.Uri;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -14,20 +12,20 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.realestatemanager.R;
-import com.example.realestatemanager.models.Address;
 import com.example.realestatemanager.models.Photo;
-import com.example.realestatemanager.models.Place;
+import com.example.realestatemanager.models.PlaceAddressesPhotosAndInterests;
+import com.example.realestatemanager.utils.Utils;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class PlaceViewHolder extends RecyclerView.ViewHolder {
+public class ListPlaceViewHolder extends RecyclerView.ViewHolder {
 
-    @BindView(R.id.type_of_place_text_view) TextView typeOfPlaceTextView;
+    @BindView(R.id.type_of_place_text_view)
+    TextView typeOfPlaceTextView;
     @BindView(R.id.status_text_view) TextView statusTextView;
     @BindView(R.id.city_text_view) TextView cityTextView;
     @BindView(R.id.price_text_view) TextView priceTextView;
@@ -37,29 +35,24 @@ public class PlaceViewHolder extends RecyclerView.ViewHolder {
     RelativeLayout relativeLayout;
 
 
-
-    public PlaceViewHolder(@NonNull View itemView) {
+    public ListPlaceViewHolder(@NonNull View itemView) {
         super(itemView);
         ButterKnife.bind(this, itemView);
-
     }
 
-    public void updateUi(Place place, Address address, List<Photo> photos,
+    public void updateUi(PlaceAddressesPhotosAndInterests placeAddressesPhotosAndInterests,
                          Context context, RequestManager glide) {
-        this.typeOfPlaceTextView.setText(place.getType());
-        String price = place.getPrice() + " $";
+        this.typeOfPlaceTextView.setText(placeAddressesPhotosAndInterests.getPlace().getType());
+        String price = placeAddressesPhotosAndInterests.getPlace().getPrice() + " $";
         this.priceTextView.setText(price);
-        if (place.getIdAddress() != -1) {
-            if (place.getIdAddress() == address.getAddressId()) {
-                this.cityTextView.setText(address.getCity());
-            }
-        }
+        
+        cityTextView.setText(Utils.setFirstLetterUpperCase(placeAddressesPhotosAndInterests.getAddress().getCity()));
 
         List<Photo> photoList = new ArrayList<>();
-        if (photos.size() != 0) {
-            for (int i = 0; i<photos.size(); i++ ) {
-                if (photos.get(i).getPlaceId() == place.getId()) {
-                    photoList.add(photos.get(i));
+        if (placeAddressesPhotosAndInterests.getPhotos().size() != 0) {
+            for (int i = 0; i<placeAddressesPhotosAndInterests.getPhotos().size(); i++ ) {
+                if (placeAddressesPhotosAndInterests.getPhotos().get(i).getPlaceId() == placeAddressesPhotosAndInterests.getPlace().getId()) {
+                    photoList.add(placeAddressesPhotosAndInterests.getPhotos().get(i));
                 }
             }
             if (photoList.size() > 1) {
@@ -74,7 +67,7 @@ public class PlaceViewHolder extends RecyclerView.ViewHolder {
 
         }
 
-        if (place.getDateOfSale() != null) {
+        if (placeAddressesPhotosAndInterests.getPlace().getDateOfSale() != null) {
             statusTextView.setText(context.getString(R.string.status_sold));
             statusTextView.setTextColor(context.getResources().getColor(R.color.red));
         } else {

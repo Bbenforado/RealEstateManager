@@ -28,7 +28,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
@@ -42,8 +41,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.realestatemanager.MainActivity;
-import com.example.realestatemanager.adapters.PhotoRecyclerViewAdapter;
-import com.example.realestatemanager.fragments.ListFragment;
+import com.example.realestatemanager.adapters.PhotoFormAndTabletModeRecyclerViewAdapter;
 import com.example.realestatemanager.models.Address;
 import com.example.realestatemanager.models.Interest;
 import com.example.realestatemanager.models.Photo;
@@ -55,14 +53,12 @@ import com.example.realestatemanager.R;
 import com.example.realestatemanager.injections.Injection;
 import com.example.realestatemanager.injections.ViewModelFactory;
 import com.example.realestatemanager.models.Place;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -88,7 +84,6 @@ import static com.example.realestatemanager.utils.UtilsAddFormActivity.setDataVa
 import static com.example.realestatemanager.utils.UtilsAddFormActivity.setDataValueTextToEditText;
 
 public class AddFormActivity extends AppCompatActivity {
-
     //----------------------------------
     //BIND VIEWS
     //------------------------------------
@@ -127,7 +122,7 @@ public class AddFormActivity extends AppCompatActivity {
     private List<CheckBox> checkBoxes;
     private List<Photo> photoList;
     private String currentPhotoPath;
-    private PhotoRecyclerViewAdapter adapter;
+    private PhotoFormAndTabletModeRecyclerViewAdapter adapter;
     private List<Photo> allPhotos;
     private List<Long> deletedPhotosId;
     private List<Photo> updatedPhoto;
@@ -254,7 +249,7 @@ public class AddFormActivity extends AppCompatActivity {
     }
 
     private void configureRecyclerView(List<Photo> photos) {
-        adapter = new PhotoRecyclerViewAdapter(photos, Glide.with(this));
+        adapter = new PhotoFormAndTabletModeRecyclerViewAdapter(photos, Glide.with(this));
         this.recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayout.HORIZONTAL, false));
     }
@@ -293,7 +288,7 @@ public class AddFormActivity extends AppCompatActivity {
     public void onClickAddFile() {
         if (!EasyPermissions.hasPermissions(this, PERMS)) {
             EasyPermissions.requestPermissions(this, getString(R.string.popup_title_permission_files_access), RC_IMAGE_PERMS, PERMS);
-            Toast.makeText(this, getString(R.string.permissions_granted), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, getString(R.string.permissions_granted), Toast.LENGTH_SHORT).show();
             return;
         }
         String[] wayToGetPicture = {getString(R.string.way_to_get_photos_gallery), getString(R.string.way_to_get_photos_camera)};
@@ -551,7 +546,6 @@ public class AddFormActivity extends AppCompatActivity {
             }
         }
     }
-
     //----------------------------------------
     //LAUNCH ACTIVITY
     //-------------------------------------------
@@ -559,7 +553,6 @@ public class AddFormActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
-
     //-----------------------------------------
     //DISPLAY DIALOGS METHODS
     //------------------------------------------------
@@ -577,7 +570,6 @@ public class AddFormActivity extends AppCompatActivity {
                     case 0:
                         long photoId = photo.getIdPhoto();
                         deletedPhotosId.add(photoId);
-
                         for (int i = 0; i < allPhotos.size(); i++) {
                             if (allPhotos.get(i).getIdPhoto() == photoId) {
                                 allPhotos.remove(allPhotos.get(i));
@@ -586,7 +578,6 @@ public class AddFormActivity extends AppCompatActivity {
                         adapter.notifyDataSetChanged();
                         break;
                     case 1:
-                        //display dialog with edit text to add description
                         displayAddDescriptionDialog(photo);
                         break;
                     default:
@@ -659,7 +650,6 @@ public class AddFormActivity extends AppCompatActivity {
         if (photo.getDescriptionPhoto() != null) {
             description.setText(photo.getDescriptionPhoto());
         }
-
         dialog.setMessage(getString(R.string.title_dialog_add_description))
                 .setView(dialogLayout)
                 .setPositiveButton(getString(R.string.save), new DialogInterface.OnClickListener() {
@@ -676,7 +666,6 @@ public class AddFormActivity extends AppCompatActivity {
                 .setNegativeButton(getString(R.string.cancel), null)
                 .show();
     }
-
     //-------------------------------------------------------------------------
     //CREATE IN DATABASE
     //-------------------------------------------------------------------------
@@ -759,7 +748,6 @@ public class AddFormActivity extends AppCompatActivity {
         UtilsAddFormActivity.getAndSetLatLngOfPlace(this,address);
         return placeViewModel.createAddress(address);
     }
-
     //-----------------------------------------------
     //DELETE
     //-----------------------------------------------
@@ -771,7 +759,6 @@ public class AddFormActivity extends AppCompatActivity {
             placeViewModel.deletePhoto(id);
         }
     }
-
     //------------------------------------------------
     //UPDATE
     //--------------------------------------------------

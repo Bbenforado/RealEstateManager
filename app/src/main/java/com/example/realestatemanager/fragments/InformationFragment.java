@@ -19,7 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.realestatemanager.R;
-import com.example.realestatemanager.adapters.DetailRecyclerViewAdapter;
+import com.example.realestatemanager.adapters.InterestRecyclerViewAdapter;
 import com.example.realestatemanager.injections.Injection;
 import com.example.realestatemanager.injections.ViewModelFactory;
 import com.example.realestatemanager.models.Interest;
@@ -28,7 +28,6 @@ import com.example.realestatemanager.utils.Utils;
 import com.example.realestatemanager.viewModels.PlaceViewModel;
 import com.google.android.material.button.MaterialButton;
 
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 import butterknife.BindView;
@@ -75,7 +74,7 @@ public class InformationFragment extends Fragment {
     //---------------------------------------------------
     //-----------------------------------------------------------
     private PlaceViewModel viewModel;
-    private DetailRecyclerViewAdapter adapter;
+    private InterestRecyclerViewAdapter adapter;
     private long price;
 
     public InformationFragment() {
@@ -105,13 +104,8 @@ public class InformationFragment extends Fragment {
             viewModel.getPlace(placeId).observe(this, new Observer<Place>() {
                 @Override
                 public void onChanged(Place place) {
-                    updateUiPlace(getContext(), place, managerOfPlaceTextView, creationDateTextView, priceTextView,
-                            descriptionTextView, surfaceTextView, nbrOfRoomsTextView, nbrOfBedroomsTextView,
-                            nbrOfBathroomsTextView, statusTextView, dateOfSaleTextView, layoutDateOfSale);
-                    getInterests(place.getId());
-                    Utils.updateUiAddress(getContext(), place, viewModel, owner,
-                            streetAddressTextView, complementTextView, postalCodeAndCityTextView, countryTextView);
-                    adapter = new DetailRecyclerViewAdapter();
+                    updateUiWithData(place, owner);
+                    adapter = new InterestRecyclerViewAdapter();
                     configureRecyclerViewForInterestsHorizontal();
                     price = place.getPrice();
                 }
@@ -120,6 +114,9 @@ public class InformationFragment extends Fragment {
         return result;
     }
 
+    //--------------------------------
+    //CONFIGURATION
+    //-----------------------------------
     private void configureViewModel() {
         ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(getContext());
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(PlaceViewModel.class);
@@ -129,11 +126,10 @@ public class InformationFragment extends Fragment {
      * configure the recycler view for the interests, displayed in horizontal
      */
     private void configureRecyclerViewForInterestsHorizontal() {
-        this.adapter = new DetailRecyclerViewAdapter();
+        this.adapter = new InterestRecyclerViewAdapter();
         this.recyclerViewInterest.setAdapter(adapter);
         recyclerViewInterest.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayout.HORIZONTAL, false));
     }
-
     //--------------------------------------------------
     //ACTIONS
     //----------------------------------------------------
@@ -142,18 +138,8 @@ public class InformationFragment extends Fragment {
      */
     @OnClick(R.id.material_convert_price_button)
     public void convertPrice() {
-        if (convertPriceButton.getText().toString().equals(getString(R.string.button_text_convert_to_euros))) {
-            int priceInEuros = convertDollarToEuro((int)price);
-            String priceEuro = priceInEuros + " €";
-            priceTextView.setText(priceEuro);
-            convertPriceButton.setText(getString(R.string.button_text_convert_to_dollars));
-        } else if (convertPriceButton.getText().toString().equals(getString(R.string.button_text_convert_to_dollars))) {
-            String priceDollars = price + " $";
-            priceTextView.setText(priceDollars);
-            convertPriceButton.setText(getString(R.string.button_text_convert_to_euros));
-        }
+        Utils.convertPrice(getContext(), convertPriceButton, priceTextView, price);
     }
-
     //--------------------------------------------------
     //UPDATE UI
     //---------------------------------------------------
@@ -175,4 +161,12 @@ public class InformationFragment extends Fragment {
         }
     }
 
+    private void updateUiWithData(Place place, LifecycleOwner owner) {
+        updateUiPlace(getContext(), place, managerOfPlaceTextView, creationDateTextView, priceTextView,
+                descriptionTextView, surfaceTextView, nbrOfRoomsTextView, nbrOfBedroomsTextView,
+                nbrOfBathroomsTextView, statusTextView, dateOfSaleTextView, layoutDateOfSale);
+        getInterests(place.getId());
+        Utils.updateUiAddress(getContext(), place, viewModel, owner,
+                streetAddressTextView, complementTextView, postalCodeAndCityTextView, countryTextView);
+    }
 }

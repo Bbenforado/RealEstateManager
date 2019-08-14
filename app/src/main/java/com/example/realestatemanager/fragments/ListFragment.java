@@ -22,11 +22,12 @@ import com.example.realestatemanager.MainActivity;
 import com.example.realestatemanager.R;
 import com.example.realestatemanager.activities.AddFormActivity;
 import com.example.realestatemanager.activities.DetailActivity;
-import com.example.realestatemanager.adapters.RecyclerViewPlaceAdapter;
+import com.example.realestatemanager.adapters.RecyclerViewListPlaceAdapter;
 import com.example.realestatemanager.injections.Injection;
 import com.example.realestatemanager.injections.ViewModelFactory;
 import com.example.realestatemanager.models.PlaceAddressesPhotosAndInterests;
 import com.example.realestatemanager.utils.ItemClickSupport;
+import com.example.realestatemanager.utils.Utils;
 import com.example.realestatemanager.viewModels.PlaceViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
@@ -45,7 +46,6 @@ import butterknife.OnClick;
  * and to display results of the search activity
  */
 public class ListFragment extends Fragment {
-
     //----------------------------------------
     //BIND VIEWS
     //----------------------------------------
@@ -59,7 +59,7 @@ public class ListFragment extends Fragment {
     private PlaceViewModel viewModel;
     private SharedPreferences preferences;
     private String[] longClickFunctionality = {"Edit place"};
-    private RecyclerViewPlaceAdapter adapterPlace;
+    private RecyclerViewListPlaceAdapter adapterPlace;
     //----------------------------------------------
     //
     //----------------------------------------------
@@ -86,6 +86,7 @@ public class ListFragment extends Fragment {
         configureViewModel();
         configureRecyclerView();
         configureOnClickRecyclerView();
+
         //if it s results activity
         if (preferences.getInt(KEY_RESULTS_ACTIVITY, -1) == 1) {
             floatingButtonAddPlace.setVisibility(View.GONE);
@@ -107,23 +108,6 @@ public class ListFragment extends Fragment {
         }
         return result;
     }
-
-   /* @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        System.out.println("on destroy view frag list");
-        preferences.edit().putInt(KEY_RESULTS_ACTIVITY, -1).apply();
-        System.out.println("key result = " + preferences.getInt(KEY_RESULTS_ACTIVITY, -1));
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        System.out.println("on dstroy frag list");
-        preferences.edit().putInt(KEY_RESULTS_ACTIVITY, -1).apply();
-        System.out.println("key result = " + preferences.getInt(KEY_RESULTS_ACTIVITY, -1));
-    }*/
-
     //-------------------------------------------
     //CONFIGURATION
     //-------------------------------------------
@@ -133,7 +117,7 @@ public class ListFragment extends Fragment {
     }
 
     private void configureRecyclerView() {
-        adapterPlace = new RecyclerViewPlaceAdapter(Glide.with(this));
+        adapterPlace = new RecyclerViewListPlaceAdapter(Glide.with(this));
         recyclerView.setAdapter(adapterPlace);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     }
@@ -159,6 +143,14 @@ public class ListFragment extends Fragment {
 
                         } else {
                             Intent detailIntent = new Intent(getContext(), DetailActivity.class);
+                            Bundle bundle = new Bundle();
+                            if (preferences.getInt(KEY_RESULTS_ACTIVITY, -1) == 1) {
+                                bundle.putInt("result", 1);
+                                detailIntent.putExtras(bundle);
+                            } else {
+                                bundle.putInt("result", -1);
+                                detailIntent.putExtras(bundle);
+                            }
                             startActivity(detailIntent);
                         }
                     }
@@ -168,12 +160,10 @@ public class ListFragment extends Fragment {
                     public boolean onItemLongClicked(RecyclerView recyclerView, int position, View v) {
                         PlaceAddressesPhotosAndInterests place = adapterPlace.getPlaceAddressesPhotosAndInterests(position);
                         displayLongClickDialog(place);
-
                         return false;
                     }
                 });
     }
-
     //----------------------------------------------
     //ACTIONS
     //------------------------------------------------
@@ -183,8 +173,6 @@ public class ListFragment extends Fragment {
         Intent intent = new Intent(getContext(), AddFormActivity.class);
         startActivity(intent);
     }
-
-
     //-----------------------------------------------
     //GET DATA
     //------------------------------------------------
@@ -209,7 +197,6 @@ public class ListFragment extends Fragment {
         placeList = gson.fromJson(json, type);
         return placeList;
     }
-
     //-----------------------------------
     //
     //------------------------------------------------------

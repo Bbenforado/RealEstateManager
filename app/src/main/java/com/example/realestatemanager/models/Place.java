@@ -87,7 +87,6 @@ public class Place {
         return price;
     }
 
-
     public Date getCreationDate() {
         return creationDate;
     }
@@ -168,7 +167,6 @@ public class Place {
         if (values.containsKey("nbrOfBathrooms")) place.setNbrOfBathrooms(values.getAsInteger("nbrOfBathrooms"));
         if (values.containsKey("author")) place.setAuthor(values.getAsString("author"));
         if (values.containsKey("description")) place.setDescription(values.getAsString("description"));
-        //if (values.containsKey("idAddress")) place.setIdAddress(id);
         place.setIdAddress(id);
         place.setCreationDate(creationdate);
         return place;
