@@ -84,12 +84,18 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         configureViewModel();
         id = preferences.getLong(PLACE_ID, -1);
         addressId = preferences.getLong(ADDRESS_ID, -1);
-        viewModel.getPlace(id).observe(this, new Observer<Place>() {
+
+        System.out.println("id = " + id);
+        System.out.println("address id = " + addressId);
+
+        /*viewModel.getPlace(id).observe(this, new Observer<Place>() {
             @Override
             public void onChanged(Place place) {
+                System.out.println("come here");
                 addressId = place.getIdAddress();
+                System.out.println("address id ici = " + addressId);
             }
-        });
+        });*/
 
        if (isNetworkAvailable(getContext())) {
             if (id != 0 && id != -1) {

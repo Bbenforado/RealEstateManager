@@ -26,6 +26,7 @@ import com.example.realestatemanager.R;
 import com.example.realestatemanager.injections.Injection;
 import com.example.realestatemanager.injections.ViewModelFactory;
 import com.example.realestatemanager.models.Address;
+import com.example.realestatemanager.models.Place;
 import com.example.realestatemanager.models.PlaceIdAndAddressId;
 import com.example.realestatemanager.viewModels.PlaceViewModel;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -58,6 +59,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private static final int REQUEST_ID_ACCESS_COURSE_FINE_LOCATION = 100;
     private static final String APP_PREFERENCES = "appPreferences";
     private static final String PLACE_ID = "placeId";
+    private static final String ADDRESS_ID = "addressId";
 
 
     @Override
@@ -181,6 +183,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             @Override
             public void onChanged(List<PlaceIdAndAddressId> placeIdAndAddressIds) {
                 for (int i = 0; i<placeIdAndAddressIds.size(); i++) {
+
+                    System.out.println("tour n " + i);
+                    System.out.println("place id = " + placeIdAndAddressIds.get(i).getId());
+                    System.out.println("address id = " + placeIdAndAddressIds.get(i).getAddressId());
+
                     if (placeIdAndAddressIds.get(i).getLatLng() != null) {
                         String latLng = placeIdAndAddressIds.get(i).getLatLng();
                         LatLng latLngOfPlace = getLatLngOfPlace(latLng);
@@ -269,9 +276,22 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public boolean onMarkerClick(Marker marker) {
         System.out.println("on marker click");
         long tag = (long) marker.getTag();
-            preferences.edit().putLong(PLACE_ID, tag).apply();
-            Intent detailIntent = new Intent(this, DetailActivity.class);
-            startActivity(detailIntent);
+
+        viewModel.getPlace(tag).observe(this, new Observer<Place>() {
+            @Override
+            public void onChanged(Place place) {
+                long addressId = place.getIdAddress();
+                preferences.edit().putLong(ADDRESS_ID, addressId).apply();
+                preferences.edit().putLong(PLACE_ID, tag).apply();
+                Intent detailIntent = new Intent(getApplicationContext(), DetailActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putInt("result", -1);
+                detailIntent.putExtras(bundle);
+                startActivity(detailIntent);
+            }
+        });
+
+
             return false;
     }
 

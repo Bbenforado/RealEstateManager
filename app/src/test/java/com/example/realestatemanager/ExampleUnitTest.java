@@ -102,7 +102,6 @@ public class ExampleUnitTest {
         Photo photo2 = new Photo();
         photos.add(photo1);
         photos.add(photo2);
-        //AddFormActivity activity = new AddFormActivity();
         boolean hasPhotoDescription = UtilsAddFormActivity.allPhotosHaveDescription(photos);
         assertNotNull(hasPhotoDescription);
         assertFalse(hasPhotoDescription);

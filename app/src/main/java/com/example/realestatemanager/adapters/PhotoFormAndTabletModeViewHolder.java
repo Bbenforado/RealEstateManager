@@ -38,5 +38,7 @@ public class PhotoFormAndTabletModeViewHolder extends RecyclerView.ViewHolder {
                 textViewDescription.setText(photo.getDescriptionPhoto());
             }
         }
+
+
     }
 }
