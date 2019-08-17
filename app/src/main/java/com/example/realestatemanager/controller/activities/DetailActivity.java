@@ -1,4 +1,4 @@
-package com.example.realestatemanager.activities;
+package com.example.realestatemanager.controller.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -9,7 +9,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import com.example.realestatemanager.R;
-import com.example.realestatemanager.fragments.DetailFragment;
+import com.example.realestatemanager.controller.fragments.DetailFragment;
 
 public class DetailActivity extends AppCompatActivity {
 

@@ -1,4 +1,4 @@
-package com.example.realestatemanager.activities;
+package com.example.realestatemanager.controller.activities;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,7 +25,9 @@ public class SettingsActivity extends AppCompatActivity {
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.user_name_text_view) TextView userNameTextView;
     @BindView(R.id.material_change_user_name_button) MaterialButton changeUserNameButton;
+    //-------------------------------------------------------------
     private SharedPreferences preferences;
+    //-------------------------------------------------------------
     public static final String APP_PREFERENCES = "appPreferences";
     public static final String USER_NAME = "userName";
 

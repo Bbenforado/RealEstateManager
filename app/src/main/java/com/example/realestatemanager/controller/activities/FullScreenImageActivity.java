@@ -1,4 +1,4 @@
-package com.example.realestatemanager.activities;
+package com.example.realestatemanager.controller.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 

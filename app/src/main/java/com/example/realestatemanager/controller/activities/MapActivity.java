@@ -1,10 +1,8 @@
-package com.example.realestatemanager.activities;
+package com.example.realestatemanager.controller.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -13,7 +11,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -25,7 +22,6 @@ import android.widget.Toast;
 import com.example.realestatemanager.R;
 import com.example.realestatemanager.injections.Injection;
 import com.example.realestatemanager.injections.ViewModelFactory;
-import com.example.realestatemanager.models.Address;
 import com.example.realestatemanager.models.Place;
 import com.example.realestatemanager.models.PlaceIdAndAddressId;
 import com.example.realestatemanager.viewModels.PlaceViewModel;
@@ -34,20 +30,16 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
 
 import static com.example.realestatemanager.utils.Utils.getLatLngOfPlace;
-import static com.example.realestatemanager.utils.Utils.getLocationFromAddress;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnCameraIdleListener {
 

@@ -1,4 +1,4 @@
-package com.example.realestatemanager.fragments;
+package com.example.realestatemanager.controller.fragments;
 
 
 import android.content.Context;
@@ -24,7 +24,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.realestatemanager.R;
-import com.example.realestatemanager.activities.AddFormActivity;
+import com.example.realestatemanager.controller.activities.AddFormActivity;
 import com.example.realestatemanager.adapters.DetailFragmentViewPagerAdapter;
 import com.example.realestatemanager.adapters.DetailPhotoPhoneModeRecyclerViewAdapter;
 import com.example.realestatemanager.adapters.InterestRecyclerViewAdapter;
@@ -55,7 +55,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Optional;
 
-import static com.example.realestatemanager.utils.Utils.convertDollarToEuro;
 import static com.example.realestatemanager.utils.Utils.getLatLngOfPlace;
 import static com.example.realestatemanager.utils.Utils.isNetworkAvailable;
 import static com.example.realestatemanager.utils.Utils.updateUiPlace;
@@ -64,7 +63,6 @@ import static com.example.realestatemanager.utils.Utils.updateUiPlace;
  * Displays details of the place
  */
 public class DetailFragment extends Fragment implements OnMapReadyCallback {
-
     //----------------------------------------------
     //BIND VIEWS
     //------------------------------------------------
@@ -73,8 +71,6 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
     FloatingActionButton editFloatingActionButton;
     @Nullable
     @BindView(R.id.viewpager) ViewPager viewPager;
-    /*@Nullable
-    @BindView(R.id.custom_view_pager) ViewPager customViewPager;*/
     @Nullable
     @BindView(R.id.main_tabs) TabLayout tabLayout;
     @BindView(R.id.recycler_view_detail_photos) RecyclerView recyclerViewPhotos;
@@ -299,9 +295,7 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
     private void configureViewpagerAndTabs() {
         DetailFragmentViewPagerAdapter viewPagerAdapter = new DetailFragmentViewPagerAdapter(getActivity().getSupportFragmentManager(), titles);
         viewPager.setAdapter(viewPagerAdapter);
-        //customViewPager.setAdapter(viewPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
-        //tabLayout.setupWithViewPager(customViewPager);
         for (int i = 0; i < tabLayout.getTabCount(); i++) {
             tabLayout.getTabAt(i).setIcon(iconTabLayout[i]);
         }

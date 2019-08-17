@@ -1,19 +1,15 @@
 package com.example.realestatemanager;
 
-import com.example.realestatemanager.activities.AddFormActivity;
-import com.example.realestatemanager.activities.SearchActivity;
 import com.example.realestatemanager.models.Photo;
-import com.example.realestatemanager.models.Place;
 import com.example.realestatemanager.utils.Utils;
 import com.example.realestatemanager.utils.UtilsAddFormActivity;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText;
 
 import org.junit.Test;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 

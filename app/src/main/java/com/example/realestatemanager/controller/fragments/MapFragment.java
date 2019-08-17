@@ -1,15 +1,13 @@
-package com.example.realestatemanager.fragments;
+package com.example.realestatemanager.controller.fragments;
 
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.location.Geocoder;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.viewpager.widget.ViewPager;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,8 +19,6 @@ import com.example.realestatemanager.R;
 import com.example.realestatemanager.injections.Injection;
 import com.example.realestatemanager.injections.ViewModelFactory;
 import com.example.realestatemanager.models.Address;
-import com.example.realestatemanager.models.Place;
-import com.example.realestatemanager.utils.Utils;
 import com.example.realestatemanager.viewModels.PlaceViewModel;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -30,22 +26,13 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.example.realestatemanager.utils.Utils.getLatLngOfPlace;
-import static com.example.realestatemanager.utils.Utils.getLocationFromAddress;
 import static com.example.realestatemanager.utils.Utils.isNetworkAvailable;
 
 /**
@@ -84,18 +71,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         configureViewModel();
         id = preferences.getLong(PLACE_ID, -1);
         addressId = preferences.getLong(ADDRESS_ID, -1);
-
-        System.out.println("id = " + id);
-        System.out.println("address id = " + addressId);
-
-        /*viewModel.getPlace(id).observe(this, new Observer<Place>() {
-            @Override
-            public void onChanged(Place place) {
-                System.out.println("come here");
-                addressId = place.getIdAddress();
-                System.out.println("address id ici = " + addressId);
-            }
-        });*/
 
        if (isNetworkAvailable(getContext())) {
             if (id != 0 && id != -1) {

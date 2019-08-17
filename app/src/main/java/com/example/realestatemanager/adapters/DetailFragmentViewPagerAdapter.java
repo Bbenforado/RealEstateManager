@@ -8,17 +8,12 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-import com.example.realestatemanager.CustomViewPager;
-import com.example.realestatemanager.fragments.InformationFragment;
-import com.example.realestatemanager.fragments.MapFragment;
-
-import java.nio.charset.Charset;
-import java.util.Map;
+import com.example.realestatemanager.controller.fragments.InformationFragment;
+import com.example.realestatemanager.controller.fragments.MapFragment;
 
 public class DetailFragmentViewPagerAdapter extends FragmentPagerAdapter {
 
     private String[] titles;
-    private int mCurrentPosition = -1;
 
     public DetailFragmentViewPagerAdapter(FragmentManager fragmentManager, String[] titles) {
         super(fragmentManager);
@@ -65,16 +60,4 @@ public class DetailFragmentViewPagerAdapter extends FragmentPagerAdapter {
         return titles[position];
     }
 
-    /*@Override
-    public void setPrimaryItem(ViewGroup container, int position, Object object) {
-        super.setPrimaryItem(container, position, object);
-        if (position != mCurrentPosition) {
-            Fragment fragment = (Fragment) object;
-            CustomViewPager pager = (CustomViewPager) container;
-            if (fragment != null && fragment.getView() != null) {
-                mCurrentPosition = position;
-                pager.measureCurrentView(fragment.getView());
-            }
-        }
-    }*/
 }

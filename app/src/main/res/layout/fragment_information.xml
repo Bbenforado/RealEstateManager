@@ -2,7 +2,7 @@
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".fragments.InformationFragment"
+    tools:context=".controller.fragments.InformationFragment"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
     <LinearLayout
@@ -12,7 +12,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="16dp"
-    tools:context=".fragments.InformationFragment">
+    tools:context=".controller.fragments.InformationFragment">
 
 
         <RelativeLayout

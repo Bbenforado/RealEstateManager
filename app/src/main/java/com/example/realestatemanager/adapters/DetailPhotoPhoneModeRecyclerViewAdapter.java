@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.RequestManager;
 import com.example.realestatemanager.R;
-import com.example.realestatemanager.activities.FullScreenImageActivity;
+import com.example.realestatemanager.controller.activities.FullScreenImageActivity;
 import com.example.realestatemanager.models.Photo;
 
 import java.util.ArrayList;

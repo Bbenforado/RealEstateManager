@@ -1,4 +1,4 @@
-package com.example.realestatemanager.activities;
+package com.example.realestatemanager.controller.activities;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -40,7 +40,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.realestatemanager.MainActivity;
 import com.example.realestatemanager.adapters.PhotoFormAndTabletModeRecyclerViewAdapter;
 import com.example.realestatemanager.models.Address;
 import com.example.realestatemanager.models.Interest;
@@ -290,7 +289,6 @@ public class AddFormActivity extends AppCompatActivity {
     public void onClickAddFile() {
         if (!EasyPermissions.hasPermissions(this, PERMS)) {
             EasyPermissions.requestPermissions(this, getString(R.string.popup_title_permission_files_access), RC_IMAGE_PERMS, PERMS);
-            //Toast.makeText(this, getString(R.string.permissions_granted), Toast.LENGTH_SHORT).show();
             return;
         }
         String[] wayToGetPicture = {getString(R.string.way_to_get_photos_gallery), getString(R.string.way_to_get_photos_camera)};
@@ -488,7 +486,7 @@ public class AddFormActivity extends AppCompatActivity {
                 getSystemService(Context.NOTIFICATION_SERVICE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence channelName = "Message provenant de mon appli";
+            CharSequence channelName = "Message provenant de realestatemanager";
             int importance = NotificationManager.IMPORTANCE_HIGH;
             NotificationChannel channel = new NotificationChannel(channelId, channelName, importance);
             notificationManager.createNotificationChannel(channel);
@@ -505,7 +503,6 @@ public class AddFormActivity extends AppCompatActivity {
                 !TextUtils.isEmpty(editTextAuthor.getText().toString()) && !TextUtils.isEmpty(editTextStreetNbr.getText().toString()) &&
                 !TextUtils.isEmpty(editTextStreetName.getText().toString()) && !TextUtils.isEmpty(editTextPostalCode.getText().toString()) &&
                 !TextUtils.isEmpty(editTextCity.getText().toString()) && !TextUtils.isEmpty(editTextCountry.getText().toString());
-
     }
 
     //-------------------------------------------------
@@ -533,7 +530,6 @@ public class AddFormActivity extends AppCompatActivity {
     }
 
     private void handleResponseForCamera(int requestCode, int resultCode, Intent data) {
-        //WHEN TAKE PICTURE WITH CAMERA
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
             File imgFile = new  File(currentPhotoPath);
             if(imgFile.exists())            {

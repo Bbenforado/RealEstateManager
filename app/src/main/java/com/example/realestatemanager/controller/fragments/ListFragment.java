@@ -1,4 +1,4 @@
-package com.example.realestatemanager.fragments;
+package com.example.realestatemanager.controller.fragments;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -18,16 +18,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
-import com.example.realestatemanager.MainActivity;
+import com.example.realestatemanager.controller.activities.MainActivity;
 import com.example.realestatemanager.R;
-import com.example.realestatemanager.activities.AddFormActivity;
-import com.example.realestatemanager.activities.DetailActivity;
+import com.example.realestatemanager.controller.activities.AddFormActivity;
+import com.example.realestatemanager.controller.activities.DetailActivity;
 import com.example.realestatemanager.adapters.RecyclerViewListPlaceAdapter;
 import com.example.realestatemanager.injections.Injection;
 import com.example.realestatemanager.injections.ViewModelFactory;
 import com.example.realestatemanager.models.PlaceAddressesPhotosAndInterests;
 import com.example.realestatemanager.utils.ItemClickSupport;
-import com.example.realestatemanager.utils.Utils;
 import com.example.realestatemanager.viewModels.PlaceViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
@@ -54,14 +53,12 @@ public class ListFragment extends Fragment {
     @BindView(R.id.add_floating_action_button)
     FloatingActionButton floatingButtonAddPlace;
     //-------------------------------------------
-    //
     //---------------------------------------------
     private PlaceViewModel viewModel;
     private SharedPreferences preferences;
     private String[] longClickFunctionality = {"Edit place"};
     private RecyclerViewListPlaceAdapter adapterPlace;
     //----------------------------------------------
-    //
     //----------------------------------------------
     private static final String APP_PREFERENCES = "appPreferences";
     private static final String PLACE_ID = "placeId";

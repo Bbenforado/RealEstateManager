@@ -1,4 +1,4 @@
-package com.example.realestatemanager.fragments;
+package com.example.realestatemanager.controller.fragments;
 
 
 import android.content.Context;
@@ -34,7 +34,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static com.example.realestatemanager.utils.Utils.convertDollarToEuro;
 import static com.example.realestatemanager.utils.Utils.updateUiPlace;
 
 /**

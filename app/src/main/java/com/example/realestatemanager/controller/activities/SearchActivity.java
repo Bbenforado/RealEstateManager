@@ -1,4 +1,4 @@
-package com.example.realestatemanager.activities;
+package com.example.realestatemanager.controller.activities;
 
 import android.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,7 +20,6 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.sqlite.db.SimpleSQLiteQuery;
 
-import com.example.realestatemanager.MainActivity;
 import com.example.realestatemanager.R;
 import com.example.realestatemanager.injections.Injection;
 import com.example.realestatemanager.injections.ViewModelFactory;
@@ -74,7 +73,6 @@ public class SearchActivity extends AppCompatActivity {
     @BindView(R.id.checkboxSchool) CheckBox checkBoxSchool;
     @BindView(R.id.text_edit_min_nbr_photos_search_activity) TextInputEditText editTextNbrOfPhotos;
     @BindView(R.id.text_edit_city_search_activity) TextInputEditText editTextCity;
-
     //--------------------------------------------------
     //-----------------------------------------------------
     private String[] typesOfPlace = {"Loft", "Mansion", "Penthouse", "Duplex"};
@@ -153,7 +151,6 @@ public class SearchActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        //super.onBackPressed();
         Intent mainActivity = new Intent(this, MainActivity.class);
         startActivity(mainActivity);
     }
@@ -165,7 +162,6 @@ public class SearchActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Search");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
     }
 
     private void configureViewModel() {

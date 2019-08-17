@@ -1,4 +1,4 @@
-package com.example.realestatemanager;
+package com.example.realestatemanager.controller.activities;
 
 import android.content.Intent;
 
@@ -15,19 +15,19 @@ import android.widget.Toast;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import com.example.realestatemanager.activities.MapActivity;
-import com.example.realestatemanager.activities.SearchActivity;
-import com.example.realestatemanager.activities.SettingsActivity;
-import com.example.realestatemanager.fragments.DetailFragment;
-import com.example.realestatemanager.fragments.ListFragment;
-import com.example.realestatemanager.models.Place;
+
+import com.example.realestatemanager.R;
+import com.example.realestatemanager.controller.activities.MapActivity;
+import com.example.realestatemanager.controller.activities.SearchActivity;
+import com.example.realestatemanager.controller.activities.SettingsActivity;
+import com.example.realestatemanager.controller.fragments.DetailFragment;
+import com.example.realestatemanager.controller.fragments.ListFragment;
 import com.facebook.stetho.Stetho;
 import com.google.android.material.navigation.NavigationView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.example.realestatemanager.utils.Utils.isInternetAvailable;
 import static com.example.realestatemanager.utils.Utils.isNetworkAvailable;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
@@ -39,13 +39,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @BindView(R.id.drawer_layout) DrawerLayout drawerLayout;
     @BindView(R.id.nav_view) NavigationView navigationView;
     //--------------------------------------------
-    //
     //-----------------------------------------------
     private ListFragment listFragment;
     private DetailFragment detailFragment;
     private SharedPreferences preferences;
     //-------------------------------------------------
-    //
     //----------------------------------------------------
     public static final String APP_PREFERENCES = "appPreferences";
     public static final String APP_MODE = "appMode";
