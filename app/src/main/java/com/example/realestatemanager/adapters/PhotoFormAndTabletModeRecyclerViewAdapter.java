@@ -22,8 +22,10 @@ public class PhotoFormAndTabletModeRecyclerViewAdapter extends RecyclerView.Adap
     private RequestManager glide;
     private static final String STATUS_FORM_ACTIVITY = "statusFormActivity";
     public static final String APP_PREFERENCES = "appPreferences";
+    private static final String CODE_FORM = "codeForm";
     private int statusActivity;
     private Context context;
+    private SharedPreferences preferences;
 
     public PhotoFormAndTabletModeRecyclerViewAdapter(List<Photo> photos, RequestManager glide) {
         this.glide = glide;
@@ -36,7 +38,7 @@ public class PhotoFormAndTabletModeRecyclerViewAdapter extends RecyclerView.Adap
         context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.photo_recycler_view_item, parent, false);
-        SharedPreferences preferences = view.getContext().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+        preferences = view.getContext().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         statusActivity = preferences.getInt(STATUS_FORM_ACTIVITY, -1);
         return new PhotoFormAndTabletModeViewHolder(view);
     }
@@ -45,14 +47,16 @@ public class PhotoFormAndTabletModeRecyclerViewAdapter extends RecyclerView.Adap
     public void onBindViewHolder(@NonNull PhotoFormAndTabletModeViewHolder holder, int position) {
         holder.updateUi(photoList.get(position), this.glide, this.statusActivity);
 
-        holder.imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent= new Intent(context, FullScreenImageActivity.class);
-                intent.putExtra("image_url", photoList.get(position).getUri());
-                context.startActivity(intent);
-            }
-        });
+        if (preferences.getString(CODE_FORM, null) == null) {
+            holder.imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, FullScreenImageActivity.class);
+                    intent.putExtra("image_url", photoList.get(position).getUri());
+                    context.startActivity(intent);
+                }
+            });
+        }
     }
 
     @Override

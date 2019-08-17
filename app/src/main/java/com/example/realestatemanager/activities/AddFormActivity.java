@@ -141,6 +141,7 @@ public class AddFormActivity extends AppCompatActivity {
     private static final int RC_CHOOSE_PHOTO = 200;
     private static final int REQUEST_TAKE_PHOTO = 1;
     public static final String CODE_DESCRIPTION = "codeDescription";
+    public static final String CODE_FORM = "codeForm";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -153,6 +154,7 @@ public class AddFormActivity extends AppCompatActivity {
         saleDateButton.setHint(Utils.getTodayDate());
         status = preferences.getInt(STATUS_FORM_ACTIVITY, -1);
         preferences.edit().putInt(CODE_DESCRIPTION, -1).apply();
+        preferences.edit().putString(CODE_FORM, "form").apply();
 
         configureToolbar();
         initializeArrayLists();
@@ -181,6 +183,7 @@ public class AddFormActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         preferences.edit().putString(DATE_OF_SALE, null).apply();
+        preferences.edit().putString(CODE_FORM, null).apply();
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -234,7 +237,6 @@ public class AddFormActivity extends AppCompatActivity {
         handleResponseForGallery(requestCode, resultCode, data);
         handleResponseForCamera(requestCode, resultCode, data);
     }
-
     //-----------------------------------
     //CONFIGURATION
     //--------------------------------------
