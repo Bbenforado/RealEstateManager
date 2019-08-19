@@ -3,11 +3,14 @@ package com.example.realestatemanager;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import androidx.room.Room;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.rule.ActivityTestRule;
 
 import static com.example.realestatemanager.provider.PlaceContentProvider.AUTHORITY;
 import static com.example.realestatemanager.provider.PlaceContentProvider.TABLE_ADDRESS;
@@ -22,11 +25,13 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
+import com.example.realestatemanager.controller.activities.MainActivity;
 import com.example.realestatemanager.database.RealEstateManagerDatabase;
 import com.example.realestatemanager.provider.PlaceContentProvider;
 import com.example.realestatemanager.utils.Utils;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 @RunWith(AndroidJUnit4.class)
@@ -38,6 +43,12 @@ public class PlaceContentProviderTest {
     private static final Uri URI_PHOTO_UPDATE = Uri.parse("content://" + AUTHORITY + "/" + TABLE_PHOTO + "/1");
     private static final Uri URI_INTEREST_UPDATE = Uri.parse("content://" + AUTHORITY + "/" + TABLE_INTEREST + "/1");
     private static long id = 1;
+    public static final String ID_PLACE_FOR_CONTENT_PROVIDER = "idPlaceContentProvider";
+    public static final String APP_PREFERENCES = "appPreferences";
+    private SharedPreferences preferences;
+
+    @Rule
+    public ActivityTestRule<MainActivity> activityTestRule = new ActivityTestRule<>(MainActivity.class);
 
     @Before
     public void setUp() {
@@ -65,32 +76,34 @@ public class PlaceContentProviderTest {
         contentResolver.insert(PlaceContentProvider.URI_PHOTO, generatePhoto(url, description));
 
         //get place
+        preferences = activityTestRule.getActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+        long idPlace = preferences.getLong(ID_PLACE_FOR_CONTENT_PROVIDER, -1);
+
         final Cursor cursorPlace = contentResolver.query(ContentUris
-                        .withAppendedId(PlaceContentProvider.URI_PLACE, id),
+                        .withAppendedId(PlaceContentProvider.URI_PLACE, idPlace),
                 null, null, null, null);
 
         assertThat(cursorPlace, notNullValue());
         assertThat(cursorPlace.getCount(), is(1));
         assertThat(cursorPlace.moveToFirst(), is(true));
-        assertThat(cursorPlace.getString(cursorPlace.getColumnIndexOrThrow("type")), is("Mansion"));
-        //assertThat(cursorPlace.getString(cursorPlace.getColumnIndex("type")), is("Loft"));
+        assertThat(cursorPlace.getString(cursorPlace.getColumnIndexOrThrow("type")), is("Loft"));
         cursorPlace.close();
 
         //get address
-        final Cursor cursorAddress = contentResolver.query(ContentUris.withAppendedId(PlaceContentProvider.URI_ADDRESS, id),
+        final Cursor cursorAddress = contentResolver.query(ContentUris.withAppendedId(PlaceContentProvider.URI_ADDRESS, idPlace),
                 null, null, null, null);
         assertThat(cursorAddress, notNullValue());
         assertThat(cursorAddress.getCount(), is(1));
         cursorAddress.close();
 
         //get interest
-        final Cursor cursorInterest = contentResolver.query(ContentUris.withAppendedId(URI_INTEREST, id),
+        final Cursor cursorInterest = contentResolver.query(ContentUris.withAppendedId(URI_INTEREST, idPlace),
                 null, null, null, null);
         assertThat(cursorInterest.getCount(), is(1));
         cursorInterest.close();
 
         //get photo
-        final Cursor cursorPhoto = contentResolver.query(ContentUris.withAppendedId(URI_PHOTO, id),
+        final Cursor cursorPhoto = contentResolver.query(ContentUris.withAppendedId(URI_PHOTO, idPlace),
                 null, null, null, null);
         assertThat(cursorPhoto.getCount(), is(1));
         cursorPhoto.close();
@@ -102,9 +115,12 @@ public class PlaceContentProviderTest {
     //----------------------------------------
     @Test
     public void updatePlace() {
-        contentResolver.update(URI_PLACE, generateUpdatedPlace(id, id), null, null);
+        preferences = activityTestRule.getActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+        long idPlace = preferences.getLong(ID_PLACE_FOR_CONTENT_PROVIDER, -1);
 
-        final Cursor cursorUpdatedPlace = contentResolver.query(ContentUris.withAppendedId(URI_PLACE, id),
+        contentResolver.update(URI_PLACE, generateUpdatedPlace(idPlace, idPlace), null, null);
+
+        final Cursor cursorUpdatedPlace = contentResolver.query(ContentUris.withAppendedId(URI_PLACE, idPlace),
                 null, null, null, null);
         assertThat(cursorUpdatedPlace, notNullValue());
         assertThat(cursorUpdatedPlace.getCount(), is(1));
@@ -114,8 +130,11 @@ public class PlaceContentProviderTest {
 
     @Test
     public void updateAddress() {
-        contentResolver.update(URI_ADDRESS_UPDATE, generateUpdatedAddress(id), null, null);
-        final Cursor cursorUpdatedAddress = contentResolver.query(ContentUris.withAppendedId(URI_ADDRESS, id),
+        preferences = activityTestRule.getActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+        long idPlace = preferences.getLong(ID_PLACE_FOR_CONTENT_PROVIDER, -1);
+
+        contentResolver.update(URI_ADDRESS_UPDATE, generateUpdatedAddress(idPlace), null, null);
+        final Cursor cursorUpdatedAddress = contentResolver.query(ContentUris.withAppendedId(URI_ADDRESS, idPlace),
                 null, null, null, null);
         assertThat(cursorUpdatedAddress, notNullValue());
         assertThat(cursorUpdatedAddress.getString(cursorUpdatedAddress.getColumnIndex("streetName")), is("rue stephenson"));
@@ -124,10 +143,13 @@ public class PlaceContentProviderTest {
 
     @Test
     public void updatePhoto() {
+        preferences = activityTestRule.getActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+        long idPlace = preferences.getLong(ID_PLACE_FOR_CONTENT_PROVIDER, -1);
+
         String url = "https://ksassets.timeincuk.net/wp/uploads/sites/56/2019/07/Ideal-Home-July-19-Country-bathroom-620x620.jpg";
         String description = "New description";
-        contentResolver.update(URI_PHOTO_UPDATE, generateUpdatedPhoto(url, description), null, null);
-        final Cursor cursorUpdatedPhoto = contentResolver.query(ContentUris.withAppendedId(URI_PHOTO, id),
+        contentResolver.update(URI_PHOTO_UPDATE, generateUpdatedPhoto(url, description, idPlace), null, null);
+        final Cursor cursorUpdatedPhoto = contentResolver.query(ContentUris.withAppendedId(URI_PHOTO, idPlace),
                 null, null, null, null);
         assertThat(cursorUpdatedPhoto, notNullValue());
         assertThat(cursorUpdatedPhoto.getString(cursorUpdatedPhoto.getColumnIndex("descriptionPhoto")), is("New description"));
@@ -136,35 +158,16 @@ public class PlaceContentProviderTest {
 
     @Test
     public void updateInterest() {
-        contentResolver.update(URI_INTEREST_UPDATE, generateInterestForUpdate(id, id), null, null);
-        final Cursor cursorUpdatedInterest = contentResolver.query(ContentUris.withAppendedId(URI_INTEREST, id),
+        preferences = activityTestRule.getActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+        long idPlace = preferences.getLong(ID_PLACE_FOR_CONTENT_PROVIDER, -1);
+
+        contentResolver.update(URI_INTEREST_UPDATE, generateInterestForUpdate(idPlace, idPlace), null, null);
+        final Cursor cursorUpdatedInterest = contentResolver.query(ContentUris.withAppendedId(URI_INTEREST, idPlace),
                 null, null, null, null);
         assertThat(cursorUpdatedInterest, notNullValue());
         assertThat(cursorUpdatedInterest.getString(cursorUpdatedInterest.getColumnIndex("interestType")), is("Park"));
         cursorUpdatedInterest.close();
     }
-
-    //-----------------------------------
-    //DELETE
-    //--------------------------------------
-    /*@Test
-    public void deletePlaceTest() {
-        contentResolver.delete(URI_PLACE_DELETE, null, null);
-        contentResolver.delete(URI_ADDRESS_DELETE, null, null);
-        final Cursor cursor = contentResolver.query(ContentUris.withAppendedId(PlaceContentProvider.URI_PLACE, id),
-                null, null, null, null);
-        assertThat(cursor.getCount(), is(0));
-    }
-
-    @Test
-    public void deleteAddressTest() {
-        contentResolver.delete(URI_ADDRESS_DELETE, null, null);
-        final Cursor cursor = contentResolver.query(ContentUris.withAppendedId(PlaceContentProvider.URI_ADDRESS, id),
-                null, null, null, null);
-        assertThat(cursor.getCount(), is(0));
-    }*/
-
-
     //------------------------------------
     //GENERATE DATA OBJECTS METHODS
     //---------------------------------------
@@ -244,7 +247,7 @@ public class PlaceContentProviderTest {
         return values;
     }
 
-    private ContentValues generateUpdatedPhoto(String url, String description) {
+    private ContentValues generateUpdatedPhoto(String url, String description, long id) {
         final ContentValues values = new ContentValues();
         values.put("idPhoto", id);
         values.put("uri", url);
